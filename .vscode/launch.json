@@ -5,8 +5,12 @@
       "name": "Debug C++",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/driver.exe",
-      "args": [],
+      "program": "${workspaceFolder}/build/driver.exe",
+      "args": [
+        "inputs\\bubblesort.src",
+        "inputs\\a_good_grammar_grammar.grm",
+        "inputs\\a_good_grammar_grammar.grm"
+      ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],

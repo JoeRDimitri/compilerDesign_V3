@@ -1,4 +1,4 @@
-# Install script for directory: C:/Projects/CompilerDesignV2
+# Install script for directory: C:/Projects/CompilerDesignV2/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

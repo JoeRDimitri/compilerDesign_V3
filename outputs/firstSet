@@ -1,0 +1,353 @@
+Key: variable2 -> Values: 
+[ 
+( 
+. 
+EPSILON 
+
+Key: variable -> Values: 
+self 
+id 
+
+Key: varDecl -> Values: 
+id 
+
+Key: idnest2 -> Values: 
+( 
+[ 
+. 
+
+Key: funcHead -> Values: 
+function 
+constructor 
+
+Key: localVarDeclOrStat -> Values: 
+local 
+if 
+while 
+read 
+write 
+return 
+self 
+id 
+
+Key: rept-fParams3 -> Values: 
+[ 
+EPSILON 
+
+Key: variable3 -> Values: 
+EPSILON 
+. 
+
+Key: funcDef -> Values: 
+function 
+constructor 
+
+Key: funcBody -> Values: 
+{ 
+
+Key: expr2 -> Values: 
+EPSILON 
+== 
+<> 
+< 
+> 
+<= 
+>= 
+
+Key: returnType -> Values: 
+void 
+int 
+float 
+id 
+
+Key: rept-factor3 -> Values: 
+. 
+EPSILON 
+
+Key: rept-factor2 -> Values: 
+( 
+[ 
+. 
+EPSILON 
+
+Key: rept-fParamsTail4 -> Values: 
+[ 
+EPSILON 
+
+Key: rept-factor -> Values: 
+id 
+self 
+
+Key: rept-statBlock1 -> Values: 
+EPSILON 
+if 
+while 
+read 
+write 
+return 
+self 
+id 
+
+Key: factor -> Values: 
+intnum 
+floatnum 
+( 
+not 
+id 
+self 
++ 
+- 
+
+Key: rept-factor4 -> Values: 
+. 
+EPSILON 
+
+Key: rept-fParams4 -> Values: 
+, 
+EPSILON 
+
+Key: arithExpr -> Values: 
+intnum 
+floatnum 
+( 
+not 
+id 
+self 
++ 
+- 
+
+Key: statBlock -> Values: 
+{ 
+EPSILON 
+if 
+while 
+read 
+write 
+return 
+self 
+id 
+
+Key: classDecl -> Values: 
+class 
+
+Key: rept-prog0 -> Values: 
+class 
+EPSILON 
+implementation 
+function 
+constructor 
+
+Key: fParamsTail -> Values: 
+, 
+
+Key: arraySize2 -> Values: 
+intnum 
+] 
+
+Key: rept-variable2 -> Values: 
+[ 
+EPSILON 
+
+Key: localVarDecl -> Values: 
+local 
+
+Key: aParamsTail -> Values: 
+, 
+
+Key: aParams -> Values: 
+EPSILON 
+intnum 
+floatnum 
+( 
+not 
+id 
+self 
++ 
+- 
+
+Key: fParams -> Values: 
+id 
+EPSILON 
+
+Key: expr -> Values: 
+intnum 
+floatnum 
+( 
+not 
+id 
+self 
++ 
+- 
+
+Key: opt-classDecl2 -> Values: 
+isa 
+EPSILON 
+
+Key: rept-statement2 -> Values: 
+[ 
+( 
+. 
+:= 
+EPSILON 
+
+Key: addOp -> Values: 
++ 
+- 
+or 
+
+Key: assignOp -> Values: 
+:= 
+
+Key: visibility -> Values: 
+public 
+private 
+
+Key: attributeDecl -> Values: 
+attribute 
+
+Key: rept-aParams1 -> Values: 
+, 
+EPSILON 
+
+Key: rept-statement -> Values: 
+self 
+id 
+
+Key: rept-statement3 -> Values: 
+. 
+; 
+
+Key: multOp -> Values: 
+* 
+/ 
+and 
+
+Key: prog -> Values: 
+class 
+EPSILON 
+implementation 
+function 
+constructor 
+
+Key: START -> Values: 
+class 
+EPSILON 
+implementation 
+function 
+constructor 
+
+Key: relOp -> Values: 
+== 
+<> 
+< 
+> 
+<= 
+>= 
+
+Key: rept-classDecl4 -> Values: 
+EPSILON 
+public 
+private 
+
+Key: rept-funcBody1 -> Values: 
+local 
+EPSILON 
+if 
+while 
+read 
+write 
+return 
+self 
+id 
+
+Key: rept-implDef3 -> Values: 
+EPSILON 
+function 
+constructor 
+
+Key: rept-opt-classDecl22 -> Values: 
+, 
+EPSILON 
+
+Key: indice -> Values: 
+[ 
+
+Key: rept-varDecl3 -> Values: 
+[ 
+EPSILON 
+
+Key: arraySize -> Values: 
+[ 
+
+Key: term -> Values: 
+intnum 
+floatnum 
+( 
+not 
+id 
+self 
++ 
+- 
+
+Key: rightrec-arithExpr -> Values: 
+EPSILON 
++ 
+- 
+or 
+
+Key: statement -> Values: 
+if 
+while 
+read 
+write 
+return 
+self 
+id 
+
+Key: classOrImplOrFunc -> Values: 
+class 
+implementation 
+function 
+constructor 
+
+Key: rightrec-term -> Values: 
+EPSILON 
+* 
+/ 
+and 
+
+Key: funcDecl -> Values: 
+function 
+constructor 
+
+Key: implDef -> Values: 
+implementation 
+
+Key: type -> Values: 
+int 
+float 
+id 
+
+Key: memberDecl -> Values: 
+attribute 
+function 
+constructor 
+
+Key: relExpr -> Values: 
+intnum 
+floatnum 
+( 
+not 
+id 
+self 
++ 
+- 
+
+Key: sign -> Values: 
++ 
+- 
+
+Key: rept-statement4 -> Values: 
+. 
+:= 
+

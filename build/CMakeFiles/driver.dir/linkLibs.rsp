@@ -1,1 +1,1 @@
- "C:/VCPKG/vcpkg/installed/x64-windows/debug/lib/spdlogd.lib" "C:/VCPKG/vcpkg/installed/x64-windows/debug/lib/fmtd.lib" -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 
+ C:/msys64/ucrt64/lib/libspdlog.dll.a C:/msys64/ucrt64/lib/libfmt.a -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 

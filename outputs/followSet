@@ -1,0 +1,289 @@
+Key: variable2 -> Values: 
+) 
+
+Key: assignOp -> Values: 
+intnum 
+floatnum 
+( 
+not 
+id 
+self 
++ 
+- 
+
+Key: rept-statement3 -> Values: 
+if 
+while 
+read 
+write 
+return 
+self 
+id 
+
+Key: rept-statement4 -> Values: 
+if 
+while 
+read 
+write 
+return 
+self 
+id 
+
+Key: rept-factor4 -> Values: 
+
+Key: rept-factor -> Values: 
+
+Key: rept-fParams4 -> Values: 
+
+Key: rept-fParams3 -> Values: 
+, 
+
+Key: localVarDeclOrStat -> Values: 
+local 
+if 
+while 
+read 
+write 
+return 
+self 
+id 
+} 
+
+Key: START -> Values: 
+$ 
+
+Key: relOp -> Values: 
+intnum 
+floatnum 
+( 
+not 
+id 
+self 
++ 
+- 
+
+Key: variable3 -> Values: 
+) 
+
+Key: funcDef -> Values: 
+function 
+constructor 
+} 
+
+Key: statBlock -> Values: 
+else 
+; 
+
+Key: classDecl -> Values: 
+
+Key: rept-prog0 -> Values: 
+$ 
+
+Key: opt-classDecl2 -> Values: 
+{ 
+
+Key: expr -> Values: 
+, 
+) 
+; 
+
+Key: expr2 -> Values: 
+, 
+
+Key: funcBody -> Values: 
+
+Key: returnType -> Values: 
+; 
+{ 
+
+Key: prog -> Values: 
+$ 
+
+Key: arithExpr -> Values: 
+== 
+<> 
+< 
+> 
+<= 
+>= 
+, 
+) 
+] 
+
+Key: rept-classDecl4 -> Values: 
+} 
+
+Key: varDecl -> Values: 
+
+Key: fParamsTail -> Values: 
+, 
+
+Key: arraySize2 -> Values: 
+
+Key: rept-variable2 -> Values: 
+. 
+:= 
+) 
+
+Key: aParams -> Values: 
+) 
+
+Key: fParams -> Values: 
+) 
+
+Key: classOrImplOrFunc -> Values: 
+class 
+implementation 
+function 
+constructor 
+$ 
+
+Key: rightrec-term -> Values: 
++ 
+- 
+or 
+
+Key: rept-fParamsTail4 -> Values: 
+
+Key: rept-aParams1 -> Values: 
+
+Key: arraySize -> Values: 
+[ 
+, 
+
+Key: term -> Values: 
++ 
+- 
+or 
+
+Key: indice -> Values: 
+[ 
+. 
+
+Key: rept-varDecl3 -> Values: 
+; 
+
+Key: rightrec-arithExpr -> Values: 
+
+Key: statement -> Values: 
+if 
+while 
+read 
+write 
+return 
+self 
+id 
+
+Key: rept-factor2 -> Values: 
+
+Key: factor -> Values: 
+* 
+/ 
+and 
++ 
+- 
+or 
+
+Key: rept-statBlock1 -> Values: 
+} 
+
+Key: idnest2 -> Values: 
+id 
+self 
+
+Key: rept-factor3 -> Values: 
+
+Key: rept-funcBody1 -> Values: 
+} 
+
+Key: funcHead -> Values: 
+; 
+{ 
+
+Key: rept-implDef3 -> Values: 
+} 
+
+Key: aParamsTail -> Values: 
+, 
+
+Key: localVarDecl -> Values: 
+
+Key: implDef -> Values: 
+
+Key: type -> Values: 
+[ 
+, 
+; 
+{ 
+
+Key: funcDecl -> Values: 
+
+Key: relExpr -> Values: 
+) 
+
+Key: sign -> Values: 
+intnum 
+floatnum 
+( 
+not 
+id 
+self 
++ 
+- 
+
+Key: memberDecl -> Values: 
+public 
+private 
+} 
+
+Key: rept-statement -> Values: 
+if 
+while 
+read 
+write 
+return 
+self 
+id 
+
+Key: rept-opt-classDecl22 -> Values: 
+{ 
+
+Key: attributeDecl -> Values: 
+
+Key: visibility -> Values: 
+attribute 
+function 
+constructor 
+
+Key: rept-statement2 -> Values: 
+if 
+while 
+read 
+write 
+return 
+self 
+id 
+
+Key: addOp -> Values: 
+intnum 
+floatnum 
+( 
+not 
+id 
+self 
++ 
+- 
+
+Key: multOp -> Values: 
+intnum 
+floatnum 
+( 
+not 
+id 
+self 
++ 
+- 
+
+Key: variable -> Values: 
+) 
+

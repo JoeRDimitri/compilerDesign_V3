@@ -1,0 +1,9 @@
+script:
+C:\Projects\CompilerDesignV2\inputs\bubblesort.src
+grammar:
+C:\Projects\CompilerDesignV2\inputs\a_good_grammar_grammar.grm
+Attribute:
+C:\Projects\CompilerDesignV2\inputs\AttributeGrammar.txt
+
+& 'C:\msys64\ucrt64\bin\g++.exe' -Wall -g driver.cpp lexor.cpp parser.cpp \
+    first_and_follow.cpp handler.cpp -o driver.exe -lspdlog -lfmt

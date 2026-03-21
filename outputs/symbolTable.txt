@@ -1,0 +1,20 @@
+Global Table
+=========================
+bubbleSort: function | void | 
+=========================
+	table for bubbleSort
+
+	j: variable | int | 
+	n: variable | i | 
+	temp: variable | int | 
+main: function | void | 
+=========================
+	table for main
+
+	arr: variable | int | 
+printArray: function | void | 
+=========================
+	table for printArray
+
+	i: variable | int | 
+	n: variable | int | 

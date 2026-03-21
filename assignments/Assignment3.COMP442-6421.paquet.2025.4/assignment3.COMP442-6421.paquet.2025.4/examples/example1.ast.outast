@@ -1,0 +1,198 @@
+Prog              
+| classdecl       
+| | Id         
+| | {         
+| | | classmember     
+| | | | visibility      
+| | | | vardecl        
+| | | | |id
+| | | | |type
+| | | classmember     
+| | | | visibility      
+| | | | vardecl        
+| | | | |id
+| | | | |type
+| classdecl       
+| | Id         
+| | {         
+| | | classmember     
+| | | | visibility      
+| | | | vardecl        
+| | | | |id
+| | | | |type
+| | | | |dimlist     
+| | | | | | intnum     
+| | | | | | intnum     
+| | | | | | intnum      
+| | | classmember     
+| | | | visibility      
+| | | | vardecl        
+| | | | |id
+| | | | |type
+| | | | |dimlist     
+| | | | | | intnum     
+| | | classmember     
+| | | | visibility      
+| | | | vardecl        
+| | | | |id
+| | | | |type
+| | | | |dimlist     
+| | | | | | intnum     
+| | | classmember     
+| | | | visibility      
+| | | | vardecl        
+| | | | |id
+| | | | |type
+| | | classmember     
+| | | | visibility      
+| | | | vardecl        
+| | | | |id
+| | | | |type
+| funcdecl       
+| | funchead
+| | |Id
+| | |funcparams
+| | | | id        
+| | | | type
+| | | | dimlist     
+| | | | | intnum     
+| | | | | intnum     
+| | | | | intnum    
+| | | | param     
+| | | | | id        
+| | | | | type
+| | | | | dimlist     
+| | | | | | intnum     
+| | |returntype
+| | funcbody  
+| | | vardecl        
+| | | | id
+| | | | type
+| | | | dimlist     
+| | | | | intnum     
+| | | assign
+| | | | term
+| | | | | id        
+| | | | expr     
+| | | | | addop        
+| | | | | | term        
+| | | | | | | id        
+| | | | | | multop        
+| | | | | | | term        
+| | | | | | | | id        
+| | | | | | | term        
+| | | | | | | | id  
+| funcdecl       
+| | funchead
+| | |Id
+| | |funcparams
+| | | | id        
+| | | | type
+| | | | param     
+| | | | | id        
+| | | | | type
+| | |returntype
+| | funcbody  
+| | | vardecl        
+| | | | id
+| | | | type
+| | | | dimlist     
+| | | | | intnum     
+| | | | | intnum     
+| | | | | intnum     
+| | | vardecl        
+| | | | id
+| | | | type
+| | | | dimlist     
+| | | | | intnum    
+| | | assign
+| | | | term
+| | | | | id        
+| | | | expr     
+| | | | | addop        
+| | | | | | term        
+| | | | | | | id        
+| | | | | | multop        
+| | | | | | | term        
+| | | | | | | | id        
+| | | | | | | term        
+| | | | | | | | id  
+| | | assign
+| | | | term
+| | | | | id        
+| | | | expr     
+| | | | | addop        
+| | | | | | term        
+| | | | | | | id        
+| | | | | | multop        
+| | | | | | | term        
+| | | | | | | | id        
+| | | | | | | term        
+| | | | | | | | id  
+| funcdecl       
+| | funchead
+| | |Id
+| | |returntype
+| | funcbody  
+| | | vardecl        
+| | | | id
+| | | | type
+| | | | dimlist     
+| | | | | intnum     
+| | | | | intnum     
+| | | | | intnum     
+| | | vardecl        
+| | | | id
+| | | | type
+| | | | dimlist     
+| | | | | intnum   
+| | | vardecl        
+| | | | id
+| | | | type
+| | | | dimlist     
+| | | | | intnum   
+| | | vardecl        
+| | | | id
+| | | | type
+| | | vardecl        
+| | | | id
+| | | | type
+| | | assign
+| | | | term
+| | | | | id        
+| | | | expr     
+| | | | | addop        
+| | | | | | term        
+| | | | | | | id        
+| | | | | | multop        
+| | | | | | | term        
+| | | | | | | | id        
+| | | | | | | term        
+| | | | | | | | id  
+| | | assign
+| | | | term
+| | | | | id        
+| | | | expr     
+| | | | | addop        
+| | | | | | term        
+| | | | | | | id        
+| | | | | | multop        
+| | | | | | | term        
+| | | | | | | | id        
+| | | | | | | term        
+| | | | | | | | id  
+| | | assign
+| | | | term
+| | | | | id        
+| | | | expr     
+| | | | | addop        
+| | | | | | term        
+| | | | | | | id        
+| | | | | | multop        
+| | | | | | | term        
+| | | | | | | | id        
+| | | | | | | term        
+| | | | | | | | id  
+
+
+

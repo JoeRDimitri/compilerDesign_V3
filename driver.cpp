@@ -1,0 +1,91 @@
+#include "lexor.h"
+#include "parser.h"
+#include <filesystem>
+#include <iostream>
+#include <spdlog/sinks/basic_file_sink.h>
+
+
+
+int main (){
+
+	//Set logging to a file instead of the command line.
+	// auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("compiler.log", true);
+	// spdlog::set_default_logger(std::make_shared<spdlog::logger>("file_logger", file_sink));
+	// spdlog::set_level(spdlog::level::info);
+
+	spdlog::info("** ** **IN MAIN DRIVER.CPP** ** **");
+	
+	lexor * lex = new lexor();
+	spdlog::warn("Current working directory check :{}", std::filesystem::current_path().string());
+	std::vector<token*> vectorOfTokens;
+
+
+	try{
+		spdlog::warn("Entering the token loop from the driver.cpp file.");
+		while(true){
+		try{
+			token * currentToken = lex->getNextToken();
+			if(currentToken->getTypeName().find("cmt")==std::string::npos && currentToken->getTypeName().find("comment")==std::string::npos)
+			vectorOfTokens.emplace_back(currentToken);
+		}
+		catch (const std::invalid_argument& e) {
+			spdlog::warn("Caught exception: {}",e.what());
+			return 1;
+			}
+		}
+	}
+
+	catch (const EndOfFileException& e) {
+		token * lastToken = new token("$","$",-1,-1);
+		vectorOfTokens.emplace_back(lastToken);
+				spdlog::warn("Reached the end of the Script file with a total of {} Tokens found in the file.", vectorOfTokens.size());
+		}
+
+	catch(const std::exception & e){
+		std::cerr << "Caught a generic exception: " << e.what() << std::endl;
+		return 1;
+	}
+
+	std::cout<<"Deleted lex objext"<<std::endl;
+	delete lex;
+
+	std::cout<<"------------------------------------------------------------------------------------"<<std::endl;
+	spdlog::info("Entering Second phase, the parsing phase.");
+
+	parser parser ;
+	try{
+		parser.faf.generateFirstSet();
+	}
+	catch (const std::invalid_argument& e) {
+		spdlog::warn("Caught exception: {}",e.what());
+		return 1;
+	    }
+	parser.faf.writeToFirstSetFile();
+
+	try{
+		parser.faf.generateFollowSet();
+	}
+	catch (const std::invalid_argument& e) {
+		spdlog::warn("Caught exception: {}",e.what());
+		return 1;
+	    }
+	parser.faf.writeToFollowSetFile();
+
+
+	std::cout<<"------------------------------------------------------------------------------------"<<std::endl;
+
+	parser.parsingTable.buildTable();
+	parser.parse(vectorOfTokens);
+	std::cout<<"Finished Parsing"<<std::endl;
+	parser.AST.printTree();
+
+
+	std::cout<<"------------------------------------------------------------------------------------"<<std::endl;
+
+	parser.AST.treeHead->accept(parser.first);
+	parser.AST.printSymbolTable(parser.AST.treeHead);
+	std::cout<<"Finished Building Symbol Table"<<std::endl;
+
+	return 0;
+
+}

@@ -1,0 +1,289 @@
+<START> ::= <prog> 
+
+<alphanum> ::= 'a'
+<alphanum> ::= 'b'
+<alphanum> ::= 'c'
+<alphanum> ::= 'd'
+<alphanum> ::= 'e'
+<alphanum> ::= 'f'
+<alphanum> ::= 'g'
+<alphanum> ::= 'h'
+<alphanum> ::= 'i'
+<alphanum> ::= 'j'
+<alphanum> ::= 'k'
+<alphanum> ::= 'l'
+<alphanum> ::= 'm'
+<alphanum> ::= 'n'
+<alphanum> ::= 'o'
+<alphanum> ::= 'p'
+<alphanum> ::= 'q'
+<alphanum> ::= 'r'
+<alphanum> ::= 's'
+<alphanum> ::= 't'
+<alphanum> ::= 'u'
+<alphanum> ::= 'v'
+<alphanum> ::= 'w'
+<alphanum> ::= 'x'
+<alphanum> ::= 'y'
+<alphanum> ::= 'z'
+<alphanum> ::= 'A'
+<alphanum> ::= 'B'
+<alphanum> ::= 'C'
+<alphanum> ::= 'D'
+<alphanum> ::= 'E'
+<alphanum> ::= 'F'
+<alphanum> ::= 'G'
+<alphanum> ::= 'H'
+<alphanum> ::= 'I'
+<alphanum> ::= 'J'
+<alphanum> ::= 'K'
+<alphanum> ::= 'L'
+<alphanum> ::= 'M'
+<alphanum> ::= 'N'
+<alphanum> ::= 'O'
+<alphanum> ::= 'P'
+<alphanum> ::= 'Q'
+<alphanum> ::= 'R'
+<alphanum> ::= 'S'
+<alphanum> ::= 'T'
+<alphanum> ::= 'U'
+<alphanum> ::= 'V'
+<alphanum> ::= 'W'
+<alphanum> ::= 'X'
+<alphanum> ::= 'Y'
+<alphanum> ::= 'Z'
+<alphanum> ::= '_'
+<alphanum> ::= '0'
+<alphanum> ::= '1'
+<alphanum> ::= '2'
+<alphanum> ::= '3'
+<alphanum> ::= '4'
+<alphanum> ::= '5'
+<alphanum> ::= '6'
+<alphanum> ::= '7'
+<alphanum> ::= '8'
+<alphanum> ::= '9'
+
+<aParams> ::= <expr> <rept-aParams1> 
+<aParams> ::= EPSILON 
+
+<aParamsTail> ::= ',' <expr> 
+
+<addOp> ::= '+' 
+<addOp> ::= '-' 
+<addOp> ::= 'or' 
+
+<arithExpr> ::= <term> <rightrec-arithExpr> 
+
+<arraySize> ::= '[' <arraySize2>
+<arraySize2> ::= 'intNum' ']' 
+<arraySize2> ::= ']' 
+
+<assignOp> ::= ':=' 
+
+<assignStat> ::= <variable> <assignOp> <expr> 
+
+<attributeDecl> ::= 'attribute' <varDecl> 
+
+<classDecl> ::= 'class' <id> <opt-classDecl2> '{' <rept-classDecl4> '}' ';' 
+
+<classOrImplOrFunc> ::= <classDecl> 
+<classOrImplOrFunc> ::= <implDef> 
+<classOrImplOrFunc> ::= <funcDef> 
+
+<expr> ::= <arithExpr> <expr2>
+<expr2> ::= EPSILON
+<expr2> ::= <relOp> <arithExpr>
+
+<fParams> ::= <id> ':' <type> <rept-fParams3> <rept-fParams4> 
+<fParams> ::= EPSILON 
+
+<fParamsTail> ::= ',' <id> ':' <type> <rept-fParams3> 
+
+<factor> ::= <rept-functionCall0> <ids> <factor2>
+<factor2> ::= <rept-idnest1>
+<factor2> ::= '(' <aParams> ')'
+<factor> ::= 'intLit' 
+<factor> ::= 'floatLit' 
+<factor> ::= '(' <arithExpr> ')' 
+<factor> ::= 'not' <factor> 
+<factor> ::= <sign> <factor> 
+
+<funcBody> ::= '{' <rept-funcBody1> '}' 
+
+<funcDecl> ::= <funcHead> ';' 
+
+<funcDef> ::= <funcHead> <funcBody> 
+
+<funcHead> ::= 'function' <id> '(' <fParams> ')' '=' '>' <returnType> 
+<funcHead> ::= 'constructor' '(' <fParams> ')' 
+
+<functionCall> ::= <rept-functionCall0> <ids> '(' <aParams> ')' 
+
+<id> ::= <letter> <id2>
+<id2> ::= EPSILON
+<id2> ::= <alphanum>
+
+<idOrSelf> ::= <id> 
+<idOrSelf> ::= 'self' 
+
+<idnest> ::= <idOrSelf> <idnest2>
+<idnest2> ::= <rept-idnest1> '.' 
+<idnest2> ::= '(' <aParams> ')' '.' 
+
+<implDef> ::= 'implementation' <id> '{' <rept-implDef3> '}' 
+
+<indice> ::= '[' <arithExpr> ']' 
+
+<letter> ::= 'a'
+<letter> ::= 'b'
+<letter> ::= 'c'
+<letter> ::= 'd'
+<letter> ::= 'e'
+<letter> ::= 'f'
+<letter> ::= 'g'
+<letter> ::= 'h'
+<letter> ::= 'i'
+<letter> ::= 'j'
+<letter> ::= 'k'
+<letter> ::= 'l'
+<letter> ::= 'm'
+<letter> ::= 'n'
+<letter> ::= 'o'
+<letter> ::= 'p'
+<letter> ::= 'q'
+<letter> ::= 'r'
+<letter> ::= 's'
+<letter> ::= 't'
+<letter> ::= 'u'
+<letter> ::= 'v'
+<letter> ::= 'w'
+<letter> ::= 'x'
+<letter> ::= 'y'
+<letter> ::= 'z'
+<letter> ::= 'A'
+<letter> ::= 'B'
+<letter> ::= 'C'
+<letter> ::= 'D'
+<letter> ::= 'E'
+<letter> ::= 'F'
+<letter> ::= 'G'
+<letter> ::= 'H'
+<letter> ::= 'I'
+<letter> ::= 'J'
+<letter> ::= 'K'
+<letter> ::= 'L'
+<letter> ::= 'M'
+<letter> ::= 'N'
+<letter> ::= 'O'
+<letter> ::= 'P'
+<letter> ::= 'Q'
+<letter> ::= 'R'
+<letter> ::= 'S'
+<letter> ::= 'T'
+<letter> ::= 'U'
+<letter> ::= 'V'
+<letter> ::= 'W'
+<letter> ::= 'X'
+<letter> ::= 'Y'
+<letter> ::= 'Z'
+
+<localVarDecl> ::= 'local' <varDecl> 
+
+<localVarDeclOrStat> ::= <localVarDecl> 
+<localVarDeclOrStat> ::= <statement> 
+
+<memberDecl> ::= <funcDecl> 
+<memberDecl> ::= <attributeDecl> 
+
+<multOp> ::= '*' 
+<multOp> ::= '/' 
+<multOp> ::= 'and' 
+
+<opt-classDecl2> ::= 'isa' <id> <rept-opt-classDecl22> 
+<opt-classDecl2> ::= EPSILON 
+
+<prog> ::= <rept-prog0> 
+
+<relExpr> ::= <arithExpr> <relOp> <arithExpr> 
+
+<relOp> ::= '==' 
+<relOp> ::= '<>' 
+<relOp> ::= '<' 
+<relOp> ::= '>' 
+<relOp> ::= '<=' 
+<relOp> ::= '>=' 
+
+<rept-aParams1> ::= <aParamsTail> <rept-aParams1> 
+<rept-aParams1> ::= EPSILON 
+
+<rept-classDecl4> ::= <visibility> <memberDecl> <rept-classDecl4> 
+<rept-classDecl4> ::= EPSILON 
+
+<rept-fParams3> ::= <arraySize> <rept-fParams3> 
+<rept-fParams3> ::= EPSILON 
+
+<rept-fParams4> ::= <fParamsTail> <rept-fParams4> 
+<rept-fParams4> ::= EPSILON 
+
+<rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1> 
+<rept-funcBody1> ::= EPSILON 
+
+<rept-functionCall0> ::= <idnest> <rept-functionCall0> 
+<rept-functionCall0> ::= EPSILON 
+
+<rept-idnest1> ::= <indice> <rept-idnest1> 
+<rept-idnest1> ::= EPSILON 
+
+<rept-implDef3> ::= <funcDef> <rept-implDef3> 
+<rept-implDef3> ::= EPSILON 
+
+<rept-opt-classDecl22> ::= ',' <id> <rept-opt-classDecl22> 
+<rept-opt-classDecl22> ::= EPSILON 
+
+<rept-prog0> ::= <classOrImplOrFunc> <rept-prog0> 
+<rept-prog0> ::= EPSILON 
+
+<rept-statBlock1> ::= <statement> <rept-statBlock1> 
+<rept-statBlock1> ::= EPSILON 
+
+<returnType> ::= <type> 
+<returnType> ::= 'void' 
+
+<rightrec-arithExpr> ::= EPSILON 
+<rightrec-arithExpr> ::= <addOp> <term> <rightrec-arithExpr> 
+
+<rightrec-term> ::= EPSILON 
+<rightrec-term> ::= <multOp> <factor> <rightrec-term> 
+
+<sign> ::= '+' 
+<sign> ::= '-' 
+
+<statBlock> ::= '{' <rept-statBlock1> '}' 
+<statBlock> ::= <statement> 
+<statBlock> ::= EPSILON 
+
+<statement> ::= 'if' '(' <relExpr> ')' 'then' <statBlock> 'else' <statBlock> ';' 
+<statement> ::= 'while' '(' <relExpr> ')' <statBlock> ';' 
+<statement> ::= 'read' '(' <variable> ')' ';' 
+<statement> ::= 'write' '(' <expr> ')' ';' 
+<statement> ::= 'return' '(' <expr> ')' ';' 
+<statement> ::= <statement2> ';'
+<statement2> ::= <rept-functionCall0> <ids> <statement3>
+<statement3> ::= <rept-idnest1> <assignOp> <expr>
+<statement3> ::= '(' <aParams> ')'
+
+<term> ::= <factor> <rightrec-term> 
+
+<type> ::= 'int' 
+<type> ::= 'float' 
+<type> ::= <id> 
+
+<varDecl> ::= <id> ':' <type> <rept-fParams3> ';' 
+
+<variable> ::= <rept-functionCall0> <ids> <rept-idnest1> 
+
+<visibility> ::= 'public' 
+<visibility> ::= 'private' 
+
+

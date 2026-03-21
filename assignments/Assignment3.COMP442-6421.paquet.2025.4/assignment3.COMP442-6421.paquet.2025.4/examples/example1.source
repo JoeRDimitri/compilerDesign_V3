@@ -1,0 +1,37 @@
+class class1{
+private attribute float1: float;
+private attribute int1: int;
+ };
+ 		
+class class2{
+  private attribute in532 : int[5][3][2];
+  private attribute float10 : float [10];
+  private attribute float100 : float [100];
+  private attribute float1 : float ;
+  private attribute int1 : int ;
+};
+
+function  func1(int532 :int[5][3][2], float100: float [100]) => int{
+  local float10 : float [10];
+  a := a + b * c;
+}
+
+function  func2(float1: float ,int1: int ) => float{
+  local int532 : int[5][3][2]; 
+  local float100 : float[100];
+  a :=a+b*c;
+  x :=a+b*c;
+}
+
+function program() => void{
+  local in532 :int [5][3][2];
+  local float10 :float[10];
+  local float100 :float[100];
+  local float1 :float;
+  local int1 :int;
+  a:=a+b*c;
+  x:=a+b*c;
+  a:=x+z*y;
+}
+
+	

@@ -1,0 +1,4 @@
+function main() => void
+{
+    write(f1.f2.evaluate(counter));
+}

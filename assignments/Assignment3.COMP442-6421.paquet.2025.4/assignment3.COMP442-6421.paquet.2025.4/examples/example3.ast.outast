@@ -1,0 +1,133 @@
+prog
+| funcdecl
+| | funchead
+| | | id
+| | | funcparams
+| | | | param 
+| | | | | id
+| | | | | type
+| | | | param 
+| | | | | id
+| | | | | type
+| | | | param 
+| | | | | id
+| | | | | type
+| | | returntype
+| | funcbody
+| | | vardecl
+| | | | id
+| | | | type
+| | | functioncall
+| | | | id
+| | | | aparams
+| | | | | expr
+| | | | | | term
+| | | | | | | id
+| | | functioncall
+| | | | id
+| | | | aparams
+| | | | | expr
+| | | | | | term
+| | | | | | | id
+| | | functioncall
+| | | | id
+| | | | aparams
+| | | | | expr
+| | | | | | term
+| | | | | | | id
+| | | assign
+| | | | term
+| | | | | id
+| | | | expr
+| | | | | addop
+| | | | | | term
+| | | | | | | id
+| | | | | | multop
+| | | | | | | term
+| | | | | | | | id
+| | | | | | | term
+| | | | | | | | id
+| | | functioncall
+| | | | id
+| | | | aparams
+| | | | | expr
+| | | | | | term
+| | | | | | | id
+| funcdecl
+| | funchead
+| | | id
+| | | returntype
+| | funcbody
+| | | vardecl
+| | | | id
+| | | | type
+| | | vardecl
+| | | | id
+| | | | type
+| | | vardecl
+| | | | id
+| | | | type
+| | | assign
+| | | | term
+| | | | | id
+| | | | expr
+| | | | | intnum
+| | | functioncall
+| | | | id
+| | | | aparams
+| | | | | expr
+| | | | | | term
+| | | | | | | id
+| | | assign
+| | | | term
+| | | | | id
+| | | | expr
+| | | | | intnum
+| | | functioncall
+| | | | id
+| | | | aparams
+| | | | | expr
+| | | | | | term
+| | | | | | | id
+| | | assign
+| | | | term
+| | | | | id
+| | | | expr
+| | | | | intnum
+| | | functioncall
+| | | | id
+| | | | aparams
+| | | | | expr
+| | | | | | term
+| | | | | | | id
+| | | assign
+| | | | term
+| | | | | id
+| | | | expr
+| | | | | addop
+| | | | | | multop
+| | | | | | | functioncall
+| | | | | | | | id
+| | | | | | | | aparams
+| | | | | | | | | expr
+| | | | | | | | | | term
+| | | | | | | | | | | id
+| | | | | | | | | reptaparams1
+| | | | | | | | | | expr
+| | | | | | | | | | | term
+| | | | | | | | | | | | id
+| | | | | | | | | | expr
+| | | | | | | | | | | term
+| | | | | | | | | | | | id
+| | | | | | | term
+| | | | | | | | id
+| | | | | | term
+| | | | | | | id
+| | | functioncall
+| | | | id
+| | | | aparams
+| | | | | expr
+| | | | | | addop
+| | | | | | | term
+| | | | | | | | id
+| | | | | | | intnum

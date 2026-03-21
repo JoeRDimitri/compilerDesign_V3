@@ -1,0 +1,71 @@
+Prog             
+| funcdecl       
+| | funchead
+| | |Id
+| | |returntype
+| | funcbody  
+| | | vardecl        
+| | | | id
+| | | | type
+| | | vardecl        
+| | | | id
+| | | | type
+| | | vardecl        
+| | | | id
+| | | | type
+| | | assign
+| | | | term
+| | | | | id        
+| | | | expr     
+| | | | | intnum        
+| | | functioncall
+| | | | id
+| | | | aparams
+| | | | | expr   
+| | | | | | term  
+| | | | | | | id
+| | | assign
+| | | | term
+| | | | | id        
+| | | | expr     
+| | | | | intnum        
+| | | functioncall
+| | | | id
+| | | | aparams
+| | | | | expr   
+| | | | | | term  
+| | | | | | | id
+| | | assign
+| | | | term
+| | | | | id        
+| | | | expr     
+| | | | | intnum        
+| | | functioncall
+| | | | id
+| | | | aparams
+| | | | | expr   
+| | | | | | term  
+| | | | | | | id
+| | | assign
+| | | | term
+| | | | | id        
+| | | | expr     
+| | | | | addop        
+| | | | | | term  
+| | | | | | | id
+| | | | | | multop        
+| | | | | | | term        
+| | | | | | | | id        
+| | | | | | | term        
+| | | | | | | | id  
+| | | functioncall
+| | | | id
+| | | | aparams
+| | | | | expr   
+| | | | | | term  
+| | | | | | | id
+| | | | | addop        
+| | | | | | term        
+| | | | | | | id        
+| | | | | | intnum        
+

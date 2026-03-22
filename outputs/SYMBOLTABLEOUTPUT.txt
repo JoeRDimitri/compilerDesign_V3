@@ -33,7 +33,7 @@ COLUMN : ,, at value: 40
 Table entry: error
 ROW: rept-statement4, at value: 63
 COLUMN : :=, at value: 39
-Table entry: <rept-statement4> ::= <assignOp> <expr> ';'
+Table entry: <rept-statement4> ::= <assignOp> <expr> #reptstatement4 ';'
 ROW: rept-statement4, at value: 63
 COLUMN : <, at value: 38
 Table entry: error
@@ -63,7 +63,7 @@ COLUMN : [, at value: 30
 Table entry: error
 ROW: rept-statement4, at value: 63
 COLUMN : ., at value: 29
-Table entry: <rept-statement4> ::= '.' <rept-statement>
+Table entry: <rept-statement4> ::= '.' <rept-statement> #dot
 ROW: rept-statement4, at value: 63
 COLUMN : id, at value: 21
 Table entry: error
@@ -165,7 +165,7 @@ COLUMN : float, at value: 46
 Table entry: error
 ROW: sign, at value: 62
 COLUMN : +, at value: 45
-Table entry: <sign> ::= '+' 
+Table entry: <sign> ::= '+' #sign
 ROW: sign, at value: 62
 COLUMN : int, at value: 44
 Table entry: error
@@ -285,7 +285,7 @@ COLUMN : function, at value: 28
 Table entry: error
 ROW: sign, at value: 62
 COLUMN : -, at value: 27
-Table entry: <sign> ::= '-' 
+Table entry: <sign> ::= '-' #sign
 ROW: sign, at value: 62
 COLUMN : self, at value: 22
 Table entry: error
@@ -303,7 +303,7 @@ COLUMN : EPSILON, at value: 0
 Table entry: error
 ROW: relExpr, at value: 61
 COLUMN : intnum, at value: 49
-Table entry: <relExpr> ::= <arithExpr> <relOp> <arithExpr> 
+Table entry: <relExpr> ::= <arithExpr> <relOp> <arithExpr> #relexpr
 ROW: relExpr, at value: 61
 COLUMN : if, at value: 48
 Table entry: error
@@ -315,7 +315,7 @@ COLUMN : float, at value: 46
 Table entry: error
 ROW: relExpr, at value: 61
 COLUMN : +, at value: 45
-Table entry: <relExpr> ::= <arithExpr> <relOp> <arithExpr> 
+Table entry: <relExpr> ::= <arithExpr> <relOp> <arithExpr> #relexpr
 ROW: relExpr, at value: 61
 COLUMN : int, at value: 44
 Table entry: error
@@ -366,7 +366,7 @@ COLUMN : ., at value: 29
 Table entry: error
 ROW: relExpr, at value: 61
 COLUMN : id, at value: 21
-Table entry: <relExpr> ::= <arithExpr> <relOp> <arithExpr> 
+Table entry: <relExpr> ::= <arithExpr> <relOp> <arithExpr> #relexpr
 ROW: relExpr, at value: 61
 COLUMN : ], at value: 10
 Table entry: error
@@ -423,25 +423,25 @@ COLUMN : write, at value: 17
 Table entry: error
 ROW: relExpr, at value: 61
 COLUMN : (, at value: 18
-Table entry: <relExpr> ::= <arithExpr> <relOp> <arithExpr> 
+Table entry: <relExpr> ::= <arithExpr> <relOp> <arithExpr> #relexpr
 ROW: relExpr, at value: 61
 COLUMN : local, at value: 19
 Table entry: error
 ROW: relExpr, at value: 61
 COLUMN : not, at value: 20
-Table entry: <relExpr> ::= <arithExpr> <relOp> <arithExpr> 
+Table entry: <relExpr> ::= <arithExpr> <relOp> <arithExpr> #relexpr
 ROW: relExpr, at value: 61
 COLUMN : function, at value: 28
 Table entry: error
 ROW: relExpr, at value: 61
 COLUMN : -, at value: 27
-Table entry: <relExpr> ::= <arithExpr> <relOp> <arithExpr> 
+Table entry: <relExpr> ::= <arithExpr> <relOp> <arithExpr> #relexpr
 ROW: relExpr, at value: 61
 COLUMN : self, at value: 22
-Table entry: <relExpr> ::= <arithExpr> <relOp> <arithExpr> 
+Table entry: <relExpr> ::= <arithExpr> <relOp> <arithExpr> #relexpr
 ROW: relExpr, at value: 61
 COLUMN : floatnum, at value: 26
-Table entry: <relExpr> ::= <arithExpr> <relOp> <arithExpr> 
+Table entry: <relExpr> ::= <arithExpr> <relOp> <arithExpr> #relexpr
 ROW: relExpr, at value: 61
 COLUMN : $, at value: 23
 Table entry: error
@@ -525,7 +525,7 @@ COLUMN : private, at value: 9
 Table entry: error
 ROW: memberDecl, at value: 60
 COLUMN : attribute, at value: 6
-Table entry: <memberDecl> ::= <attributeDecl> 
+Table entry: <memberDecl> ::= <attributeDecl> #attributedeclfam
 ROW: memberDecl, at value: 60
 COLUMN : }, at value: 4
 Table entry: error
@@ -582,7 +582,7 @@ COLUMN : not, at value: 20
 Table entry: error
 ROW: memberDecl, at value: 60
 COLUMN : function, at value: 28
-Table entry: <memberDecl> ::= <funcDecl> 
+Table entry: <memberDecl> ::= <funcDecl> #funcdeclfam
 ROW: memberDecl, at value: 60
 COLUMN : -, at value: 27
 Table entry: error
@@ -603,7 +603,7 @@ COLUMN : EPSILON, at value: 0
 Table entry: error
 ROW: arraySize2, at value: 25
 COLUMN : intnum, at value: 49
-Table entry: <arraySize2> ::= 'intnum' ']' 
+Table entry: <arraySize2> ::= 'intnum' #intnum ']' 
 ROW: arraySize2, at value: 25
 COLUMN : if, at value: 48
 Table entry: error
@@ -669,7 +669,7 @@ COLUMN : id, at value: 21
 Table entry: error
 ROW: arraySize2, at value: 25
 COLUMN : ], at value: 10
-Table entry: <arraySize2> ::= ']' 
+Table entry: <arraySize2> ::= ']' #p 
 ROW: arraySize2, at value: 25
 COLUMN : private, at value: 9
 Table entry: error
@@ -780,7 +780,7 @@ COLUMN : and, at value: 41
 Table entry: error
 ROW: fParamsTail, at value: 24
 COLUMN : ,, at value: 40
-Table entry: <fParamsTail> ::= ',' 'id' ':' <type> <rept-fParamsTail4> 
+Table entry: <fParamsTail> ::= ',' 'id' #id ':' <type> #p <rept-fParams3> #reptfparams3 
 ROW: fParamsTail, at value: 24
 COLUMN : :=, at value: 39
 Table entry: error
@@ -966,7 +966,7 @@ COLUMN : ., at value: 29
 Table entry: error
 ROW: varDecl, at value: 2
 COLUMN : id, at value: 21
-Table entry: <varDecl> ::= 'id' ':' <type> <rept-varDecl3> ';' 
+Table entry: <varDecl> ::= 'id' #id ':' <type> #p <rept-varDecl3> #reptvardecl3 #vardecl ';' 
 ROW: varDecl, at value: 2
 COLUMN : ], at value: 10
 Table entry: error
@@ -1230,7 +1230,7 @@ COLUMN : and, at value: 41
 Table entry: error
 ROW: aParamsTail, at value: 28
 COLUMN : ,, at value: 40
-Table entry: <aParamsTail> ::= ',' <expr> 
+Table entry: <aParamsTail> ::= ',' <expr>  
 ROW: aParamsTail, at value: 28
 COLUMN : :=, at value: 39
 Table entry: error
@@ -1476,7 +1476,7 @@ COLUMN : (, at value: 18
 Table entry: error
 ROW: localVarDecl, at value: 27
 COLUMN : local, at value: 19
-Table entry: <localVarDecl> ::= 'local' <varDecl> 
+Table entry: <localVarDecl> ::= 'local' <varDecl> #localvardecl
 ROW: localVarDecl, at value: 27
 COLUMN : not, at value: 20
 Table entry: error
@@ -1752,7 +1752,7 @@ COLUMN : =>, at value: 1
 Table entry: error
 ROW: classDecl, at value: 22
 COLUMN : class, at value: 11
-Table entry: <classDecl> ::= 'class' 'id' <opt-classDecl2> '{' <rept-classDecl4> '}' ';' 
+Table entry: <classDecl> ::= 'class' 'id' #id <opt-classDecl2> '{' #p <rept-classDecl4> #reptclassdecl4 '}' ';' #classdecl
 ROW: classDecl, at value: 22
 COLUMN : *, at value: 12
 Table entry: error
@@ -1800,16 +1800,16 @@ COLUMN : void, at value: 25
 Table entry: error
 ROW: statBlock, at value: 21
 COLUMN : EPSILON, at value: 0
-Table entry: <statBlock> ::= EPSILON 
+Table entry: <statBlock> ::= EPSILON #p
 ROW: statBlock, at value: 21
 COLUMN : intnum, at value: 49
 Table entry: error
 ROW: statBlock, at value: 21
 COLUMN : if, at value: 48
-Table entry: <statBlock> ::= <statement> 
+Table entry: <statBlock> ::= <statement> #statblock
 ROW: statBlock, at value: 21
 COLUMN : ;, at value: 47
-Table entry: <statBlock> ::= EPSILON 
+Table entry: <statBlock> ::= EPSILON #p
 ROW: statBlock, at value: 21
 COLUMN : float, at value: 46
 Table entry: error
@@ -1854,10 +1854,10 @@ COLUMN : /, at value: 33
 Table entry: error
 ROW: statBlock, at value: 21
 COLUMN : {, at value: 32
-Table entry: <statBlock> ::= '{' <rept-statBlock1> '}' 
+Table entry: <statBlock> ::= '{' #p <rept-statBlock1> #reptstatblock1 '}' #statblock
 ROW: statBlock, at value: 21
 COLUMN : else, at value: 31
-Table entry: <statBlock> ::= EPSILON 
+Table entry: <statBlock> ::= EPSILON #p
 ROW: statBlock, at value: 21
 COLUMN : [, at value: 30
 Table entry: error
@@ -1866,7 +1866,7 @@ COLUMN : ., at value: 29
 Table entry: error
 ROW: statBlock, at value: 21
 COLUMN : id, at value: 21
-Table entry: <statBlock> ::= <statement> 
+Table entry: <statBlock> ::= <statement> #statblock
 ROW: statBlock, at value: 21
 COLUMN : ], at value: 10
 Table entry: error
@@ -1881,7 +1881,7 @@ COLUMN : }, at value: 4
 Table entry: error
 ROW: statBlock, at value: 21
 COLUMN : then, at value: 0
-Table entry: <statBlock> ::= EPSILON 
+Table entry: <statBlock> ::= EPSILON #p
 ROW: statBlock, at value: 21
 COLUMN : :, at value: 3
 Table entry: error
@@ -1911,16 +1911,16 @@ COLUMN : >=, at value: 13
 Table entry: error
 ROW: statBlock, at value: 21
 COLUMN : read, at value: 14
-Table entry: <statBlock> ::= <statement> 
+Table entry: <statBlock> ::= <statement> #statblock
 ROW: statBlock, at value: 21
 COLUMN : while, at value: 15
-Table entry: <statBlock> ::= <statement> 
+Table entry: <statBlock> ::= <statement> #statblock
 ROW: statBlock, at value: 21
 COLUMN : return, at value: 16
-Table entry: <statBlock> ::= <statement> 
+Table entry: <statBlock> ::= <statement> #statblock
 ROW: statBlock, at value: 21
 COLUMN : write, at value: 17
-Table entry: <statBlock> ::= <statement> 
+Table entry: <statBlock> ::= <statement> #statblock
 ROW: statBlock, at value: 21
 COLUMN : (, at value: 18
 Table entry: error
@@ -1938,7 +1938,7 @@ COLUMN : -, at value: 27
 Table entry: error
 ROW: statBlock, at value: 21
 COLUMN : self, at value: 22
-Table entry: <statBlock> ::= <statement> 
+Table entry: <statBlock> ::= <statement> #statblock
 ROW: statBlock, at value: 21
 COLUMN : floatnum, at value: 26
 Table entry: error
@@ -1953,7 +1953,7 @@ COLUMN : EPSILON, at value: 0
 Table entry: error
 ROW: arithExpr, at value: 20
 COLUMN : intnum, at value: 49
-Table entry: <arithExpr> ::= <term> <rightrec-arithExpr> 
+Table entry: <arithExpr> ::= <term> <rightrec-arithExpr> #arithexpr 
 ROW: arithExpr, at value: 20
 COLUMN : if, at value: 48
 Table entry: error
@@ -1965,7 +1965,7 @@ COLUMN : float, at value: 46
 Table entry: error
 ROW: arithExpr, at value: 20
 COLUMN : +, at value: 45
-Table entry: <arithExpr> ::= <term> <rightrec-arithExpr> 
+Table entry: <arithExpr> ::= <term> <rightrec-arithExpr> #arithexpr 
 ROW: arithExpr, at value: 20
 COLUMN : int, at value: 44
 Table entry: error
@@ -2016,7 +2016,7 @@ COLUMN : ., at value: 29
 Table entry: error
 ROW: arithExpr, at value: 20
 COLUMN : id, at value: 21
-Table entry: <arithExpr> ::= <term> <rightrec-arithExpr> 
+Table entry: <arithExpr> ::= <term> <rightrec-arithExpr> #arithexpr 
 ROW: arithExpr, at value: 20
 COLUMN : ], at value: 10
 Table entry: error
@@ -2073,25 +2073,25 @@ COLUMN : write, at value: 17
 Table entry: error
 ROW: arithExpr, at value: 20
 COLUMN : (, at value: 18
-Table entry: <arithExpr> ::= <term> <rightrec-arithExpr> 
+Table entry: <arithExpr> ::= <term> <rightrec-arithExpr> #arithexpr 
 ROW: arithExpr, at value: 20
 COLUMN : local, at value: 19
 Table entry: error
 ROW: arithExpr, at value: 20
 COLUMN : not, at value: 20
-Table entry: <arithExpr> ::= <term> <rightrec-arithExpr> 
+Table entry: <arithExpr> ::= <term> <rightrec-arithExpr> #arithexpr 
 ROW: arithExpr, at value: 20
 COLUMN : function, at value: 28
 Table entry: error
 ROW: arithExpr, at value: 20
 COLUMN : -, at value: 27
-Table entry: <arithExpr> ::= <term> <rightrec-arithExpr> 
+Table entry: <arithExpr> ::= <term> <rightrec-arithExpr> #arithexpr 
 ROW: arithExpr, at value: 20
 COLUMN : self, at value: 22
-Table entry: <arithExpr> ::= <term> <rightrec-arithExpr> 
+Table entry: <arithExpr> ::= <term> <rightrec-arithExpr> #arithexpr 
 ROW: arithExpr, at value: 20
 COLUMN : floatnum, at value: 26
-Table entry: <arithExpr> ::= <term> <rightrec-arithExpr> 
+Table entry: <arithExpr> ::= <term> <rightrec-arithExpr> #arithexpr 
 ROW: arithExpr, at value: 20
 COLUMN : $, at value: 23
 Table entry: error
@@ -2100,7 +2100,7 @@ COLUMN : void, at value: 25
 Table entry: error
 ROW: rept-fParams4, at value: 19
 COLUMN : EPSILON, at value: 0
-Table entry: <rept-fParams4> ::= EPSILON 
+Table entry: <rept-fParams4> ::= EPSILON
 ROW: rept-fParams4, at value: 19
 COLUMN : intnum, at value: 49
 Table entry: error
@@ -2130,7 +2130,7 @@ COLUMN : and, at value: 41
 Table entry: error
 ROW: rept-fParams4, at value: 19
 COLUMN : ,, at value: 40
-Table entry: <rept-fParams4> ::= <fParamsTail> <rept-fParams4> 
+Table entry: <rept-fParams4> ::= #p <fParamsTail> #param <rept-fParams4> 
 ROW: rept-fParams4, at value: 19
 COLUMN : :=, at value: 39
 Table entry: error
@@ -2181,7 +2181,7 @@ COLUMN : }, at value: 4
 Table entry: error
 ROW: rept-fParams4, at value: 19
 COLUMN : then, at value: 0
-Table entry: <rept-fParams4> ::= EPSILON 
+Table entry: <rept-fParams4> ::= EPSILON
 ROW: rept-fParams4, at value: 19
 COLUMN : :, at value: 3
 Table entry: error
@@ -2196,7 +2196,7 @@ COLUMN : or, at value: 7
 Table entry: error
 ROW: rept-fParams4, at value: 19
 COLUMN : ), at value: 5
-Table entry: <rept-fParams4> ::= EPSILON 
+Table entry: <rept-fParams4> ::= EPSILON
 ROW: rept-fParams4, at value: 19
 COLUMN : =>, at value: 1
 Table entry: error
@@ -2313,7 +2313,7 @@ COLUMN : [, at value: 30
 Table entry: error
 ROW: rept-factor4, at value: 18
 COLUMN : ., at value: 29
-Table entry: <rept-factor4> ::= '.' <rept-factor>
+Table entry: <rept-factor4> ::= '.' <rept-factor> #dot
 ROW: rept-factor4, at value: 18
 COLUMN : id, at value: 21
 Table entry: error
@@ -2466,7 +2466,7 @@ COLUMN : ., at value: 29
 Table entry: error
 ROW: rept-factor, at value: 15
 COLUMN : id, at value: 21
-Table entry: <rept-factor> ::= 'id' <rept-factor2>
+Table entry: <rept-factor> ::= 'id' #id <rept-factor2>
 ROW: rept-factor, at value: 15
 COLUMN : ], at value: 10
 Table entry: error
@@ -2538,7 +2538,7 @@ COLUMN : -, at value: 27
 Table entry: error
 ROW: rept-factor, at value: 15
 COLUMN : self, at value: 22
-Table entry: <rept-factor> ::= 'self' <idnest2> <rept-factor>
+Table entry: <rept-factor> ::= 'self' #self <idnest2> #selfandidnest2 <rept-factor> #dot
 ROW: rept-factor, at value: 15
 COLUMN : floatnum, at value: 26
 Table entry: error
@@ -2550,7 +2550,7 @@ COLUMN : void, at value: 25
 Table entry: error
 ROW: rept-fParamsTail4, at value: 14
 COLUMN : EPSILON, at value: 0
-Table entry: <rept-fParamsTail4> ::= EPSILON 
+Table entry: error
 ROW: rept-fParamsTail4, at value: 14
 COLUMN : intnum, at value: 49
 Table entry: error
@@ -2580,7 +2580,7 @@ COLUMN : and, at value: 41
 Table entry: error
 ROW: rept-fParamsTail4, at value: 14
 COLUMN : ,, at value: 40
-Table entry: <rept-fParamsTail4> ::= EPSILON 
+Table entry: error
 ROW: rept-fParamsTail4, at value: 14
 COLUMN : :=, at value: 39
 Table entry: error
@@ -2610,7 +2610,7 @@ COLUMN : else, at value: 31
 Table entry: error
 ROW: rept-fParamsTail4, at value: 14
 COLUMN : [, at value: 30
-Table entry: <rept-fParamsTail4> ::= <arraySize> <rept-fParamsTail4> 
+Table entry: error
 ROW: rept-fParamsTail4, at value: 14
 COLUMN : ., at value: 29
 Table entry: error
@@ -2631,7 +2631,7 @@ COLUMN : }, at value: 4
 Table entry: error
 ROW: rept-fParamsTail4, at value: 14
 COLUMN : then, at value: 0
-Table entry: <rept-fParamsTail4> ::= EPSILON 
+Table entry: error
 ROW: rept-fParamsTail4, at value: 14
 COLUMN : :, at value: 3
 Table entry: error
@@ -2646,7 +2646,7 @@ COLUMN : or, at value: 7
 Table entry: error
 ROW: rept-fParamsTail4, at value: 14
 COLUMN : ), at value: 5
-Table entry: <rept-fParamsTail4> ::= EPSILON 
+Table entry: error
 ROW: rept-fParamsTail4, at value: 14
 COLUMN : =>, at value: 1
 Table entry: error
@@ -2709,37 +2709,37 @@ COLUMN : if, at value: 48
 Table entry: error
 ROW: rept-factor2, at value: 13
 COLUMN : ;, at value: 47
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : float, at value: 46
 Table entry: error
 ROW: rept-factor2, at value: 13
 COLUMN : +, at value: 45
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : int, at value: 44
 Table entry: error
 ROW: rept-factor2, at value: 13
 COLUMN : <=, at value: 43
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : >, at value: 42
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : and, at value: 41
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : ,, at value: 40
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : :=, at value: 39
 Table entry: error
 ROW: rept-factor2, at value: 13
 COLUMN : <, at value: 38
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : <>, at value: 37
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : implementation, at value: 36
 Table entry: error
@@ -2748,10 +2748,10 @@ COLUMN : public, at value: 35
 Table entry: error
 ROW: rept-factor2, at value: 13
 COLUMN : ==, at value: 34
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : /, at value: 33
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : {, at value: 32
 Table entry: error
@@ -2760,16 +2760,16 @@ COLUMN : else, at value: 31
 Table entry: error
 ROW: rept-factor2, at value: 13
 COLUMN : [, at value: 30
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : ., at value: 29
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : id, at value: 21
 Table entry: error
 ROW: rept-factor2, at value: 13
 COLUMN : ], at value: 10
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : private, at value: 9
 Table entry: error
@@ -2793,10 +2793,10 @@ COLUMN : isa, at value: 8
 Table entry: error
 ROW: rept-factor2, at value: 13
 COLUMN : or, at value: 7
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : ), at value: 5
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : =>, at value: 1
 Table entry: error
@@ -2805,10 +2805,10 @@ COLUMN : class, at value: 11
 Table entry: error
 ROW: rept-factor2, at value: 13
 COLUMN : *, at value: 12
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : >=, at value: 13
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : read, at value: 14
 Table entry: error
@@ -2823,7 +2823,7 @@ COLUMN : write, at value: 17
 Table entry: error
 ROW: rept-factor2, at value: 13
 COLUMN : (, at value: 18
-Table entry: <rept-factor2> ::= '(' <aParams> ')' <rept-factor3>
+Table entry: <rept-factor2> ::= '(' <aParams> #aparamsandid ')' <rept-factor3>
 ROW: rept-factor2, at value: 13
 COLUMN : local, at value: 19
 Table entry: error
@@ -2835,7 +2835,7 @@ COLUMN : function, at value: 28
 Table entry: error
 ROW: rept-factor2, at value: 13
 COLUMN : -, at value: 27
-Table entry: <rept-factor2> ::= <rept-variable2> <rept-factor4>
+Table entry: <rept-factor2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-factor4>
 ROW: rept-factor2, at value: 13
 COLUMN : self, at value: 22
 Table entry: error
@@ -2853,7 +2853,7 @@ COLUMN : EPSILON, at value: 0
 Table entry: error
 ROW: factor, at value: 17
 COLUMN : intnum, at value: 49
-Table entry: <factor> ::= 'intnum' 
+Table entry: <factor> ::= 'intnum' #intnum #factor
 ROW: factor, at value: 17
 COLUMN : if, at value: 48
 Table entry: error
@@ -2865,7 +2865,7 @@ COLUMN : float, at value: 46
 Table entry: error
 ROW: factor, at value: 17
 COLUMN : +, at value: 45
-Table entry: <factor> ::= <sign> <factor> 
+Table entry: <factor> ::= <sign> <factor> #factor2
 ROW: factor, at value: 17
 COLUMN : int, at value: 44
 Table entry: error
@@ -2916,7 +2916,7 @@ COLUMN : ., at value: 29
 Table entry: error
 ROW: factor, at value: 17
 COLUMN : id, at value: 21
-Table entry: <factor> ::= <rept-factor> 
+Table entry: <factor> ::= <rept-factor> #factor
 ROW: factor, at value: 17
 COLUMN : ], at value: 10
 Table entry: error
@@ -2973,25 +2973,25 @@ COLUMN : write, at value: 17
 Table entry: error
 ROW: factor, at value: 17
 COLUMN : (, at value: 18
-Table entry: <factor> ::= '(' <arithExpr> ')' 
+Table entry: <factor> ::= '(' <arithExpr> ')' #factor 
 ROW: factor, at value: 17
 COLUMN : local, at value: 19
 Table entry: error
 ROW: factor, at value: 17
 COLUMN : not, at value: 20
-Table entry: <factor> ::= 'not' <factor> 
+Table entry: <factor> ::= 'not' <factor> #factor2
 ROW: factor, at value: 17
 COLUMN : function, at value: 28
 Table entry: error
 ROW: factor, at value: 17
 COLUMN : -, at value: 27
-Table entry: <factor> ::= <sign> <factor> 
+Table entry: <factor> ::= <sign> <factor> #factor2
 ROW: factor, at value: 17
 COLUMN : self, at value: 22
-Table entry: <factor> ::= <rept-factor> 
+Table entry: <factor> ::= <rept-factor> #factor
 ROW: factor, at value: 17
 COLUMN : floatnum, at value: 26
-Table entry: <factor> ::= 'floatnum' 
+Table entry: <factor> ::= 'floatnum' #floatnum #factor
 ROW: factor, at value: 17
 COLUMN : $, at value: 23
 Table entry: error
@@ -3210,10 +3210,10 @@ COLUMN : else, at value: 31
 Table entry: error
 ROW: variable2, at value: 0
 COLUMN : [, at value: 30
-Table entry: <variable2> ::= <rept-variable2> <variable3>
+Table entry: <variable2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <variable3>
 ROW: variable2, at value: 0
 COLUMN : ., at value: 29
-Table entry: <variable2> ::= <rept-variable2> <variable3>
+Table entry: <variable2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <variable3>
 ROW: variable2, at value: 0
 COLUMN : id, at value: 21
 Table entry: error
@@ -3246,7 +3246,7 @@ COLUMN : or, at value: 7
 Table entry: error
 ROW: variable2, at value: 0
 COLUMN : ), at value: 5
-Table entry: <variable2> ::= <rept-variable2> <variable3>
+Table entry: <variable2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <variable3>
 ROW: variable2, at value: 0
 COLUMN : =>, at value: 1
 Table entry: error
@@ -3273,7 +3273,7 @@ COLUMN : write, at value: 17
 Table entry: error
 ROW: variable2, at value: 0
 COLUMN : (, at value: 18
-Table entry: <variable2> ::= '(' <aParams> ')' '.' <variable>
+Table entry: <variable2> ::= '(' <aParams> #aparamsandid ')' '.' <variable> #dot
 ROW: variable2, at value: 0
 COLUMN : local, at value: 19
 Table entry: error
@@ -3342,7 +3342,7 @@ COLUMN : <>, at value: 37
 Table entry: error
 ROW: prog, at value: 42
 COLUMN : implementation, at value: 36
-Table entry: <prog> ::= <rept-prog0> 
+Table entry: <prog> ::= #p <rept-prog0> #reptprog0 #prog
 ROW: prog, at value: 42
 COLUMN : public, at value: 35
 Table entry: error
@@ -3402,7 +3402,7 @@ COLUMN : =>, at value: 1
 Table entry: error
 ROW: prog, at value: 42
 COLUMN : class, at value: 11
-Table entry: <prog> ::= <rept-prog0> 
+Table entry: <prog> ::= #p <rept-prog0> #reptprog0 #prog
 ROW: prog, at value: 42
 COLUMN : *, at value: 12
 Table entry: error
@@ -3432,7 +3432,7 @@ COLUMN : not, at value: 20
 Table entry: error
 ROW: prog, at value: 42
 COLUMN : function, at value: 28
-Table entry: <prog> ::= <rept-prog0> 
+Table entry: <prog> ::= #p <rept-prog0> #reptprog0 #prog
 ROW: prog, at value: 42
 COLUMN : -, at value: 27
 Table entry: error
@@ -3444,7 +3444,7 @@ COLUMN : floatnum, at value: 26
 Table entry: error
 ROW: prog, at value: 42
 COLUMN : $, at value: 23
-Table entry: <prog> ::= <rept-prog0> 
+Table entry: <prog> ::= #p <rept-prog0> #reptprog0 #prog
 ROW: prog, at value: 42
 COLUMN : void, at value: 25
 Table entry: error
@@ -3510,7 +3510,7 @@ COLUMN : else, at value: 31
 Table entry: error
 ROW: rept-fParams3, at value: 6
 COLUMN : [, at value: 30
-Table entry: <rept-fParams3> ::= <arraySize> <rept-fParams3> 
+Table entry: <rept-fParams3> ::= <arraySize> <rept-fParams3>
 ROW: rept-fParams3, at value: 6
 COLUMN : ., at value: 29
 Table entry: error
@@ -3750,7 +3750,7 @@ COLUMN : void, at value: 25
 Table entry: error
 ROW: expr2, at value: 10
 COLUMN : EPSILON, at value: 0
-Table entry: <expr2> ::= EPSILON 
+Table entry: <expr2> ::= EPSILON #p
 ROW: expr2, at value: 10
 COLUMN : intnum, at value: 49
 Table entry: error
@@ -3759,7 +3759,7 @@ COLUMN : if, at value: 48
 Table entry: error
 ROW: expr2, at value: 10
 COLUMN : ;, at value: 47
-Table entry: <expr2> ::= EPSILON 
+Table entry: <expr2> ::= EPSILON #p
 ROW: expr2, at value: 10
 COLUMN : float, at value: 46
 Table entry: error
@@ -3771,25 +3771,25 @@ COLUMN : int, at value: 44
 Table entry: error
 ROW: expr2, at value: 10
 COLUMN : <=, at value: 43
-Table entry: <expr2> ::= <relOp> <arithExpr>
+Table entry: <expr2> ::= <relOp> <arithExpr> #expr2
 ROW: expr2, at value: 10
 COLUMN : >, at value: 42
-Table entry: <expr2> ::= <relOp> <arithExpr>
+Table entry: <expr2> ::= <relOp> <arithExpr> #expr2
 ROW: expr2, at value: 10
 COLUMN : and, at value: 41
 Table entry: error
 ROW: expr2, at value: 10
 COLUMN : ,, at value: 40
-Table entry: <expr2> ::= EPSILON 
+Table entry: <expr2> ::= EPSILON #p
 ROW: expr2, at value: 10
 COLUMN : :=, at value: 39
 Table entry: error
 ROW: expr2, at value: 10
 COLUMN : <, at value: 38
-Table entry: <expr2> ::= <relOp> <arithExpr>
+Table entry: <expr2> ::= <relOp> <arithExpr> #expr2
 ROW: expr2, at value: 10
 COLUMN : <>, at value: 37
-Table entry: <expr2> ::= <relOp> <arithExpr>
+Table entry: <expr2> ::= <relOp> <arithExpr> #expr2
 ROW: expr2, at value: 10
 COLUMN : implementation, at value: 36
 Table entry: error
@@ -3798,7 +3798,7 @@ COLUMN : public, at value: 35
 Table entry: error
 ROW: expr2, at value: 10
 COLUMN : ==, at value: 34
-Table entry: <expr2> ::= <relOp> <arithExpr>
+Table entry: <expr2> ::= <relOp> <arithExpr> #expr2
 ROW: expr2, at value: 10
 COLUMN : /, at value: 33
 Table entry: error
@@ -3831,7 +3831,7 @@ COLUMN : }, at value: 4
 Table entry: error
 ROW: expr2, at value: 10
 COLUMN : then, at value: 0
-Table entry: <expr2> ::= EPSILON 
+Table entry: <expr2> ::= EPSILON #p
 ROW: expr2, at value: 10
 COLUMN : :, at value: 3
 Table entry: error
@@ -3846,7 +3846,7 @@ COLUMN : or, at value: 7
 Table entry: error
 ROW: expr2, at value: 10
 COLUMN : ), at value: 5
-Table entry: <expr2> ::= EPSILON 
+Table entry: <expr2> ::= EPSILON #p
 ROW: expr2, at value: 10
 COLUMN : =>, at value: 1
 Table entry: error
@@ -3858,7 +3858,7 @@ COLUMN : *, at value: 12
 Table entry: error
 ROW: expr2, at value: 10
 COLUMN : >=, at value: 13
-Table entry: <expr2> ::= <relOp> <arithExpr>
+Table entry: <expr2> ::= <relOp> <arithExpr> #expr2
 ROW: expr2, at value: 10
 COLUMN : read, at value: 14
 Table entry: error
@@ -3954,7 +3954,7 @@ COLUMN : /, at value: 33
 Table entry: error
 ROW: funcBody, at value: 9
 COLUMN : {, at value: 32
-Table entry: <funcBody> ::= '{' <rept-funcBody1> '}' 
+Table entry: <funcBody> ::= '{' #p <rept-funcBody1> #reptfuncbody1 #funcbody '}' 
 ROW: funcBody, at value: 9
 COLUMN : else, at value: 31
 Table entry: error
@@ -4062,13 +4062,13 @@ COLUMN : ;, at value: 47
 Table entry: error
 ROW: returnType, at value: 11
 COLUMN : float, at value: 46
-Table entry: <returnType> ::= <type> 
+Table entry: <returnType> ::= <type> #returntype
 ROW: returnType, at value: 11
 COLUMN : +, at value: 45
 Table entry: error
 ROW: returnType, at value: 11
 COLUMN : int, at value: 44
-Table entry: <returnType> ::= <type> 
+Table entry: <returnType> ::= <type> #returntype
 ROW: returnType, at value: 11
 COLUMN : <=, at value: 43
 Table entry: error
@@ -4116,7 +4116,7 @@ COLUMN : ., at value: 29
 Table entry: error
 ROW: returnType, at value: 11
 COLUMN : id, at value: 21
-Table entry: <returnType> ::= <type> 
+Table entry: <returnType> ::= <type> #returntype
 ROW: returnType, at value: 11
 COLUMN : ], at value: 10
 Table entry: error
@@ -4197,7 +4197,7 @@ COLUMN : $, at value: 23
 Table entry: error
 ROW: returnType, at value: 11
 COLUMN : void, at value: 25
-Table entry: <returnType> ::= 'void' 
+Table entry: <returnType> ::= 'void' #void #returntype
 ROW: variable, at value: 1
 COLUMN : EPSILON, at value: 0
 Table entry: error
@@ -4266,7 +4266,7 @@ COLUMN : ., at value: 29
 Table entry: error
 ROW: variable, at value: 1
 COLUMN : id, at value: 21
-Table entry: <variable> ::= 'id' <variable2>
+Table entry: <variable> ::= 'id' #id <variable2> 
 ROW: variable, at value: 1
 COLUMN : ], at value: 10
 Table entry: error
@@ -4338,7 +4338,7 @@ COLUMN : -, at value: 27
 Table entry: error
 ROW: variable, at value: 1
 COLUMN : self, at value: 22
-Table entry: <variable> ::= 'self' <idnest2> <variable>
+Table entry: <variable> ::= 'self' #self <idnest2> #selfandidnest2 <variable> #dot
 ROW: variable, at value: 1
 COLUMN : floatnum, at value: 26
 Table entry: error
@@ -4482,7 +4482,7 @@ COLUMN : not, at value: 20
 Table entry: error
 ROW: funcHead, at value: 4
 COLUMN : function, at value: 28
-Table entry: <funcHead> ::= 'function' 'id' '(' <fParams> ')' '=>' <returnType> 
+Table entry: <funcHead> ::= 'function' #p 'id' #id '(' <fParams> ')' '=>' <returnType> #funchead
 ROW: funcHead, at value: 4
 COLUMN : -, at value: 27
 Table entry: error
@@ -4560,10 +4560,10 @@ COLUMN : else, at value: 31
 Table entry: error
 ROW: idnest2, at value: 3
 COLUMN : [, at value: 30
-Table entry: <idnest2> ::= <rept-variable2> '.' 
+Table entry: <idnest2> ::= #p <rept-variable2> #reptvariable2 #idnest2 '.' 
 ROW: idnest2, at value: 3
 COLUMN : ., at value: 29
-Table entry: <idnest2> ::= <rept-variable2> '.' 
+Table entry: <idnest2> ::= #p <rept-variable2> #reptvariable2 #idnest2 '.' 
 ROW: idnest2, at value: 3
 COLUMN : id, at value: 21
 Table entry: error
@@ -4623,7 +4623,7 @@ COLUMN : write, at value: 17
 Table entry: error
 ROW: idnest2, at value: 3
 COLUMN : (, at value: 18
-Table entry: <idnest2> ::= '(' <aParams> ')' '.'
+Table entry: <idnest2> ::= '(' #p <aParams> ')' #idnest2 '.' 
 ROW: idnest2, at value: 3
 COLUMN : local, at value: 19
 Table entry: error
@@ -4713,7 +4713,7 @@ COLUMN : [, at value: 30
 Table entry: error
 ROW: variable3, at value: 7
 COLUMN : ., at value: 29
-Table entry: <variable3> ::= '.' <variable> 
+Table entry: <variable3> ::= '.' <variable> #dot 
 ROW: variable3, at value: 7
 COLUMN : id, at value: 21
 Table entry: error
@@ -4932,7 +4932,7 @@ COLUMN : not, at value: 20
 Table entry: error
 ROW: funcDef, at value: 8
 COLUMN : function, at value: 28
-Table entry: <funcDef> ::= <funcHead> <funcBody> 
+Table entry: <funcDef> ::= <funcHead> <funcBody> #funcdef
 ROW: funcDef, at value: 8
 COLUMN : -, at value: 27
 Table entry: error
@@ -4950,7 +4950,7 @@ COLUMN : void, at value: 25
 Table entry: error
 ROW: rept-factor3, at value: 12
 COLUMN : EPSILON, at value: 0
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : intnum, at value: 49
 Table entry: error
@@ -4959,37 +4959,37 @@ COLUMN : if, at value: 48
 Table entry: error
 ROW: rept-factor3, at value: 12
 COLUMN : ;, at value: 47
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : float, at value: 46
 Table entry: error
 ROW: rept-factor3, at value: 12
 COLUMN : +, at value: 45
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : int, at value: 44
 Table entry: error
 ROW: rept-factor3, at value: 12
 COLUMN : <=, at value: 43
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : >, at value: 42
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : and, at value: 41
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : ,, at value: 40
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : :=, at value: 39
 Table entry: error
 ROW: rept-factor3, at value: 12
 COLUMN : <, at value: 38
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : <>, at value: 37
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : implementation, at value: 36
 Table entry: error
@@ -4998,10 +4998,10 @@ COLUMN : public, at value: 35
 Table entry: error
 ROW: rept-factor3, at value: 12
 COLUMN : ==, at value: 34
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : /, at value: 33
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : {, at value: 32
 Table entry: error
@@ -5013,13 +5013,13 @@ COLUMN : [, at value: 30
 Table entry: error
 ROW: rept-factor3, at value: 12
 COLUMN : ., at value: 29
-Table entry: <rept-factor3> ::= '.' <rept-factor>
+Table entry: <rept-factor3> ::= '.' <rept-factor> #dot
 ROW: rept-factor3, at value: 12
 COLUMN : id, at value: 21
 Table entry: error
 ROW: rept-factor3, at value: 12
 COLUMN : ], at value: 10
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : private, at value: 9
 Table entry: error
@@ -5031,7 +5031,7 @@ COLUMN : }, at value: 4
 Table entry: error
 ROW: rept-factor3, at value: 12
 COLUMN : then, at value: 0
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : :, at value: 3
 Table entry: error
@@ -5043,10 +5043,10 @@ COLUMN : isa, at value: 8
 Table entry: error
 ROW: rept-factor3, at value: 12
 COLUMN : or, at value: 7
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : ), at value: 5
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : =>, at value: 1
 Table entry: error
@@ -5055,10 +5055,10 @@ COLUMN : class, at value: 11
 Table entry: error
 ROW: rept-factor3, at value: 12
 COLUMN : *, at value: 12
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : >=, at value: 13
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : read, at value: 14
 Table entry: error
@@ -5085,7 +5085,7 @@ COLUMN : function, at value: 28
 Table entry: error
 ROW: rept-factor3, at value: 12
 COLUMN : -, at value: 27
-Table entry: <rept-factor3> ::= EPSILON 
+Table entry: <rept-factor3> ::= EPSILON
 ROW: rept-factor3, at value: 12
 COLUMN : self, at value: 22
 Table entry: error
@@ -5100,10 +5100,10 @@ COLUMN : void, at value: 25
 Table entry: error
 ROW: aParams, at value: 29
 COLUMN : EPSILON, at value: 0
-Table entry: <aParams> ::= EPSILON 
+Table entry: <aParams> ::= EPSILON #p #aparams 
 ROW: aParams, at value: 29
 COLUMN : intnum, at value: 49
-Table entry: <aParams> ::= <expr> <rept-aParams1> 
+Table entry: <aParams> ::= #p <expr> <rept-aParams1> #aparams 
 ROW: aParams, at value: 29
 COLUMN : if, at value: 48
 Table entry: error
@@ -5115,7 +5115,7 @@ COLUMN : float, at value: 46
 Table entry: error
 ROW: aParams, at value: 29
 COLUMN : +, at value: 45
-Table entry: <aParams> ::= <expr> <rept-aParams1> 
+Table entry: <aParams> ::= #p <expr> <rept-aParams1> #aparams 
 ROW: aParams, at value: 29
 COLUMN : int, at value: 44
 Table entry: error
@@ -5166,7 +5166,7 @@ COLUMN : ., at value: 29
 Table entry: error
 ROW: aParams, at value: 29
 COLUMN : id, at value: 21
-Table entry: <aParams> ::= <expr> <rept-aParams1> 
+Table entry: <aParams> ::= #p <expr> <rept-aParams1> #aparams 
 ROW: aParams, at value: 29
 COLUMN : ], at value: 10
 Table entry: error
@@ -5181,7 +5181,7 @@ COLUMN : }, at value: 4
 Table entry: error
 ROW: aParams, at value: 29
 COLUMN : then, at value: 0
-Table entry: <aParams> ::= EPSILON 
+Table entry: <aParams> ::= EPSILON #p #aparams 
 ROW: aParams, at value: 29
 COLUMN : :, at value: 3
 Table entry: error
@@ -5196,7 +5196,7 @@ COLUMN : or, at value: 7
 Table entry: error
 ROW: aParams, at value: 29
 COLUMN : ), at value: 5
-Table entry: <aParams> ::= EPSILON 
+Table entry: <aParams> ::= EPSILON #p #aparams 
 ROW: aParams, at value: 29
 COLUMN : =>, at value: 1
 Table entry: error
@@ -5223,25 +5223,25 @@ COLUMN : write, at value: 17
 Table entry: error
 ROW: aParams, at value: 29
 COLUMN : (, at value: 18
-Table entry: <aParams> ::= <expr> <rept-aParams1> 
+Table entry: <aParams> ::= #p <expr> <rept-aParams1> #aparams 
 ROW: aParams, at value: 29
 COLUMN : local, at value: 19
 Table entry: error
 ROW: aParams, at value: 29
 COLUMN : not, at value: 20
-Table entry: <aParams> ::= <expr> <rept-aParams1> 
+Table entry: <aParams> ::= #p <expr> <rept-aParams1> #aparams 
 ROW: aParams, at value: 29
 COLUMN : function, at value: 28
 Table entry: error
 ROW: aParams, at value: 29
 COLUMN : -, at value: 27
-Table entry: <aParams> ::= <expr> <rept-aParams1> 
+Table entry: <aParams> ::= #p <expr> <rept-aParams1> #aparams 
 ROW: aParams, at value: 29
 COLUMN : self, at value: 22
-Table entry: <aParams> ::= <expr> <rept-aParams1> 
+Table entry: <aParams> ::= #p <expr> <rept-aParams1> #aparams 
 ROW: aParams, at value: 29
 COLUMN : floatnum, at value: 26
-Table entry: <aParams> ::= <expr> <rept-aParams1> 
+Table entry: <aParams> ::= #p <expr> <rept-aParams1> #aparams 
 ROW: aParams, at value: 29
 COLUMN : $, at value: 23
 Table entry: error
@@ -5250,7 +5250,7 @@ COLUMN : void, at value: 25
 Table entry: error
 ROW: fParams, at value: 30
 COLUMN : EPSILON, at value: 0
-Table entry: <fParams> ::= EPSILON 
+Table entry: <fParams> ::= EPSILON
 ROW: fParams, at value: 30
 COLUMN : intnum, at value: 49
 Table entry: error
@@ -5316,7 +5316,7 @@ COLUMN : ., at value: 29
 Table entry: error
 ROW: fParams, at value: 30
 COLUMN : id, at value: 21
-Table entry: <fParams> ::= 'id' ':' <type> <rept-fParams3> <rept-fParams4> 
+Table entry: <fParams> ::= #p #p 'id' #id ':' <type>  #p <rept-fParams3> #reptfparams3 #param <rept-fParams4>  #fparams
 ROW: fParams, at value: 30
 COLUMN : ], at value: 10
 Table entry: error
@@ -5331,7 +5331,7 @@ COLUMN : }, at value: 4
 Table entry: error
 ROW: fParams, at value: 30
 COLUMN : then, at value: 0
-Table entry: <fParams> ::= EPSILON 
+Table entry: <fParams> ::= EPSILON
 ROW: fParams, at value: 30
 COLUMN : :, at value: 3
 Table entry: error
@@ -5346,7 +5346,7 @@ COLUMN : or, at value: 7
 Table entry: error
 ROW: fParams, at value: 30
 COLUMN : ), at value: 5
-Table entry: <fParams> ::= EPSILON 
+Table entry: <fParams> ::= EPSILON
 ROW: fParams, at value: 30
 COLUMN : =>, at value: 1
 Table entry: error
@@ -5403,7 +5403,7 @@ COLUMN : EPSILON, at value: 0
 Table entry: error
 ROW: expr, at value: 31
 COLUMN : intnum, at value: 49
-Table entry: <expr> ::= <arithExpr> <expr2>
+Table entry: <expr> ::= <arithExpr> <expr2> #expr
 ROW: expr, at value: 31
 COLUMN : if, at value: 48
 Table entry: error
@@ -5415,7 +5415,7 @@ COLUMN : float, at value: 46
 Table entry: error
 ROW: expr, at value: 31
 COLUMN : +, at value: 45
-Table entry: <expr> ::= <arithExpr> <expr2>
+Table entry: <expr> ::= <arithExpr> <expr2> #expr
 ROW: expr, at value: 31
 COLUMN : int, at value: 44
 Table entry: error
@@ -5466,7 +5466,7 @@ COLUMN : ., at value: 29
 Table entry: error
 ROW: expr, at value: 31
 COLUMN : id, at value: 21
-Table entry: <expr> ::= <arithExpr> <expr2>
+Table entry: <expr> ::= <arithExpr> <expr2> #expr
 ROW: expr, at value: 31
 COLUMN : ], at value: 10
 Table entry: error
@@ -5523,25 +5523,25 @@ COLUMN : write, at value: 17
 Table entry: error
 ROW: expr, at value: 31
 COLUMN : (, at value: 18
-Table entry: <expr> ::= <arithExpr> <expr2>
+Table entry: <expr> ::= <arithExpr> <expr2> #expr
 ROW: expr, at value: 31
 COLUMN : local, at value: 19
 Table entry: error
 ROW: expr, at value: 31
 COLUMN : not, at value: 20
-Table entry: <expr> ::= <arithExpr> <expr2>
+Table entry: <expr> ::= <arithExpr> <expr2> #expr
 ROW: expr, at value: 31
 COLUMN : function, at value: 28
 Table entry: error
 ROW: expr, at value: 31
 COLUMN : -, at value: 27
-Table entry: <expr> ::= <arithExpr> <expr2>
+Table entry: <expr> ::= <arithExpr> <expr2> #expr
 ROW: expr, at value: 31
 COLUMN : self, at value: 22
-Table entry: <expr> ::= <arithExpr> <expr2>
+Table entry: <expr> ::= <arithExpr> <expr2> #expr
 ROW: expr, at value: 31
 COLUMN : floatnum, at value: 26
-Table entry: <expr> ::= <arithExpr> <expr2>
+Table entry: <expr> ::= <arithExpr> <expr2> #expr
 ROW: expr, at value: 31
 COLUMN : $, at value: 23
 Table entry: error
@@ -5550,7 +5550,7 @@ COLUMN : void, at value: 25
 Table entry: error
 ROW: opt-classDecl2, at value: 32
 COLUMN : EPSILON, at value: 0
-Table entry: <opt-classDecl2> ::= EPSILON  
+Table entry: <opt-classDecl2> ::= #p EPSILON #optclassdecl2  
 ROW: opt-classDecl2, at value: 32
 COLUMN : intnum, at value: 49
 Table entry: error
@@ -5604,7 +5604,7 @@ COLUMN : /, at value: 33
 Table entry: error
 ROW: opt-classDecl2, at value: 32
 COLUMN : {, at value: 32
-Table entry: <opt-classDecl2> ::= EPSILON  
+Table entry: <opt-classDecl2> ::= #p EPSILON #optclassdecl2  
 ROW: opt-classDecl2, at value: 32
 COLUMN : else, at value: 31
 Table entry: error
@@ -5631,7 +5631,7 @@ COLUMN : }, at value: 4
 Table entry: error
 ROW: opt-classDecl2, at value: 32
 COLUMN : then, at value: 0
-Table entry: <opt-classDecl2> ::= EPSILON  
+Table entry: <opt-classDecl2> ::= #p EPSILON #optclassdecl2  
 ROW: opt-classDecl2, at value: 32
 COLUMN : :, at value: 3
 Table entry: error
@@ -5640,7 +5640,7 @@ COLUMN : invalidnum, at value: 2
 Table entry: error
 ROW: opt-classDecl2, at value: 32
 COLUMN : isa, at value: 8
-Table entry: <opt-classDecl2> ::= 'isa' 'id' <rept-opt-classDecl22> 
+Table entry: <opt-classDecl2> ::= 'isa' #p 'id' #id #p <rept-opt-classDecl22> #reptoptclassdecl22 #optclassdecl2 
 ROW: opt-classDecl2, at value: 32
 COLUMN : or, at value: 7
 Table entry: error
@@ -5706,10 +5706,10 @@ COLUMN : intnum, at value: 49
 Table entry: error
 ROW: rept-statement2, at value: 33
 COLUMN : if, at value: 48
-Table entry: <rept-statement2> ::= <rept-variable2> <rept-statement4>
+Table entry: <rept-statement2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-statement4> 
 ROW: rept-statement2, at value: 33
 COLUMN : ;, at value: 47
-Table entry: <rept-statement2> ::= <rept-variable2> <rept-statement4>
+Table entry: <rept-statement2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-statement4> 
 ROW: rept-statement2, at value: 33
 COLUMN : float, at value: 46
 Table entry: error
@@ -5733,7 +5733,7 @@ COLUMN : ,, at value: 40
 Table entry: error
 ROW: rept-statement2, at value: 33
 COLUMN : :=, at value: 39
-Table entry: <rept-statement2> ::= <rept-variable2> <rept-statement4>
+Table entry: <rept-statement2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-statement4> 
 ROW: rept-statement2, at value: 33
 COLUMN : <, at value: 38
 Table entry: error
@@ -5757,16 +5757,16 @@ COLUMN : {, at value: 32
 Table entry: error
 ROW: rept-statement2, at value: 33
 COLUMN : else, at value: 31
-Table entry: <rept-statement2> ::= <rept-variable2> <rept-statement4>
+Table entry: <rept-statement2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-statement4> 
 ROW: rept-statement2, at value: 33
 COLUMN : [, at value: 30
-Table entry: <rept-statement2> ::= <rept-variable2> <rept-statement4>
+Table entry: <rept-statement2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-statement4> 
 ROW: rept-statement2, at value: 33
 COLUMN : ., at value: 29
-Table entry: <rept-statement2> ::= <rept-variable2> <rept-statement4>
+Table entry: <rept-statement2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-statement4> 
 ROW: rept-statement2, at value: 33
 COLUMN : id, at value: 21
-Table entry: <rept-statement2> ::= <rept-variable2> <rept-statement4>
+Table entry: <rept-statement2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-statement4> 
 ROW: rept-statement2, at value: 33
 COLUMN : ], at value: 10
 Table entry: error
@@ -5778,7 +5778,7 @@ COLUMN : attribute, at value: 6
 Table entry: error
 ROW: rept-statement2, at value: 33
 COLUMN : }, at value: 4
-Table entry: <rept-statement2> ::= <rept-variable2> <rept-statement4>
+Table entry: <rept-statement2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-statement4> 
 ROW: rept-statement2, at value: 33
 COLUMN : then, at value: 0
 Table entry: error
@@ -5811,22 +5811,22 @@ COLUMN : >=, at value: 13
 Table entry: error
 ROW: rept-statement2, at value: 33
 COLUMN : read, at value: 14
-Table entry: <rept-statement2> ::= <rept-variable2> <rept-statement4>
+Table entry: <rept-statement2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-statement4> 
 ROW: rept-statement2, at value: 33
 COLUMN : while, at value: 15
-Table entry: <rept-statement2> ::= <rept-variable2> <rept-statement4>
+Table entry: <rept-statement2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-statement4> 
 ROW: rept-statement2, at value: 33
 COLUMN : return, at value: 16
-Table entry: <rept-statement2> ::= <rept-variable2> <rept-statement4>
+Table entry: <rept-statement2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-statement4> 
 ROW: rept-statement2, at value: 33
 COLUMN : write, at value: 17
-Table entry: <rept-statement2> ::= <rept-variable2> <rept-statement4>
+Table entry: <rept-statement2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-statement4> 
 ROW: rept-statement2, at value: 33
 COLUMN : (, at value: 18
-Table entry: <rept-statement2> ::= '(' <aParams> ')' <rept-statement3>
+Table entry: <rept-statement2> ::= '(' <aParams> #aparamsandid ')' <rept-statement3>
 ROW: rept-statement2, at value: 33
 COLUMN : local, at value: 19
-Table entry: <rept-statement2> ::= <rept-variable2> <rept-statement4>
+Table entry: <rept-statement2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-statement4> 
 ROW: rept-statement2, at value: 33
 COLUMN : not, at value: 20
 Table entry: error
@@ -5838,7 +5838,7 @@ COLUMN : -, at value: 27
 Table entry: error
 ROW: rept-statement2, at value: 33
 COLUMN : self, at value: 22
-Table entry: <rept-statement2> ::= <rept-variable2> <rept-statement4>
+Table entry: <rept-statement2> ::= #p <rept-variable2> #reptvariable2 #reptvariable2andid <rept-statement4> 
 ROW: rept-statement2, at value: 33
 COLUMN : floatnum, at value: 26
 Table entry: error
@@ -5865,7 +5865,7 @@ COLUMN : float, at value: 46
 Table entry: error
 ROW: addOp, at value: 34
 COLUMN : +, at value: 45
-Table entry: <addOp> ::= '+' 
+Table entry: <addOp> ::= '+' #addop 
 ROW: addOp, at value: 34
 COLUMN : int, at value: 44
 Table entry: error
@@ -5943,7 +5943,7 @@ COLUMN : isa, at value: 8
 Table entry: error
 ROW: addOp, at value: 34
 COLUMN : or, at value: 7
-Table entry: <addOp> ::= 'or' 
+Table entry: <addOp> ::= 'or' #addop 
 ROW: addOp, at value: 34
 COLUMN : ), at value: 5
 Table entry: error
@@ -5985,7 +5985,7 @@ COLUMN : function, at value: 28
 Table entry: error
 ROW: addOp, at value: 34
 COLUMN : -, at value: 27
-Table entry: <addOp> ::= '-' 
+Table entry: <addOp> ::= '-' #addop 
 ROW: addOp, at value: 34
 COLUMN : self, at value: 22
 Table entry: error
@@ -6033,7 +6033,7 @@ COLUMN : ,, at value: 40
 Table entry: error
 ROW: assignOp, at value: 35
 COLUMN : :=, at value: 39
-Table entry: <assignOp> ::= ':=' 
+Table entry: <assignOp> ::= ':=' #assign
 ROW: assignOp, at value: 35
 COLUMN : <, at value: 38
 Table entry: error
@@ -6195,7 +6195,7 @@ COLUMN : implementation, at value: 36
 Table entry: error
 ROW: visibility, at value: 36
 COLUMN : public, at value: 35
-Table entry: <visibility> ::= 'public' 
+Table entry: <visibility> ::= 'public' #visibility 
 ROW: visibility, at value: 36
 COLUMN : ==, at value: 34
 Table entry: error
@@ -6222,7 +6222,7 @@ COLUMN : ], at value: 10
 Table entry: error
 ROW: visibility, at value: 36
 COLUMN : private, at value: 9
-Table entry: <visibility> ::= 'private' 
+Table entry: <visibility> ::= 'private' #visibility 
 ROW: visibility, at value: 36
 COLUMN : attribute, at value: 6
 Table entry: error
@@ -6375,7 +6375,7 @@ COLUMN : private, at value: 9
 Table entry: error
 ROW: attributeDecl, at value: 37
 COLUMN : attribute, at value: 6
-Table entry: <attributeDecl> ::= 'attribute' <varDecl> 
+Table entry: <attributeDecl> ::= 'attribute' <varDecl> #attributedecl
 ROW: attributeDecl, at value: 37
 COLUMN : }, at value: 4
 Table entry: error
@@ -6480,7 +6480,7 @@ COLUMN : and, at value: 41
 Table entry: error
 ROW: rept-aParams1, at value: 38
 COLUMN : ,, at value: 40
-Table entry: <rept-aParams1> ::= <aParamsTail> <rept-aParams1> 
+Table entry: <rept-aParams1> ::= <aParamsTail> <rept-aParams1>  
 ROW: rept-aParams1, at value: 38
 COLUMN : :=, at value: 39
 Table entry: error
@@ -6666,7 +6666,7 @@ COLUMN : ., at value: 29
 Table entry: error
 ROW: rept-statement, at value: 39
 COLUMN : id, at value: 21
-Table entry: <rept-statement> ::= 'id' <rept-statement2>
+Table entry: <rept-statement> ::= 'id' #id <rept-statement2>
 ROW: rept-statement, at value: 39
 COLUMN : ], at value: 10
 Table entry: error
@@ -6738,7 +6738,7 @@ COLUMN : -, at value: 27
 Table entry: error
 ROW: rept-statement, at value: 39
 COLUMN : self, at value: 22
-Table entry: <rept-statement> ::= 'self' <idnest2> <rept-statement>
+Table entry: <rept-statement> ::= 'self' #self <idnest2> #selfandidnest2 <rept-statement> #dot
 ROW: rept-statement, at value: 39
 COLUMN : floatnum, at value: 26
 Table entry: error
@@ -6813,7 +6813,7 @@ COLUMN : [, at value: 30
 Table entry: error
 ROW: rept-statement3, at value: 40
 COLUMN : ., at value: 29
-Table entry: <rept-statement3> ::= '.' <rept-statement>
+Table entry: <rept-statement3> ::= '.' <rept-statement> #dot
 ROW: rept-statement3, at value: 40
 COLUMN : id, at value: 21
 Table entry: error
@@ -6927,7 +6927,7 @@ COLUMN : >, at value: 42
 Table entry: error
 ROW: multOp, at value: 41
 COLUMN : and, at value: 41
-Table entry: <multOp> ::= 'and' 
+Table entry: <multOp> ::= 'and' #multop
 ROW: multOp, at value: 41
 COLUMN : ,, at value: 40
 Table entry: error
@@ -6951,7 +6951,7 @@ COLUMN : ==, at value: 34
 Table entry: error
 ROW: multOp, at value: 41
 COLUMN : /, at value: 33
-Table entry: <multOp> ::= '/' 
+Table entry: <multOp> ::= '/' #multop
 ROW: multOp, at value: 41
 COLUMN : {, at value: 32
 Table entry: error
@@ -7005,7 +7005,7 @@ COLUMN : class, at value: 11
 Table entry: error
 ROW: multOp, at value: 41
 COLUMN : *, at value: 12
-Table entry: <multOp> ::= '*' 
+Table entry: <multOp> ::= '*' #multop
 ROW: multOp, at value: 41
 COLUMN : >=, at value: 13
 Table entry: error
@@ -7092,7 +7092,7 @@ COLUMN : <>, at value: 37
 Table entry: error
 ROW: START, at value: 43
 COLUMN : implementation, at value: 36
-Table entry: <START> ::= <prog> 
+Table entry: <START> ::= <prog> #start 
 ROW: START, at value: 43
 COLUMN : public, at value: 35
 Table entry: error
@@ -7152,7 +7152,7 @@ COLUMN : =>, at value: 1
 Table entry: error
 ROW: START, at value: 43
 COLUMN : class, at value: 11
-Table entry: <START> ::= <prog> 
+Table entry: <START> ::= <prog> #start 
 ROW: START, at value: 43
 COLUMN : *, at value: 12
 Table entry: error
@@ -7182,7 +7182,7 @@ COLUMN : not, at value: 20
 Table entry: error
 ROW: START, at value: 43
 COLUMN : function, at value: 28
-Table entry: <START> ::= <prog> 
+Table entry: <START> ::= <prog> #start 
 ROW: START, at value: 43
 COLUMN : -, at value: 27
 Table entry: error
@@ -7194,7 +7194,7 @@ COLUMN : floatnum, at value: 26
 Table entry: error
 ROW: START, at value: 43
 COLUMN : $, at value: 23
-Table entry: <START> ::= <prog> 
+Table entry: <START> ::= <prog> #start 
 ROW: START, at value: 43
 COLUMN : void, at value: 25
 Table entry: error
@@ -7221,10 +7221,10 @@ COLUMN : int, at value: 44
 Table entry: error
 ROW: relOp, at value: 44
 COLUMN : <=, at value: 43
-Table entry: <relOp> ::= '<=' 
+Table entry: <relOp> ::= '<=' #relop
 ROW: relOp, at value: 44
 COLUMN : >, at value: 42
-Table entry: <relOp> ::= '>' 
+Table entry: <relOp> ::= '>' #relop
 ROW: relOp, at value: 44
 COLUMN : and, at value: 41
 Table entry: error
@@ -7236,10 +7236,10 @@ COLUMN : :=, at value: 39
 Table entry: error
 ROW: relOp, at value: 44
 COLUMN : <, at value: 38
-Table entry: <relOp> ::= '<' 
+Table entry: <relOp> ::= '<' #relop
 ROW: relOp, at value: 44
 COLUMN : <>, at value: 37
-Table entry: <relOp> ::= '<>' 
+Table entry: <relOp> ::= '<>' #relop
 ROW: relOp, at value: 44
 COLUMN : implementation, at value: 36
 Table entry: error
@@ -7248,7 +7248,7 @@ COLUMN : public, at value: 35
 Table entry: error
 ROW: relOp, at value: 44
 COLUMN : ==, at value: 34
-Table entry: <relOp> ::= '==' 
+Table entry: <relOp> ::= '==' #relop
 ROW: relOp, at value: 44
 COLUMN : /, at value: 33
 Table entry: error
@@ -7308,7 +7308,7 @@ COLUMN : *, at value: 12
 Table entry: error
 ROW: relOp, at value: 44
 COLUMN : >=, at value: 13
-Table entry: <relOp> ::= '>=' 
+Table entry: <relOp> ::= '>=' #relop
 ROW: relOp, at value: 44
 COLUMN : read, at value: 14
 Table entry: error
@@ -7506,7 +7506,7 @@ COLUMN : intnum, at value: 49
 Table entry: error
 ROW: rept-funcBody1, at value: 46
 COLUMN : if, at value: 48
-Table entry: <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1> 
+Table entry: <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1>
 ROW: rept-funcBody1, at value: 46
 COLUMN : ;, at value: 47
 Table entry: error
@@ -7566,7 +7566,7 @@ COLUMN : ., at value: 29
 Table entry: error
 ROW: rept-funcBody1, at value: 46
 COLUMN : id, at value: 21
-Table entry: <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1> 
+Table entry: <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1>
 ROW: rept-funcBody1, at value: 46
 COLUMN : ], at value: 10
 Table entry: error
@@ -7611,22 +7611,22 @@ COLUMN : >=, at value: 13
 Table entry: error
 ROW: rept-funcBody1, at value: 46
 COLUMN : read, at value: 14
-Table entry: <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1> 
+Table entry: <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1>
 ROW: rept-funcBody1, at value: 46
 COLUMN : while, at value: 15
-Table entry: <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1> 
+Table entry: <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1>
 ROW: rept-funcBody1, at value: 46
 COLUMN : return, at value: 16
-Table entry: <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1> 
+Table entry: <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1>
 ROW: rept-funcBody1, at value: 46
 COLUMN : write, at value: 17
-Table entry: <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1> 
+Table entry: <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1>
 ROW: rept-funcBody1, at value: 46
 COLUMN : (, at value: 18
 Table entry: error
 ROW: rept-funcBody1, at value: 46
 COLUMN : local, at value: 19
-Table entry: <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1> 
+Table entry: <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1>
 ROW: rept-funcBody1, at value: 46
 COLUMN : not, at value: 20
 Table entry: error
@@ -7638,7 +7638,7 @@ COLUMN : -, at value: 27
 Table entry: error
 ROW: rept-funcBody1, at value: 46
 COLUMN : self, at value: 22
-Table entry: <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1> 
+Table entry: <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1>
 ROW: rept-funcBody1, at value: 46
 COLUMN : floatnum, at value: 26
 Table entry: error
@@ -7830,7 +7830,7 @@ COLUMN : and, at value: 41
 Table entry: error
 ROW: rept-opt-classDecl22, at value: 48
 COLUMN : ,, at value: 40
-Table entry: <rept-opt-classDecl22> ::= ',' 'id' <rept-opt-classDecl22> 
+Table entry: <rept-opt-classDecl22> ::= ',' 'id' #id <rept-opt-classDecl22> 
 ROW: rept-opt-classDecl22, at value: 48
 COLUMN : :=, at value: 39
 Table entry: error
@@ -8010,7 +8010,7 @@ COLUMN : else, at value: 31
 Table entry: error
 ROW: indice, at value: 49
 COLUMN : [, at value: 30
-Table entry: <indice> ::= '[' <arithExpr> ']' 
+Table entry: <indice> ::= '[' <arithExpr> #indice ']' 
 ROW: indice, at value: 49
 COLUMN : ., at value: 29
 Table entry: error
@@ -8310,7 +8310,7 @@ COLUMN : else, at value: 31
 Table entry: error
 ROW: arraySize, at value: 51
 COLUMN : [, at value: 30
-Table entry: <arraySize> ::= '[' <arraySize2>
+Table entry: <arraySize> ::= '[' <arraySize2> #arraysize
 ROW: arraySize, at value: 51
 COLUMN : ., at value: 29
 Table entry: error
@@ -8403,7 +8403,7 @@ COLUMN : EPSILON, at value: 0
 Table entry: error
 ROW: term, at value: 52
 COLUMN : intnum, at value: 49
-Table entry: <term> ::= <factor> <rightrec-term> 
+Table entry: <term> ::= <factor> <rightrec-term> #term
 ROW: term, at value: 52
 COLUMN : if, at value: 48
 Table entry: error
@@ -8415,7 +8415,7 @@ COLUMN : float, at value: 46
 Table entry: error
 ROW: term, at value: 52
 COLUMN : +, at value: 45
-Table entry: <term> ::= <factor> <rightrec-term> 
+Table entry: <term> ::= <factor> <rightrec-term> #term
 ROW: term, at value: 52
 COLUMN : int, at value: 44
 Table entry: error
@@ -8466,7 +8466,7 @@ COLUMN : ., at value: 29
 Table entry: error
 ROW: term, at value: 52
 COLUMN : id, at value: 21
-Table entry: <term> ::= <factor> <rightrec-term> 
+Table entry: <term> ::= <factor> <rightrec-term> #term
 ROW: term, at value: 52
 COLUMN : ], at value: 10
 Table entry: error
@@ -8523,25 +8523,25 @@ COLUMN : write, at value: 17
 Table entry: error
 ROW: term, at value: 52
 COLUMN : (, at value: 18
-Table entry: <term> ::= <factor> <rightrec-term> 
+Table entry: <term> ::= <factor> <rightrec-term> #term
 ROW: term, at value: 52
 COLUMN : local, at value: 19
 Table entry: error
 ROW: term, at value: 52
 COLUMN : not, at value: 20
-Table entry: <term> ::= <factor> <rightrec-term> 
+Table entry: <term> ::= <factor> <rightrec-term> #term
 ROW: term, at value: 52
 COLUMN : function, at value: 28
 Table entry: error
 ROW: term, at value: 52
 COLUMN : -, at value: 27
-Table entry: <term> ::= <factor> <rightrec-term> 
+Table entry: <term> ::= <factor> <rightrec-term> #term
 ROW: term, at value: 52
 COLUMN : self, at value: 22
-Table entry: <term> ::= <factor> <rightrec-term> 
+Table entry: <term> ::= <factor> <rightrec-term> #term
 ROW: term, at value: 52
 COLUMN : floatnum, at value: 26
-Table entry: <term> ::= <factor> <rightrec-term> 
+Table entry: <term> ::= <factor> <rightrec-term> #term
 ROW: term, at value: 52
 COLUMN : $, at value: 23
 Table entry: error
@@ -8565,7 +8565,7 @@ COLUMN : float, at value: 46
 Table entry: error
 ROW: rightrec-arithExpr, at value: 53
 COLUMN : +, at value: 45
-Table entry: <rightrec-arithExpr> ::= <addOp> <term> <rightrec-arithExpr> 
+Table entry: <rightrec-arithExpr> ::= <addOp> <term> #rightrecarithexpr <rightrec-arithExpr> 
 ROW: rightrec-arithExpr, at value: 53
 COLUMN : int, at value: 44
 Table entry: error
@@ -8643,7 +8643,7 @@ COLUMN : isa, at value: 8
 Table entry: error
 ROW: rightrec-arithExpr, at value: 53
 COLUMN : or, at value: 7
-Table entry: <rightrec-arithExpr> ::= <addOp> <term> <rightrec-arithExpr> 
+Table entry: <rightrec-arithExpr> ::= <addOp> <term> #rightrecarithexpr <rightrec-arithExpr> 
 ROW: rightrec-arithExpr, at value: 53
 COLUMN : ), at value: 5
 Table entry: <rightrec-arithExpr> ::= EPSILON 
@@ -8685,7 +8685,7 @@ COLUMN : function, at value: 28
 Table entry: error
 ROW: rightrec-arithExpr, at value: 53
 COLUMN : -, at value: 27
-Table entry: <rightrec-arithExpr> ::= <addOp> <term> <rightrec-arithExpr> 
+Table entry: <rightrec-arithExpr> ::= <addOp> <term> #rightrecarithexpr <rightrec-arithExpr> 
 ROW: rightrec-arithExpr, at value: 53
 COLUMN : self, at value: 22
 Table entry: error
@@ -8706,7 +8706,7 @@ COLUMN : intnum, at value: 49
 Table entry: error
 ROW: statement, at value: 54
 COLUMN : if, at value: 48
-Table entry: <statement> ::= 'if' '(' <relExpr> ')' 'then' <statBlock> 'else' <statBlock> ';' 
+Table entry: <statement> ::= 'if' #if '(' <relExpr> ')' #condition 'then' <statBlock> #then 'else' <statBlock> #felse ';' #ifstatement
 ROW: statement, at value: 54
 COLUMN : ;, at value: 47
 Table entry: error
@@ -8766,7 +8766,7 @@ COLUMN : ., at value: 29
 Table entry: error
 ROW: statement, at value: 54
 COLUMN : id, at value: 21
-Table entry: <statement> ::= <rept-statement> 
+Table entry: <statement> ::= <rept-statement> #statement
 ROW: statement, at value: 54
 COLUMN : ], at value: 10
 Table entry: error
@@ -8811,16 +8811,16 @@ COLUMN : >=, at value: 13
 Table entry: error
 ROW: statement, at value: 54
 COLUMN : read, at value: 14
-Table entry: <statement> ::= 'read' '(' <variable> ')' ';' 
+Table entry: <statement> ::= 'read' #read '(' <variable> ')' #readstatement ';' 
 ROW: statement, at value: 54
 COLUMN : while, at value: 15
-Table entry: <statement> ::= 'while' '(' <relExpr> ')' <statBlock> ';' 
+Table entry: <statement> ::= 'while' #while '(' <relExpr> ')' #condition <statBlock>  #then ';' #whilestatement 
 ROW: statement, at value: 54
 COLUMN : return, at value: 16
-Table entry: <statement> ::= 'return' '(' <expr> ')' ';' 
+Table entry: <statement> ::= 'return' #return '(' <expr> ')' #freturnstatement ';' 
 ROW: statement, at value: 54
 COLUMN : write, at value: 17
-Table entry: <statement> ::= 'write' '(' <expr> ')' ';' 
+Table entry: <statement> ::= 'write' #write '(' <expr> ')' #writestatement ';' 
 ROW: statement, at value: 54
 COLUMN : (, at value: 18
 Table entry: error
@@ -8838,7 +8838,7 @@ COLUMN : -, at value: 27
 Table entry: error
 ROW: statement, at value: 54
 COLUMN : self, at value: 22
-Table entry: <statement> ::= <rept-statement> 
+Table entry: <statement> ::= <rept-statement> #statement
 ROW: statement, at value: 54
 COLUMN : floatnum, at value: 26
 Table entry: error
@@ -8892,7 +8892,7 @@ COLUMN : <>, at value: 37
 Table entry: error
 ROW: classOrImplOrFunc, at value: 55
 COLUMN : implementation, at value: 36
-Table entry: <classOrImplOrFunc> ::= <implDef> 
+Table entry: <classOrImplOrFunc> ::= <implDef> #impl
 ROW: classOrImplOrFunc, at value: 55
 COLUMN : public, at value: 35
 Table entry: error
@@ -8952,7 +8952,7 @@ COLUMN : =>, at value: 1
 Table entry: error
 ROW: classOrImplOrFunc, at value: 55
 COLUMN : class, at value: 11
-Table entry: <classOrImplOrFunc> ::= <classDecl> 
+Table entry: <classOrImplOrFunc> ::= <classDecl> #class
 ROW: classOrImplOrFunc, at value: 55
 COLUMN : *, at value: 12
 Table entry: error
@@ -8982,7 +8982,7 @@ COLUMN : not, at value: 20
 Table entry: error
 ROW: classOrImplOrFunc, at value: 55
 COLUMN : function, at value: 28
-Table entry: <classOrImplOrFunc> ::= <funcDef> 
+Table entry: <classOrImplOrFunc> ::= <funcDef> #func
 ROW: classOrImplOrFunc, at value: 55
 COLUMN : -, at value: 27
 Table entry: error
@@ -9027,7 +9027,7 @@ COLUMN : >, at value: 42
 Table entry: <rightrec-term> ::= EPSILON 
 ROW: rightrec-term, at value: 56
 COLUMN : and, at value: 41
-Table entry: <rightrec-term> ::= <multOp> <factor> <rightrec-term> 
+Table entry: <rightrec-term> ::= <multOp> <factor> #rightrecterm <rightrec-term> 
 ROW: rightrec-term, at value: 56
 COLUMN : ,, at value: 40
 Table entry: <rightrec-term> ::= EPSILON 
@@ -9051,7 +9051,7 @@ COLUMN : ==, at value: 34
 Table entry: <rightrec-term> ::= EPSILON 
 ROW: rightrec-term, at value: 56
 COLUMN : /, at value: 33
-Table entry: <rightrec-term> ::= <multOp> <factor> <rightrec-term> 
+Table entry: <rightrec-term> ::= <multOp> <factor> #rightrecterm <rightrec-term> 
 ROW: rightrec-term, at value: 56
 COLUMN : {, at value: 32
 Table entry: error
@@ -9105,7 +9105,7 @@ COLUMN : class, at value: 11
 Table entry: error
 ROW: rightrec-term, at value: 56
 COLUMN : *, at value: 12
-Table entry: <rightrec-term> ::= <multOp> <factor> <rightrec-term> 
+Table entry: <rightrec-term> ::= <multOp> <factor> #rightrecterm <rightrec-term> 
 ROW: rightrec-term, at value: 56
 COLUMN : >=, at value: 13
 Table entry: <rightrec-term> ::= EPSILON 
@@ -9162,13 +9162,13 @@ COLUMN : ;, at value: 47
 Table entry: error
 ROW: type, at value: 59
 COLUMN : float, at value: 46
-Table entry: <type> ::= 'float' 
+Table entry: <type> ::= 'float' #type 
 ROW: type, at value: 59
 COLUMN : +, at value: 45
 Table entry: error
 ROW: type, at value: 59
 COLUMN : int, at value: 44
-Table entry: <type> ::= 'int' 
+Table entry: <type> ::= 'int' #type 
 ROW: type, at value: 59
 COLUMN : <=, at value: 43
 Table entry: error
@@ -9216,7 +9216,7 @@ COLUMN : ., at value: 29
 Table entry: error
 ROW: type, at value: 59
 COLUMN : id, at value: 21
-Table entry: <type> ::= 'id' 
+Table entry: <type> ::= 'id' #type 
 ROW: type, at value: 59
 COLUMN : ], at value: 10
 Table entry: error
@@ -9432,7 +9432,7 @@ COLUMN : not, at value: 20
 Table entry: error
 ROW: funcDecl, at value: 57
 COLUMN : function, at value: 28
-Table entry: <funcDecl> ::= <funcHead> ';' 
+Table entry: <funcDecl> ::= <funcHead> #funcdecl ';' 
 ROW: funcDecl, at value: 57
 COLUMN : -, at value: 27
 Table entry: error
@@ -9492,7 +9492,7 @@ COLUMN : <>, at value: 37
 Table entry: error
 ROW: implDef, at value: 58
 COLUMN : implementation, at value: 36
-Table entry: <implDef> ::= 'implementation' 'id' '{' <rept-implDef3> '}' 
+Table entry: <implDef> ::= 'implementation' 'id' #id '{' #p <rept-implDef3> #reptimpldef3 #impldef '}' 
 ROW: implDef, at value: 58
 COLUMN : public, at value: 35
 Table entry: error

@@ -1,0 +1,178 @@
+prog
+| funcdef
+| | funchead
+| | | id
+| | | funcparams
+| | | | param
+| | | | | id
+| | | | | type
+| | | | | dimlist
+| | | | param
+| | | | | id
+| | | | | type
+| | | returntype
+| | funcbody
+| | | vardecl
+| | | | id
+| | | | type
+| | | vardecl
+| | | | id
+| | | | type
+| | | vardecl
+| | | | id
+| | | | type
+| | | vardecl
+| | | | id
+| | | | type
+| | | assign
+| | | | expr
+| | | | | term
+| | | | | | id
+| | | | term
+| | | | | id
+| | | assign
+| | | | expr
+| | | | | intnum
+| | | | term
+| | | | | id
+| | | assign
+| | | | expr
+| | | | | intnum
+| | | | term
+| | | | | id
+| | | assign
+| | | | expr
+| | | | | intnum
+| | | | term
+| | | | | id
+| | | reptstatblock1
+| | | | relexpr
+| | | | | term
+| | | | | | id
+| | | | | relop
+| | | | | addop
+| | | | | | intnum
+| | | | | | term
+| | | | | | | id
+| | | | while
+| funcdef
+| | funchead
+| | | id
+| | | funcparams
+| | | | param
+| | | | | id
+| | | | | type
+| | | | | dimlist
+| | | | param
+| | | | | id
+| | | | | type
+| | | returntype
+| | funcbody
+| | | vardecl
+| | | | id
+| | | | type
+| | | vardecl
+| | | | id
+| | | | type
+| | | assign
+| | | | expr
+| | | | | term
+| | | | | | id
+| | | | term
+| | | | | id
+| | | assign
+| | | | expr
+| | | | | intnum
+| | | | term
+| | | | | id
+| | | reptstatblock1
+| | | | relexpr
+| | | | | term
+| | | | | | id
+| | | | | relop
+| | | | | term
+| | | | | | id
+| | | | while
+| funcdef
+| | funchead
+| | | id
+| | | returntype
+| | funcbody
+| | | vardecl
+| | | | id
+| | | | type
+| | | | dimlist
+| | | | | intnum
+| | | assign
+| | | | expr
+| | | | | intnum
+| | | | term
+| | | | | id
+| | | | | reptvariable2
+| | | | | | intnum
+| | | assign
+| | | | expr
+| | | | | intnum
+| | | | term
+| | | | | id
+| | | | | reptvariable2
+| | | | | | intnum
+| | | assign
+| | | | expr
+| | | | | intnum
+| | | | term
+| | | | | id
+| | | | | reptvariable2
+| | | | | | intnum
+| | | assign
+| | | | expr
+| | | | | intnum
+| | | | term
+| | | | | id
+| | | | | reptvariable2
+| | | | | | intnum
+| | | assign
+| | | | expr
+| | | | | intnum
+| | | | term
+| | | | | id
+| | | | | reptvariable2
+| | | | | | intnum
+| | | assign
+| | | | expr
+| | | | | intnum
+| | | | term
+| | | | | id
+| | | | | reptvariable2
+| | | | | | intnum
+| | | assign
+| | | | expr
+| | | | | intnum
+| | | | term
+| | | | | id
+| | | | | reptvariable2
+| | | | | | intnum
+| | | functioncall
+| | | | id
+| | | | aparams
+| | | | | expr
+| | | | | | term
+| | | | | | | id
+| | | | | expr
+| | | | | | intnum
+| | | functioncall
+| | | | id
+| | | | aparams
+| | | | | expr
+| | | | | | term
+| | | | | | | id
+| | | | | expr
+| | | | | | intnum
+| | | functioncall
+| | | | id
+| | | | aparams
+| | | | | expr
+| | | | | | term
+| | | | | | | id
+| | | | | expr
+| | | | | | intnum

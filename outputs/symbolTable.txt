@@ -4,8 +4,9 @@ bubbleSort: function | void |
 =========================
 	table for bubbleSort
 
+	i: variable | int | 
 	j: variable | int | 
-	n: variable | i | 
+	n: variable | int | 
 	temp: variable | int | 
 main: function | void | 
 =========================

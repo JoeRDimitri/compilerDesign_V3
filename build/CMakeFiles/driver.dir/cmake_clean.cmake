@@ -9,6 +9,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/driver.dir/lexor.cpp.obj.d"
   "CMakeFiles/driver.dir/parser.cpp.obj"
   "CMakeFiles/driver.dir/parser.cpp.obj.d"
+  "CMakeFiles/driver.dir/parsing_table.cpp.obj"
+  "CMakeFiles/driver.dir/parsing_table.cpp.obj.d"
   "driver.exe"
   "driver.exe.manifest"
   "driver.pdb"

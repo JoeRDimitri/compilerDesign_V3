@@ -5,6 +5,8 @@
 #include <fstream>
 #include <spdlog/spdlog.h>
 
+class first_and_follow; // forward declaration — full type needed only in handler.cpp
+
 //Forward Declaration of the token class
 class token;
 class lexor;  // Add this forward declaration
@@ -68,6 +70,9 @@ class handler{
 	std::string errorFileName;
 	fileHandler fileousHandler;
 	errorHandler errorFileHandler;
+
+	bool writeToFirstSetFile(first_and_follow &faf);
+	bool writeToFollowSetFile(first_and_follow &faf);
 
 	handler():
 	tokenFileName(""),

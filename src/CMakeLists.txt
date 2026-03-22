@@ -17,6 +17,7 @@ add_executable(driver
     parser.cpp
     first_and_follow.cpp
     handler.cpp
+    parsing_table.cpp
 )
 
 # Link libraries

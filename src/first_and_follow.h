@@ -11,7 +11,6 @@ private:
 	//unordered map for the first set
 	//Key will be the name of the nonterminal symbol
 	//The value will be a vector containing the actual set.
-    handler h;
     errorHandler erroneousHandler;
     fileHandler fileousHandler;
 	std::string currentSymbol;
@@ -20,13 +19,10 @@ private:
 	int lineIndex;
 	bool change;
 
-
-
 	void resetFileInfo();
 	//Function that moves the input stream forward if it reads white space. white space values are 9-10-11-12-13-32
 	void getRidOfWhiteSpace(int & templineIndex);
 	void getRidOfWhiteSpace();
-
 	//Finds the first non terminal symbol which will the symbol we are generating a first set for
 	std::vector<std::string> * findNT(int k);
 	//Updates the currentCharacter
@@ -34,9 +30,7 @@ private:
 	//Checks if it is a terminal.
 	bool checkT(int & tempLineIndex);
 	bool checkT();
-
 	bool checkNT(int & tempLineIndex);
-
 	bool checkE();
 	//Function that checks if the current symbol is in the vector that is provided as an argument
 	void getSymbol(std::string t,int & tempLineIndex);
@@ -50,18 +44,17 @@ private:
 	std::vector<std::string> * findFollowSet(std::string);
 	void compareAndAdd(std::vector<std::string>* v1, std::vector<std::string>* v2);
 	bool hasEpsilon(std::vector<std::string> * v);
+
 public:
+    handler h;
 	static bool inVector(std::vector<std::string> * v, const std::string s);
 	std::unordered_map<std::string, std::vector<std::string>*> firstSet;
 	std::unordered_map<std::string, std::vector<std::string>*> followSet;
 
-	bool writeToFirstSetFile();
-	bool writeToFollowSetFile();
 	void generateFirstSet();
 	void generateFollowSet();
 	// Bypass stdin prompt: open the grammar file directly and mark as ready.
 	void setInputFile(const std::string& path);
-
 	first_and_follow():
 	h(),
 	erroneousHandler(&h),

@@ -248,6 +248,30 @@ parser.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\driver.dir\build.make CMakeFiles/driver.dir/parser.cpp.s
 .PHONY : parser.cpp.s
 
+parsing_table.obj: parsing_table.cpp.obj
+.PHONY : parsing_table.obj
+
+# target to build an object file
+parsing_table.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\driver.dir\build.make CMakeFiles/driver.dir/parsing_table.cpp.obj
+.PHONY : parsing_table.cpp.obj
+
+parsing_table.i: parsing_table.cpp.i
+.PHONY : parsing_table.i
+
+# target to preprocess a source file
+parsing_table.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\driver.dir\build.make CMakeFiles/driver.dir/parsing_table.cpp.i
+.PHONY : parsing_table.cpp.i
+
+parsing_table.s: parsing_table.cpp.s
+.PHONY : parsing_table.s
+
+# target to generate assembly for a file
+parsing_table.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\driver.dir\build.make CMakeFiles/driver.dir/parsing_table.cpp.s
+.PHONY : parsing_table.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -272,6 +296,9 @@ help:
 	@echo ... parser.obj
 	@echo ... parser.i
 	@echo ... parser.s
+	@echo ... parsing_table.obj
+	@echo ... parsing_table.i
+	@echo ... parsing_table.s
 .PHONY : help
 
 

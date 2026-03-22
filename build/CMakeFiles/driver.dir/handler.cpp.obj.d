@@ -232,6 +232,7 @@ CMakeFiles/driver.dir/handler.cpp.obj: \
  C:/msys64/ucrt64/include/spdlog/details/log_msg_buffer.h \
  C:/msys64/ucrt64/include/spdlog/details/log_msg.h \
  C:/msys64/ucrt64/include/spdlog/version.h \
+ C:\Projects\CompilerDesignV2\src\first_and_follow.h \
  C:\Projects\CompilerDesignV2\src\lexor.h \
  C:/msys64/ucrt64/include/c++/15.2.0/stack \
  C:/msys64/ucrt64/include/c++/15.2.0/deque \

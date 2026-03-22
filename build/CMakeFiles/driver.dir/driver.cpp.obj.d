@@ -248,7 +248,9 @@ CMakeFiles/driver.dir/driver.cpp.obj: \
  C:/msys64/ucrt64/include/c++/15.2.0/bits/stl_multimap.h \
  C:/msys64/ucrt64/include/c++/15.2.0/unordered_set \
  C:/msys64/ucrt64/include/c++/15.2.0/bits/unordered_set.h \
+ C:\Projects\CompilerDesignV2\src\table_entry.h \
  C:\Projects\CompilerDesignV2\src\first_and_follow.h \
+ C:\Projects\CompilerDesignV2\src\parsing_table.h \
  C:/msys64/ucrt64/include/c++/15.2.0/filesystem \
  C:/msys64/ucrt64/include/c++/15.2.0/bits/fs_fwd.h \
  C:/msys64/ucrt64/include/c++/15.2.0/bits/fs_path.h \

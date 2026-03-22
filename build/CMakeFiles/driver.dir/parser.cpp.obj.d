@@ -245,4 +245,6 @@ CMakeFiles/driver.dir/parser.cpp.obj: \
  C:/msys64/ucrt64/include/spdlog/details/log_msg_buffer.h \
  C:/msys64/ucrt64/include/spdlog/details/log_msg.h \
  C:/msys64/ucrt64/include/spdlog/version.h \
- C:\Projects\CompilerDesignV2\src\first_and_follow.h
+ C:\Projects\CompilerDesignV2\src\table_entry.h \
+ C:\Projects\CompilerDesignV2\src\first_and_follow.h \
+ C:\Projects\CompilerDesignV2\src\parsing_table.h

@@ -19,6 +19,10 @@ write
 return 
 self 
 id 
+local 
+} 
+else 
+; 
 
 Key: rept-statement4 -> Values: 
 if 
@@ -28,15 +32,53 @@ write
 return 
 self 
 id 
+local 
+} 
+else 
+; 
 
 Key: rept-factor4 -> Values: 
+* 
+/ 
+and 
++ 
+- 
+or 
+== 
+<> 
+< 
+> 
+<= 
+>= 
+, 
+) 
+] 
+; 
 
 Key: rept-factor -> Values: 
+* 
+/ 
+and 
++ 
+- 
+or 
+== 
+<> 
+< 
+> 
+<= 
+>= 
+, 
+) 
+] 
+; 
 
 Key: rept-fParams4 -> Values: 
+) 
 
 Key: rept-fParams3 -> Values: 
 , 
+) 
 
 Key: localVarDeclOrStat -> Values: 
 local 
@@ -69,12 +111,20 @@ Key: funcDef -> Values:
 function 
 constructor 
 } 
+class 
+implementation 
+$ 
 
 Key: statBlock -> Values: 
 else 
 ; 
 
 Key: classDecl -> Values: 
+class 
+implementation 
+function 
+constructor 
+$ 
 
 Key: rept-prog0 -> Values: 
 $ 
@@ -89,8 +139,16 @@ Key: expr -> Values:
 
 Key: expr2 -> Values: 
 , 
+) 
+; 
 
 Key: funcBody -> Values: 
+function 
+constructor 
+} 
+class 
+implementation 
+$ 
 
 Key: returnType -> Values: 
 ; 
@@ -109,21 +167,53 @@ Key: arithExpr -> Values:
 , 
 ) 
 ] 
+; 
 
 Key: rept-classDecl4 -> Values: 
 } 
 
 Key: varDecl -> Values: 
+public 
+private 
+} 
+local 
+if 
+while 
+read 
+write 
+return 
+self 
+id 
 
 Key: fParamsTail -> Values: 
 , 
+) 
 
 Key: arraySize2 -> Values: 
+[ 
+, 
+) 
+; 
 
 Key: rept-variable2 -> Values: 
 . 
 := 
 ) 
+* 
+/ 
+and 
++ 
+- 
+or 
+== 
+<> 
+< 
+> 
+<= 
+>= 
+, 
+] 
+; 
 
 Key: aParams -> Values: 
 ) 
@@ -142,28 +232,80 @@ Key: rightrec-term -> Values:
 + 
 - 
 or 
+== 
+<> 
+< 
+> 
+<= 
+>= 
+, 
+) 
+] 
+; 
 
 Key: rept-fParamsTail4 -> Values: 
+, 
+) 
 
 Key: rept-aParams1 -> Values: 
+) 
 
 Key: arraySize -> Values: 
 [ 
 , 
+) 
+; 
 
 Key: term -> Values: 
 + 
 - 
 or 
+== 
+<> 
+< 
+> 
+<= 
+>= 
+, 
+) 
+] 
+; 
 
 Key: indice -> Values: 
 [ 
 . 
+:= 
+) 
+* 
+/ 
+and 
++ 
+- 
+or 
+== 
+<> 
+< 
+> 
+<= 
+>= 
+, 
+] 
+; 
 
 Key: rept-varDecl3 -> Values: 
 ; 
 
 Key: rightrec-arithExpr -> Values: 
+== 
+<> 
+< 
+> 
+<= 
+>= 
+, 
+) 
+] 
+; 
 
 Key: statement -> Values: 
 if 
@@ -173,8 +315,28 @@ write
 return 
 self 
 id 
+local 
+} 
+else 
+; 
 
 Key: rept-factor2 -> Values: 
+* 
+/ 
+and 
++ 
+- 
+or 
+== 
+<> 
+< 
+> 
+<= 
+>= 
+, 
+) 
+] 
+; 
 
 Key: factor -> Values: 
 * 
@@ -183,6 +345,16 @@ and
 + 
 - 
 or 
+== 
+<> 
+< 
+> 
+<= 
+>= 
+, 
+) 
+] 
+; 
 
 Key: rept-statBlock1 -> Values: 
 } 
@@ -192,6 +364,22 @@ id
 self 
 
 Key: rept-factor3 -> Values: 
+* 
+/ 
+and 
++ 
+- 
+or 
+== 
+<> 
+< 
+> 
+<= 
+>= 
+, 
+) 
+] 
+; 
 
 Key: rept-funcBody1 -> Values: 
 } 
@@ -205,18 +393,37 @@ Key: rept-implDef3 -> Values:
 
 Key: aParamsTail -> Values: 
 , 
+) 
 
 Key: localVarDecl -> Values: 
+local 
+if 
+while 
+read 
+write 
+return 
+self 
+id 
+} 
 
 Key: implDef -> Values: 
+class 
+implementation 
+function 
+constructor 
+$ 
 
 Key: type -> Values: 
 [ 
 , 
 ; 
 { 
+) 
 
 Key: funcDecl -> Values: 
+public 
+private 
+} 
 
 Key: relExpr -> Values: 
 ) 
@@ -244,11 +451,18 @@ write
 return 
 self 
 id 
+local 
+} 
+else 
+; 
 
 Key: rept-opt-classDecl22 -> Values: 
 { 
 
 Key: attributeDecl -> Values: 
+public 
+private 
+} 
 
 Key: visibility -> Values: 
 attribute 
@@ -263,6 +477,10 @@ write
 return 
 self 
 id 
+local 
+} 
+else 
+; 
 
 Key: addOp -> Values: 
 intnum 

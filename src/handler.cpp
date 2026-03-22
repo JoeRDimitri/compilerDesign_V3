@@ -1,4 +1,5 @@
 #include "handler.h"
+#include "first_and_follow.h" // full type needed for writeToFirstSetFile / writeToFollowSetFile
 #include "lexor.h"    // Include here instead of in the header
 
 void fileHandler::clear(){
@@ -135,3 +136,64 @@ void fileHandler::writeToken(token* t){
     file.close();
 }
 
+
+
+bool handler::writeToFirstSetFile(first_and_follow &faf){
+	std::string firstSetFileName="./outputs/firstSet";
+	int firstSetCounter = 0;
+	std::ofstream outFile(firstSetFileName); // Open file for writing
+    for (const auto& pair : faf.firstSet) {
+    	firstSetCounter++;
+    	outFile << "Key: " << pair.first << " -> Values: "<<std::endl;
+
+        // Check if the pointer is valid before dereferencing
+        if (pair.second) {
+            for (const auto& value : *(pair.second)) {
+            	outFile<< value << " "<<std::endl;
+            }
+        }
+        outFile << std::endl;
+    }
+    outFile.close();
+    if(firstSetCounter == faf.firstSet.size()){
+    	spdlog::info("Number of values written to firstSet file match the size of the first set map.");
+    	return true;
+    }
+    else{
+    	spdlog::warn("Number of values written to firstSet file did not match the size of the first set map.");
+    	return false;
+    }
+
+}
+
+bool handler::writeToFollowSetFile(first_and_follow &faf){
+	std::string followSetFileName="./outputs/followSet";
+	int followSetCounter = 0;
+    std::ofstream secondOutFile(followSetFileName); // Open file for writing
+
+	// Iterate over the map
+	    for (const auto& pair : faf.followSet) {
+	    	followSetCounter++;
+
+	    	secondOutFile << "Key: " << pair.first << " -> Values: "<<std::endl;
+
+	        // Check if the pointer is valid before dereferencing
+	        if (pair.second) {
+	            for (const auto& value : *(pair.second)) {
+	            	secondOutFile << value << " "<<std::endl;
+	            }
+	        }
+	        secondOutFile << std::endl;
+	    }
+
+	    secondOutFile.close();
+	    if(followSetCounter == faf.followSet.size()){
+	    	spdlog::info("Number of values written to followSet file match the size of the first set map.");
+	    	return true;
+	    }
+	    else{
+	    	spdlog::warn("Number of values written to followSet file did not match the size of the first set map.");
+	    	return false;
+	    }
+
+}

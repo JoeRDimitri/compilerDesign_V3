@@ -12,15 +12,11 @@ int main (int argc, char* argv[]){
 	// auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("./outputs/compiler.log", true);
 	// spdlog::set_default_logger(std::make_shared<spdlog::logger>("file_logger", file_sink));
 	// spdlog::set_level(spdlog::level::info);
-
 	spdlog::info("** ** **IN MAIN DRIVER.CPP** ** **");
-	
 	lexor * lex = new lexor();
 	if (argc >= 2) lex->setInputFile(argv[1]);
 	spdlog::warn("Current working directory check :{}", std::filesystem::current_path().string());
 	std::vector<token*> vectorOfTokens;
-
-
 	try{
 		spdlog::warn("Entering the token loop from the driver.cpp file.");
 		while(true){
@@ -35,24 +31,19 @@ int main (int argc, char* argv[]){
 			}
 		}
 	}
-
 	catch (const EndOfFileException& e) {
 		token * lastToken = new token("$","$",-1,-1);
 		vectorOfTokens.emplace_back(lastToken);
 				spdlog::warn("Reached the end of the Script file with a total of {} Tokens found in the file.", vectorOfTokens.size());
 		}
-
 	catch(const std::exception & e){
 		std::cerr << "Caught a generic exception: " << e.what() << std::endl;
 		return 1;
 	}
-
 	std::cout<<"Deleted lex objext"<<std::endl;
 	delete lex;
-
 	std::cout<<"------------------------------------------------------------------------------------"<<std::endl;
 	spdlog::info("Entering Second phase, the parsing phase.");
-
 	parser parser ;
 	if (argc >= 3) parser.faf.setInputFile(argv[2]);
 	try{
@@ -62,7 +53,7 @@ int main (int argc, char* argv[]){
 		spdlog::warn("Caught exception: {}",e.what());
 		return 1;
 	    }
-	parser.faf.writeToFirstSetFile();
+	parser.faf.h.writeToFirstSetFile(parser.faf);
 
 	if (argc >= 4) parser.faf.setInputFile(argv[3]);
 	try{
@@ -72,23 +63,16 @@ int main (int argc, char* argv[]){
 		spdlog::warn("Caught exception: {}",e.what());
 		return 1;
 	    }
-	parser.faf.writeToFollowSetFile();
-
-
+	parser.faf.h.writeToFollowSetFile(parser.faf);
 	std::cout<<"------------------------------------------------------------------------------------"<<std::endl;
-
 	parser.parsingTable.buildTable();
 	parser.parse(vectorOfTokens);
 	std::cout<<"Finished Parsing"<<std::endl;
 	parser.AST.printTree();
-
-
 	std::cout<<"------------------------------------------------------------------------------------"<<std::endl;
-
 	parser.AST.treeHead->accept(parser.first);
 	parser.AST.printSymbolTable(parser.AST.treeHead);
 	std::cout<<"Finished Building Symbol Table"<<std::endl;
-
 	return 0;
 
 }

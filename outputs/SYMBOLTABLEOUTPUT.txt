@@ -4482,7 +4482,7 @@ COLUMN : not, at value: 20
 Table entry: error
 ROW: funcHead, at value: 4
 COLUMN : function, at value: 28
-Table entry: <funcHead> ::= 'function' #p 'id' #id '(' <fParams> ')' '=>' <returnType> #funchead
+Table entry: <funcHead> ::= 'function' #p 'id' #id ':' '(' <fParams> ')' '=>' <returnType> #funchead
 ROW: funcHead, at value: 4
 COLUMN : -, at value: 27
 Table entry: error

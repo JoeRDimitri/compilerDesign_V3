@@ -111,7 +111,7 @@ public:
 	fileousHandler(&h),
 	tokenMap{
 	    {"==","=="},{"+","+"},{"or","or"},{"(","("},{";",";"},{"int","int"},{"while","while"},
-		{"local","local"},{"<>", "<>"},{"-","-"},{"and","and"},{")",")"},{",",","},
+		{"local","local"},{"<>", "<>"},{"-","-"},{"and","and"},{")",")"},{",",","},{"::","::"},
 		{"float","float"},{"if","if"},{"constructor","constructor"},{"<","<"},{"*","*"},
 		{"not","not"},{"{","{"},{".","."},{"void","void"},{"then","then"},
 		{"attribute","attribute"},{">",">"},{"/","/"},{"}","}"},{":",":"},{"class","class"},

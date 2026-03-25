@@ -9,7 +9,8 @@
       "args": [
         "inputs\\bubblesort.src",
         "inputs\\a_good_grammar_grammar.grm",
-        "inputs\\a_good_grammar_grammar.grm"
+        "inputs\\a_good_grammar_grammar.grm",
+        "inputs\\AttributeGrammar.txt"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",

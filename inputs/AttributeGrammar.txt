@@ -71,10 +71,13 @@
 
 <funcDef> ::= <funcHead> <funcBody> #funcdef
 
-<funcHead> ::= 'function' #p 'id' #id '(' <fParams> ')' '=>' <returnType> #funchead
-<funcHead> ::= 'constructor' #p '(' <fParams> ')' #funchead
+<funcHead> ::= 'function' #p 'id' #id ':' '(' <fParams> ')' '=>' <returnType> #funchead
+<funcHead> ::= 'constructor' #p ':' '(' <fParams> ')' #funchead
 
-<implDef> ::= 'implementation' 'id' #id '{' #p <rept-implDef3> #reptimpldef3 #impldef '}' 
+<implDef> ::= 'implementation' <scope> 'id' #id ':' '(' <fParams> ')' '=>' <returnType> #funchead '{' #p <rept-implDef3> #reptimpldef3 #impldef '}' 
+
+<scope> ::= EPSILON
+<scope> ::= 'id' #id '::'
 
 <indice> ::= '[' <arithExpr> #indice ']' 
 

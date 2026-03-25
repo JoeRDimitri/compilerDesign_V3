@@ -1,21 +1,24 @@
-Global Table
-=========================
-bubbleSort: function | void | 
-=========================
-	table for bubbleSort
+==============================
+      GLOBAL SYMBOL TABLE     
+==============================
 
-	i: variable | int | 
-	j: variable | int | 
-	n: variable | int | 
-	temp: variable | int | 
-main: function | void | 
-=========================
-	table for main
+bubbleSort  [function]  :  void
+  +-- bubbleSort --------------------
+    i  [variable]  :  int
+    j  [variable]  :  int
+    n  [variable]  :  int
+    temp  [variable]  :  int
+  +------------------------------
 
-	arr: variable | int | 
-printArray: function | void | 
-=========================
-	table for printArray
+main  [function]  :  void
+  +-- main --------------------
+    arr  [variable]  :  int
+  +------------------------------
 
-	i: variable | int | 
-	n: variable | int | 
+printArray  [function]  :  void
+  +-- printArray --------------------
+    i  [variable]  :  int
+    n  [variable]  :  int
+  +------------------------------
+
+==============================

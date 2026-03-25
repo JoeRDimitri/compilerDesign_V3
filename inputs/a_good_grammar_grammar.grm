@@ -61,13 +61,16 @@
 
 <funcDef> ::= <funcHead> <funcBody> 
 
-<funcHead> ::= 'function' 'id' '(' <fParams> ')' '=>' <returnType> 
-<funcHead> ::= 'constructor' '(' <fParams> ')' 
+<funcHead> ::= 'function' 'id' ':' '(' <fParams> ')' '=>' <returnType> 
+<funcHead> ::= 'constructor' ':' '(' <fParams> ')' 
 
 <idnest2> ::= '(' <aParams> ')' '.'
 <idnest2> ::= <rept-variable2> '.' 
 
-<implDef> ::= 'implementation' 'id' '{' <rept-implDef3> '}' 
+<implDef> ::= 'implementation' <scope> 'id' '{' <rept-implDef3> '}' 
+
+<scope> ::= EPSILON
+<scope> ::= 'id' '::'
 
 <indice> ::= '[' <arithExpr> ']' 
 

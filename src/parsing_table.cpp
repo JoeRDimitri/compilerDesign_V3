@@ -67,7 +67,7 @@ void parsing_table::fillTableWithErrors(){
 }
 
 void parsing_table:: setUniqueTerminalSymbols(){
-	std::cout<<"hello"<<std::endl;
+    spdlog::info("Setting Unique Terminal Symbols");
     for (const auto& pair : fafPtr->firstSet) {
         for (const auto& value : (*pair.second)) {
         	if(value == "EPSILON"){
@@ -81,7 +81,7 @@ void parsing_table:: setUniqueTerminalSymbols(){
         	uniqueTerminalSymbols.insert(value);  // insert automatically handles duplicates
         }
     }
-
+    uniqueTerminalSymbols.insert("::");
     uniqueTerminalSymbols.insert(":");
     uniqueTerminalSymbols.insert("=>");
     uniqueTerminalSymbols.insert(":=");
@@ -119,10 +119,8 @@ void parsing_table:: setTheTableSize(){
 
 void parsing_table::setTableRow(){
 	int i = 0;
-//	std::cout<< "FOR THE ROWS"<<std::endl;
 	for(const auto& value : fafPtr->firstSet){
 		tableRows[value.first] = i;
-//		std::cout<<"Row = "<< value.first <<", value = "<<i<<std::endl;
 		i++;
 	}
     spdlog::info("Successfully filled first Table Row.");
@@ -131,10 +129,8 @@ void parsing_table::setTableRow(){
 
 void parsing_table::setTableColumn(){
 	int i = 0;
-//	std::cout<< "FOR THE COLUMNS"<<std::endl;
 	for(const auto& value: uniqueTerminalSymbols){
 		tableColumns[value]=i;
-//		std::cout<<"Column = "<< value<<", value = "<<i<<std::endl;
 
 		i++;
 	}
@@ -172,7 +168,6 @@ void parsing_table::getAlpha(std::string & alpha, const std::string line, int & 
 }
 
 bool parsing_table::checkFirstOfAlpha(const std::string alpha,std::unordered_set<std::string> & firstOfAlpha,bool & isTerminal){
-//	std::cout<<"hello"<<std::endl;
 	int tempLineIndex = 0;
 	while(alpha.at(tempLineIndex)!= '\'' && alpha.at(tempLineIndex)!='<' && alpha.at(tempLineIndex)!= 'E'){
 		tempLineIndex++;
@@ -277,7 +272,6 @@ void parsing_table::updateTable(const std::string rule, std::unordered_set <std:
 	for (const auto& value : firstOfAlpha){
 		int rowValue = tableRows[rule];
 		int columnValue = tableColumns[value];
-//		std::cout<<value<<rowValue<<","<<columnValue<<std::endl;
 		tableEntry currentEntry = {rowValue,columnValue,line};
 		table[rowValue][columnValue] = currentEntry;
 	}
@@ -300,9 +294,7 @@ void parsing_table::getFollowOfRule(std::unordered_set <std::string> & followOfR
 }
 
 void parsing_table::createParsingTable(){
-	std::cout<<"Enter the location of the Attribute Grammar file: "<<std::endl;
-	std::string fileLocation;
-	std::getline(std::cin, fileLocation);
+	std::string fileLocation = attributeGrammarFile.empty() ? "inputs/AttributeGrammar.txt" : attributeGrammarFile;
 
 	if(connectFile(fileLocation)){
 		//We've properly connected to the file now we need to get rid of the white space and then hand control back over getNextToken().
@@ -322,25 +314,10 @@ void parsing_table::createParsingTable(){
 		getRule(rule,line,lineIndex);
 		 if(lineIndex == line.size())
 			 continue;
-//		 std::cout<<"THE RULE IS: "<<rule<<std::endl<<std::endl;
 		getAlpha(alpha,line,lineIndex);
-//		std::cout<<"THE ALPHA IS: "<<alpha<<std::endl;
 		hasEpsilon = checkFirstOfAlpha(alpha,firstOfAlpha,isTerminal);
-//		 for (const auto& elem : firstOfAlpha) {
-//		        std::cout << elem << " ";
-//
-//		    }
-//		 std::cout<<std::endl;
-
-//		for (const auto& val : firstOfAlpha) {
-//		        std::cout << val << std::endl;
-//		    }
-
 		updateTable(rule,firstOfAlpha,line);
-
-
 		if(hasEpsilon){
-//			std::cout<<"ALPHA HAS EPSILON NEED TO ADD FOLLOW SET OF "<<rule<<std::endl;
 			getFollowOfRule(followOfRule,rule);
 			updateTable(rule,followOfRule,line);
 		}

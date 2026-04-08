@@ -65,6 +65,8 @@ int main (int argc, char* argv[]){
 	    }
 	parser.faf.h.writeToFollowSetFile(parser.faf);
 	std::cout<<"------------------------------------------------------------------------------------"<<std::endl;
+	if (argc >= 5) parser.parsingTable.attributeGrammarFile = argv[4];
+	else parser.parsingTable.attributeGrammarFile = "inputs/AttributeGrammar.txt";
 	parser.parsingTable.buildTable();
 	parser.parse(vectorOfTokens);
 	std::cout<<"Finished Parsing"<<std::endl;

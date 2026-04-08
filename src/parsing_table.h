@@ -50,6 +50,7 @@ public:
 	static std::unordered_map<std::string, int> tableColumns;  // Ensure values are ints, not references
 
 	first_and_follow* fafPtr = nullptr;
+	std::string attributeGrammarFile;
 	parsing_table(){};
 	~parsing_table(){
 		for (int i = 0; i < TABLEROWSIZE; ++i) {

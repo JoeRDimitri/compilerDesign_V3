@@ -221,7 +221,6 @@ void first_and_follow:: compareSymbolVectorRec(bool & eps,std::vector<std::strin
 void first_and_follow:: addAndMove(bool& change, std::vector<std::string> * v, std::string s){
 	v->emplace_back(s);
 	change = true;
-//	std::cout<<"Adding: "<<s<<" to the first Set of : "<<currentWord<<std::endl;
 }
 bool first_and_follow::checkE(){
 	if(line.at(lineIndex)=='E'){
@@ -246,7 +245,6 @@ void first_and_follow::getSymbol(std::string s,int & tempLineIndex){
 	getRidOfWhiteSpace(tempLineIndex);
 }
 bool first_and_follow::inVector(std::vector<std::string> * firstSet,std::string s ){
-//	std::cout<<(*firstSet)<<std::end
 	for (std::string value : (*firstSet)) {
 		if(value == s)
 			return true;

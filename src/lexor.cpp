@@ -142,6 +142,11 @@ token* lexor::validToken(std::string type, int lineCounter){
 		return t;
 	}
 	else if(type.compare("res")==0){
+		if(tokenMap.count(tempLexeme) == 0){
+			token* t = new token("invalidchar", tempLexeme, line, column);
+			erroneousHandler.handleError("Lexical error", "Invalid Character", tempLexeme, line, column, t);
+			return t;
+		}
 		std::string value = tokenMap.at(tempLexeme);
 		token* t =  new token(value,tempLexeme,line,column);
 		fileousHandler.writeToken(t);
@@ -423,7 +428,6 @@ token* lexor:: getNextToken(){
 
 	//We've set the possible type for the first character of our brand new lexeme.
 	setPossibleType();
-
 	//Check what the currentCharacter and go into the corresponding function
 	if(possibleType == "id")return id();
 	else if(possibleType == "num")return num(0);

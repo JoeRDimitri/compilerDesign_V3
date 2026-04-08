@@ -47,22 +47,22 @@
 
 // ====== struct declarations ====== //
 class POLYNOMIAL {
-  public function evaluate: (x: float) => float;                    
+  public function evaluate(x: float) => float;                    
 };
 
 class LINEAR isa POLYNOMIAL {
   private attribute a: float;
   private attribute b: float;
-  public  constructor: (A: float, B: float);
-  public  function evaluate: (x: float) => float;
+  public  constructor(A: float, B: float);
+  public  function evaluate(x: float) => float;
 };
 
 class QUADRATIC isa POLYNOMIAL {
   private attribute a: float;
   private attribute b: float;
   private attribute c: float;
-  public  constructor: (A: float, B: float, C: float);
-  public  function evaluate: (x: float) => float;
+  public  constructor(A: float, B: float, C: float);
+  public  function evaluate(x: float) => float;
 };
 
 // ====== member function implementations ====== //  
@@ -81,14 +81,14 @@ implementation QUADRATIC::evaluate(x: float) => float
     return (result);                                              // 2.3
 }
 
-implementation QUADRATIC::constructor(A: float, B: float, C: float)     // 2.1, 2.2
+implementation QUADRATIC::constructor(A: float, B: float, C: float) => void // 2.1, 2.2
 {
   self.a := A;                                                     // 3.1, 5.3
   self.b := B;                                                     // 3.1, 5.3
   self.c := C;                                                     // 3.1, 5.3
 }
 
-implementation LINEAR::constructor(A: float, B: float)                  // 2.1, 2.2
+implementation LINEAR::constructor(A: float, B: float) => void                  // 2.1, 2.2
 {
   self.a := A;                                                     // 3.1, 5.3
   self.b := B;                                                     // 3.1, 5.3

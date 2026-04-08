@@ -37,25 +37,20 @@ local
 else 
 ; 
 
-Key: rept-factor4 -> Values: 
-* 
-/ 
-and 
-+ 
-- 
-or 
-== 
-<> 
-< 
-> 
-<= 
->= 
-, 
-) 
-] 
+Key: rept-statement -> Values: 
+if 
+while 
+read 
+write 
+return 
+self 
+id 
+local 
+} 
+else 
 ; 
 
-Key: rept-factor -> Values: 
+Key: rept-factor4 -> Values: 
 * 
 / 
 and 
@@ -108,12 +103,33 @@ Key: variable3 -> Values:
 ) 
 
 Key: funcDef -> Values: 
-function 
-constructor 
-} 
 class 
 implementation 
+function 
+constructor 
 $ 
+
+Key: rept-factor -> Values: 
+* 
+/ 
+and 
++ 
+- 
+or 
+== 
+<> 
+< 
+> 
+<= 
+>= 
+, 
+) 
+] 
+; 
+
+Key: scope -> Values: 
+id 
+constructor 
 
 Key: statBlock -> Values: 
 else 
@@ -143,11 +159,10 @@ Key: expr2 -> Values:
 ; 
 
 Key: funcBody -> Values: 
-function 
-constructor 
-} 
 class 
 implementation 
+function 
+constructor 
 $ 
 
 Key: returnType -> Values: 
@@ -388,6 +403,9 @@ Key: funcHead -> Values:
 ; 
 { 
 
+Key: idorconstructor -> Values: 
+( 
+
 Key: rept-implDef3 -> Values: 
 } 
 
@@ -442,19 +460,6 @@ Key: memberDecl -> Values:
 public 
 private 
 } 
-
-Key: rept-statement -> Values: 
-if 
-while 
-read 
-write 
-return 
-self 
-id 
-local 
-} 
-else 
-; 
 
 Key: rept-opt-classDecl22 -> Values: 
 { 

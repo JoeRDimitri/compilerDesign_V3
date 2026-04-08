@@ -61,16 +61,18 @@
 
 <funcDef> ::= <funcHead> <funcBody> 
 
-<funcHead> ::= 'function' 'id' ':' '(' <fParams> ')' '=>' <returnType> 
-<funcHead> ::= 'constructor' ':' '(' <fParams> ')' 
+<funcHead> ::= 'function' 'id' '(' <fParams> ')' '=>' <returnType> 
+<funcHead> ::= 'constructor' '(' <fParams> ')' 
 
 <idnest2> ::= '(' <aParams> ')' '.'
 <idnest2> ::= <rept-variable2> '.' 
 
-<implDef> ::= 'implementation' <scope> 'id' '{' <rept-implDef3> '}' 
+<implDef> ::= 'implementation' <scope> <idorconstructor> '(' <fParams> ')' '=>' <returnType> '{' <rept-implDef3> '}' 
 
-<scope> ::= EPSILON
-<scope> ::= 'id' '::'
+<idorconstructor> ::= 'id' 
+<idorconstructor> ::= 'constructor' 
+
+<scope> ::= 'id' '::' 
 
 <indice> ::= '[' <arithExpr> ']' 
 
@@ -118,7 +120,7 @@
 <rept-funcBody1> ::= <localVarDeclOrStat> <rept-funcBody1> 
 <rept-funcBody1> ::= EPSILON 
 
-<rept-implDef3> ::= <funcDef> <rept-implDef3> 
+<rept-implDef3> ::= <rept-funcBody1>
 <rept-implDef3> ::= EPSILON 
 
 <rept-opt-classDecl22> ::= ',' 'id' <rept-opt-classDecl22> 

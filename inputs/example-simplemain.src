@@ -45,12 +45,12 @@
 // 5.3: |     |  X  |
 //      -------------
 
-func main() => void  
+function main() => void  
 {
-  localvar x: integer;                             // 1.1
-  localvar y: integer;                             // 1.1
-  localvar z: integer;                             // 1.1
-  y = 1 + 2 * 3;                                   // 3.1, 5.1
+  local x: integer;                             // 1.1
+  local y: integer;                             // 1.1
+  local z: integer;                             // 1.1
+  y := 1 + 2 * 3;                                   // 3.1, 5.1
   read(x);                                         // 3.4
   if (x > y + 10)                                  // 3.2, 5.1   
   then		
@@ -58,9 +58,9 @@ func main() => void
   else
     write(x+1);                                    // 3.4, 5.1
   ;
-  z = 0;                                           // 3.1
+  z := 0;                                           // 3.1
   while(z<=10) {                                   // 3.3, 5.1
     write(z);                                      // 3.4
-    z = z + 1;                                     // 3.1
+    z := z + 1;                                     // 3.1
   }; 
 }

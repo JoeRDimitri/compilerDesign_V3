@@ -11,6 +11,10 @@ id
 Key: varDecl -> Values: 
 id 
 
+Key: idorconstructor -> Values: 
+id 
+constructor 
+
 Key: idnest2 -> Values: 
 ( 
 [ 
@@ -20,25 +24,23 @@ Key: funcHead -> Values:
 function 
 constructor 
 
-Key: localVarDeclOrStat -> Values: 
-local 
-if 
-while 
-read 
-write 
-return 
-self 
-id 
-
-Key: rept-fParams3 -> Values: 
-[ 
-EPSILON 
-
 Key: variable3 -> Values: 
 EPSILON 
 . 
 
 Key: funcDef -> Values: 
+function 
+constructor 
+
+Key: type -> Values: 
+int 
+float 
+id 
+
+Key: implDef -> Values: 
+implementation 
+
+Key: funcDecl -> Values: 
 function 
 constructor 
 
@@ -70,9 +72,25 @@ Key: rept-factor2 -> Values:
 . 
 EPSILON 
 
+Key: term -> Values: 
+intnum 
+floatnum 
+( 
+not 
+id 
+self 
++ 
+- 
+
+Key: arraySize -> Values: 
+[ 
+
 Key: rept-fParamsTail4 -> Values: 
 [ 
 EPSILON 
+
+Key: scope -> Values: 
+id 
 
 Key: rept-factor -> Values: 
 id 
@@ -148,12 +166,6 @@ Key: rept-variable2 -> Values:
 [ 
 EPSILON 
 
-Key: localVarDecl -> Values: 
-local 
-
-Key: aParamsTail -> Values: 
-, 
-
 Key: aParams -> Values: 
 EPSILON 
 intnum 
@@ -209,6 +221,26 @@ Key: rept-aParams1 -> Values:
 , 
 EPSILON 
 
+Key: aParamsTail -> Values: 
+, 
+
+Key: localVarDecl -> Values: 
+local 
+
+Key: localVarDeclOrStat -> Values: 
+local 
+if 
+while 
+read 
+write 
+return 
+self 
+id 
+
+Key: rept-fParams3 -> Values: 
+[ 
+EPSILON 
+
 Key: rept-statement -> Values: 
 self 
 id 
@@ -261,9 +293,15 @@ self
 id 
 
 Key: rept-implDef3 -> Values: 
+local 
 EPSILON 
-function 
-constructor 
+if 
+while 
+read 
+write 
+return 
+self 
+id 
 
 Key: rept-opt-classDecl22 -> Values: 
 , 
@@ -275,19 +313,6 @@ Key: indice -> Values:
 Key: rept-varDecl3 -> Values: 
 [ 
 EPSILON 
-
-Key: arraySize -> Values: 
-[ 
-
-Key: term -> Values: 
-intnum 
-floatnum 
-( 
-not 
-id 
-self 
-+ 
-- 
 
 Key: rightrec-arithExpr -> Values: 
 EPSILON 
@@ -315,18 +340,6 @@ EPSILON
 * 
 / 
 and 
-
-Key: funcDecl -> Values: 
-function 
-constructor 
-
-Key: implDef -> Values: 
-implementation 
-
-Key: type -> Values: 
-int 
-float 
-id 
 
 Key: memberDecl -> Values: 
 attribute 

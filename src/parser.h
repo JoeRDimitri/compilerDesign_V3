@@ -32,6 +32,7 @@ public:
 			std::string name;
 			std::string kind;
 			std::string type;
+			std::string visibility;
 			std::map<std::string, symbolTableEntry*> * link;
 		};
 
@@ -784,6 +785,7 @@ public:
 		void visit(classNode & head);
 		void visit(attributedeclNode & head);
 		void visit(attributedeclfamNode & head);
+		void visit(funcdeclfamNode & head);
 		void visit(funcbodyNode & head);
 		std::string get(std::string, node& head);
 
@@ -804,7 +806,7 @@ public:
 	void printSymbolTableRec(std::map<std::string,parser::abstractSyntaxTree::node::symbolTableEntry*> * link,int & count,std::ofstream & ao);
 
 	void printTree();
-	void traverseTree(abstractSyntaxTree::node* head, int& counter,std::ofstream & ao);
+	void traverseTree(abstractSyntaxTree::node* head, std::string prefix, bool isLast, std::ofstream& ao);
 
 };
 

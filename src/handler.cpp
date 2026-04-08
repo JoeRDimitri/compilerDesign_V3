@@ -85,12 +85,12 @@ bool fileHandler::checkEndOfStream(){
 
 void handler::setFileName(std::string s){
 
-	std::vector<std::string> result = splitString(s,'/');
-	std::string filenamewithperiod = result.back();
+	size_t lastSlash = s.find_last_of("/\\");
+	std::string filenamewithperiod = (lastSlash == std::string::npos) ? s : s.substr(lastSlash + 1);
 	std::string tokenfilename = filenamewithperiod.substr(0,filenamewithperiod.find("."));
 	std::string errorfilename = filenamewithperiod.substr(0,filenamewithperiod.find("."));
-	errorFileName.append(errorfilename+".outlexerrors");
-	tokenFileName.append(tokenfilename+".outlextokens");
+	errorFileName.append("./outputs/"+errorfilename+".outlexerrors");
+	tokenFileName.append("./outputs/"+tokenfilename+".outlextokens");
     std::ofstream file(errorFileName, std::ios::app);
     file.close();
     std::ofstream file2(tokenFileName, std::ios::app);

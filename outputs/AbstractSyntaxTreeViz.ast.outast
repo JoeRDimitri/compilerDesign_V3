@@ -1,178 +1,276 @@
-prog
-| funcdef
-| | funchead
-| | | id
-| | | funcparams
-| | | | param
-| | | | | id
-| | | | | type
-| | | | | dimlist
-| | | | param
-| | | | | id
-| | | | | type
-| | | returntype
-| | funcbody
-| | | vardecl
-| | | | id
-| | | | type
-| | | vardecl
-| | | | id
-| | | | type
-| | | vardecl
-| | | | id
-| | | | type
-| | | vardecl
-| | | | id
-| | | | type
-| | | assign
-| | | | expr
-| | | | | term
-| | | | | | id
-| | | | term
-| | | | | id
-| | | assign
-| | | | expr
-| | | | | intnum
-| | | | term
-| | | | | id
-| | | assign
-| | | | expr
-| | | | | intnum
-| | | | term
-| | | | | id
-| | | assign
-| | | | expr
-| | | | | intnum
-| | | | term
-| | | | | id
-| | | reptstatblock1
-| | | | relexpr
-| | | | | term
-| | | | | | id
-| | | | | relop
-| | | | | addop
-| | | | | | intnum
-| | | | | | term
-| | | | | | | id
-| | | | while
-| funcdef
-| | funchead
-| | | id
-| | | funcparams
-| | | | param
-| | | | | id
-| | | | | type
-| | | | | dimlist
-| | | | param
-| | | | | id
-| | | | | type
-| | | returntype
-| | funcbody
-| | | vardecl
-| | | | id
-| | | | type
-| | | vardecl
-| | | | id
-| | | | type
-| | | assign
-| | | | expr
-| | | | | term
-| | | | | | id
-| | | | term
-| | | | | id
-| | | assign
-| | | | expr
-| | | | | intnum
-| | | | term
-| | | | | id
-| | | reptstatblock1
-| | | | relexpr
-| | | | | term
-| | | | | | id
-| | | | | relop
-| | | | | term
-| | | | | | id
-| | | | while
-| funcdef
-| | funchead
-| | | id
-| | | returntype
-| | funcbody
-| | | vardecl
-| | | | id
-| | | | type
-| | | | dimlist
-| | | | | intnum
-| | | assign
-| | | | expr
-| | | | | intnum
-| | | | term
-| | | | | id
-| | | | | reptvariable2
-| | | | | | intnum
-| | | assign
-| | | | expr
-| | | | | intnum
-| | | | term
-| | | | | id
-| | | | | reptvariable2
-| | | | | | intnum
-| | | assign
-| | | | expr
-| | | | | intnum
-| | | | term
-| | | | | id
-| | | | | reptvariable2
-| | | | | | intnum
-| | | assign
-| | | | expr
-| | | | | intnum
-| | | | term
-| | | | | id
-| | | | | reptvariable2
-| | | | | | intnum
-| | | assign
-| | | | expr
-| | | | | intnum
-| | | | term
-| | | | | id
-| | | | | reptvariable2
-| | | | | | intnum
-| | | assign
-| | | | expr
-| | | | | intnum
-| | | | term
-| | | | | id
-| | | | | reptvariable2
-| | | | | | intnum
-| | | assign
-| | | | expr
-| | | | | intnum
-| | | | term
-| | | | | id
-| | | | | reptvariable2
-| | | | | | intnum
-| | | functioncall
-| | | | id
-| | | | aparams
-| | | | | expr
-| | | | | | term
-| | | | | | | id
-| | | | | expr
-| | | | | | intnum
-| | | functioncall
-| | | | id
-| | | | aparams
-| | | | | expr
-| | | | | | term
-| | | | | | | id
-| | | | | expr
-| | | | | | intnum
-| | | functioncall
-| | | | id
-| | | | aparams
-| | | | | expr
-| | | | | | term
-| | | | | | | id
-| | | | | expr
-| | | | | | intnum
+[prog]
+├── classdecl
+│   ├── id (POLYNOMIAL)
+│   └── {
+│       └── funcdecl
+│           ├── visibility (public)
+│           └── funchead
+│               ├── id (evaluate)
+│               ├── funcparams
+│               │   └── param
+│               │       ├── id (x)
+│               │       └── type (float)
+│               └── returntype (float)
+├── classdecl
+│   ├── id (LINEAR)
+│   ├── isalist
+│   │   └── id (POLYNOMIAL)
+│   └── {
+│       ├── attributedecl
+│       │   ├── visibility (private)
+│       │   └── vardecl
+│       │       ├── id (a)
+│       │       └── type (float)
+│       ├── attributedecl
+│       │   ├── visibility (private)
+│       │   └── vardecl
+│       │       ├── id (b)
+│       │       └── type (float)
+│       ├── funcdecl
+│       │   ├── visibility (public)
+│       │   └── funchead
+│       │       └── funcparams
+│       │           ├── param
+│       │           │   ├── id (A)
+│       │           │   └── type (float)
+│       │           └── param
+│       │               ├── id (B)
+│       │               └── type (float)
+│       └── funcdecl
+│           ├── visibility (public)
+│           └── funchead
+│               ├── id (evaluate)
+│               ├── funcparams
+│               │   └── param
+│               │       ├── id (x)
+│               │       └── type (float)
+│               └── returntype (float)
+├── classdecl
+│   ├── id (QUADRATIC)
+│   ├── isalist
+│   │   └── id (POLYNOMIAL)
+│   └── {
+│       ├── attributedecl
+│       │   ├── visibility (private)
+│       │   └── vardecl
+│       │       ├── id (a)
+│       │       └── type (float)
+│       ├── attributedecl
+│       │   ├── visibility (private)
+│       │   └── vardecl
+│       │       ├── id (b)
+│       │       └── type (float)
+│       ├── attributedecl
+│       │   ├── visibility (private)
+│       │   └── vardecl
+│       │       ├── id (c)
+│       │       └── type (float)
+│       ├── funcdecl
+│       │   ├── visibility (public)
+│       │   └── funchead
+│       │       └── funcparams
+│       │           ├── param
+│       │           │   ├── id (A)
+│       │           │   └── type (float)
+│       │           ├── param
+│       │           │   ├── id (B)
+│       │           │   └── type (float)
+│       │           └── param
+│       │               ├── id (C)
+│       │               └── type (float)
+│       └── funcdecl
+│           ├── visibility (public)
+│           └── funchead
+│               ├── id (evaluate)
+│               ├── funcparams
+│               │   └── param
+│               │       ├── id (x)
+│               │       └── type (float)
+│               └── returntype (float)
+├── impldef
+│   ├── funchead
+│   │   ├── id (POLYNOMIAL)
+│   │   ├── id (evaluate)
+│   │   ├── funcparams
+│   │   │   └── param
+│   │   │       ├── id (x)
+│   │   │       └── type (float)
+│   │   └── returntype (float)
+│   └── reptimpldef3
+│       └── expr
+│           └── return (return)
+├── impldef
+│   ├── funchead
+│   │   ├── id (QUADRATIC)
+│   │   ├── id (evaluate)
+│   │   ├── funcparams
+│   │   │   └── param
+│   │   │       ├── id (x)
+│   │   │       └── type (float)
+│   │   └── returntype (float)
+│   └── reptimpldef3
+│       ├── vardecl
+│       │   ├── id (result)
+│       │   └── type (float)
+│       ├── assign
+│       │   ├── expr
+│       │   │   └── term
+│       │   │       └── id (a)
+│       │   └── term
+│       │       └── id (result)
+│       ├── assign
+│       │   ├── expr
+│       │   │   └── addop
+│       │   │       ├── term
+│       │   │       │   └── id (b)
+│       │   │       └── multop
+│       │   │           ├── term
+│       │   │           │   └── id (x)
+│       │   │           └── term
+│       │   │               └── id (result)
+│       │   └── term
+│       │       └── id (result)
+│       ├── assign
+│       │   ├── expr
+│       │   │   └── addop
+│       │   │       ├── term
+│       │   │       │   └── id (c)
+│       │   │       └── multop
+│       │   │           ├── term
+│       │   │           │   └── id (x)
+│       │   │           └── term
+│       │   │               └── id (result)
+│       │   └── term
+│       │       └── id (result)
+│       └── expr
+│           └── return (return)
+├── impldef
+│   ├── funchead
+│   │   ├── id (QUADRATIC)
+│   │   ├── funcparams
+│   │   │   ├── param
+│   │   │   │   ├── id (A)
+│   │   │   │   └── type (float)
+│   │   │   ├── param
+│   │   │   │   ├── id (B)
+│   │   │   │   └── type (float)
+│   │   │   └── param
+│   │   │       ├── id (C)
+│   │   │       └── type (float)
+│   │   └── returntype (void)
+│   └── reptimpldef3
+│       ├── dot
+│       │   ├── assign
+│       │   │   ├── expr
+│       │   │   │   └── term
+│       │   │   │       └── id (A)
+│       │   │   └── term
+│       │   │       └── id (a)
+│       │   └── selfandidnest2
+│       │       └── self (self)
+│       ├── dot
+│       │   ├── assign
+│       │   │   ├── expr
+│       │   │   │   └── term
+│       │   │   │       └── id (B)
+│       │   │   └── term
+│       │   │       └── id (b)
+│       │   └── selfandidnest2
+│       │       └── self (self)
+│       └── dot
+│           ├── assign
+│           │   ├── expr
+│           │   │   └── term
+│           │   │       └── id (C)
+│           │   └── term
+│           │       └── id (c)
+│           └── selfandidnest2
+│               └── self (self)
+├── impldef
+│   ├── funchead
+│   │   ├── id (LINEAR)
+│   │   ├── funcparams
+│   │   │   ├── param
+│   │   │   │   ├── id (A)
+│   │   │   │   └── type (float)
+│   │   │   └── param
+│   │   │       ├── id (B)
+│   │   │       └── type (float)
+│   │   └── returntype (void)
+│   └── reptimpldef3
+│       ├── dot
+│       │   ├── assign
+│       │   │   ├── expr
+│       │   │   │   └── term
+│       │   │   │       └── id (A)
+│       │   │   └── term
+│       │   │       └── id (a)
+│       │   └── selfandidnest2
+│       │       └── self (self)
+│       └── dot
+│           ├── assign
+│           │   ├── expr
+│           │   │   └── term
+│           │   │       └── id (B)
+│           │   └── term
+│           │       └── id (b)
+│           └── selfandidnest2
+│               └── self (self)
+├── impldef
+│   ├── funchead
+│   │   ├── id (LINEAR)
+│   │   ├── id (evaluate)
+│   │   ├── funcparams
+│   │   │   └── param
+│   │   │       ├── id (x)
+│   │   │       └── type (float)
+│   │   └── returntype (float)
+│   └── reptimpldef3
+│       ├── vardecl
+│       │   ├── id (result)
+│       │   └── type (float)
+│       ├── assign
+│       │   ├── expr
+│       │   │   └── floatnum (0.0)
+│       │   └── term
+│       │       └── id (result)
+│       ├── assign
+│       │   ├── expr
+│       │   │   └── addop
+│       │   │       ├── term
+│       │   │       │   └── id (b)
+│       │   │       └── multop
+│       │   │           ├── term
+│       │   │           │   └── id (x)
+│       │   │           └── term
+│       │   │               └── id (a)
+│       │   └── term
+│       │       └── id (result)
+│       └── expr
+│           └── return (return)
+└── funcdef
+    ├── funchead
+    │   ├── id (main)
+    │   └── returntype (void)
+    └── funcbody
+        ├── vardecl
+        │   ├── id (f1)
+        │   └── type (LINEAR)
+        ├── vardecl
+        │   ├── id (f2)
+        │   └── type (QUADRATIC)
+        ├── vardecl
+        │   ├── id (counter)
+        │   └── type (float)
+        ├── assign
+        │   ├── expr
+        │   │   └── intnum (1)
+        │   └── term
+        │       └── id (counter)
+        └── reptstatblock1
+            ├── relexpr
+            │   ├── term
+            │   │   └── id (counter)
+            │   ├── relop (<=)
+            │   └── intnum (10)
+            └── while (while)

@@ -1,3 +1,14 @@
+# IDE / editor
 .vscode/
+
+# Assignment specs (local reference only)
 assignments/
+
+# Build artifacts
 build/
+src/*.exe
+src/*.o
+src/lexdriver
+
+# Generated outputs (reproducible by running the compiler)
+outputs/

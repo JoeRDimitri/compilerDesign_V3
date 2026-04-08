@@ -91,9 +91,9 @@ void handler::setFileName(std::string s){
 	std::string errorfilename = filenamewithperiod.substr(0,filenamewithperiod.find("."));
 	errorFileName.append("./outputs/"+errorfilename+".outlexerrors");
 	tokenFileName.append("./outputs/"+tokenfilename+".outlextokens");
-    std::ofstream file(errorFileName, std::ios::app);
+    std::ofstream file(errorFileName, std::ios::trunc);
     file.close();
-    std::ofstream file2(tokenFileName, std::ios::app);
+    std::ofstream file2(tokenFileName, std::ios::trunc);
     file2.close();
 }
 

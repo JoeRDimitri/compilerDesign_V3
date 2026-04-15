@@ -11,7 +11,7 @@
 
 <arithExpr> ::= <term> <rightrec-arithExpr> 
 
-<arraySize> ::= '[' <arraySize2>
+<arraySize> ::= '[' <arraySize2> 
 
 <arraySize2> ::= 'intnum' ']' 
 <arraySize2> ::= ']' 
@@ -133,6 +133,7 @@
 <rept-statBlock1> ::= EPSILON 
 
 <rept-varDecl3> ::= <arraySize> <rept-varDecl3> 
+<rept-varDecl3> ::= '(' <aParams> ')' 
 <rept-varDecl3> ::= EPSILON 
 
 <rept-variable2> ::= <indice> <rept-variable2> 

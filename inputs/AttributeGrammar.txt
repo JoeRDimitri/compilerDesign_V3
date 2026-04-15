@@ -133,6 +133,7 @@
 <rept-variable2> ::= EPSILON 
 
 <rept-varDecl3> ::= <arraySize> <rept-varDecl3> 
+<rept-varDecl3> ::= '(' <aParams> ')' 
 <rept-varDecl3> ::= EPSILON 
 
 <returnType> ::= <type> #returntype

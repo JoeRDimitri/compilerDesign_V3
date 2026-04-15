@@ -64,6 +64,8 @@ public:
 	    virtual ~node() {} // Virtual destructor
 	};
 	//Composite Element
+	//For each node class, we implement an accept function 
+	//The accept function will take a visitor as an argument, then call the accept functino for all of its children. Once all the children are visited by the visitor (through the accept function) then the visitor visits the parent. 
 	class paramNode : public node {
 	public:
 	    void accept(visitor& v) override {
@@ -75,11 +77,16 @@ public:
 	class startNode : public node {
 	public:
 	    void accept(visitor& v) override {
-	    	if(this->isLeaf ==true){v.visit(*this);}
-	    	else{for(node * child : this->children){child->accept(v);}
-	    	v.visit(*this);
-	    	}
-	    	}
+	    	if(this->isLeaf ==true){
+				v.visit(*this);
+			}
+	    	else{
+				for(node * child : this->children){
+					child->accept(v);
+				}
+				v.visit(*this);
+			}
+		}
 	};
 
 	class intNode : public node {
@@ -795,6 +802,7 @@ public:
 	class SemanticCheckingVisitor : public visitor{
 	    virtual ~SemanticCheckingVisitor() {}
 
+		//Need to implement semnatic checking with the semantic checking visitor and not the sym tab creation visitor. 
 		void visit(startNode& head);
 
 	};

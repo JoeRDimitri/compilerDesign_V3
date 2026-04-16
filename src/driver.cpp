@@ -72,7 +72,7 @@ int main (int argc, char* argv[]){
 	std::cout<<"Finished Parsing"<<std::endl;
 	parser.AST.printTree();
 	std::cout<<"------------------------------------------------------------------------------------"<<std::endl;
-	parser.AST.treeHead->accept(parser.first);
+	parser.AST.treeHead->accept(parser.ref_toTableCreatorVisitor);
 	parser.AST.printSymbolTable(parser.AST.treeHead);
 	std::cout<<"Finished Building Symbol Table"<<std::endl;
 	return 0;

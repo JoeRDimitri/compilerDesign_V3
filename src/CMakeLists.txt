@@ -18,6 +18,8 @@ add_executable(driver
     first_and_follow.cpp
     handler.cpp
     parsing_table.cpp
+    node.cpp
+    visitor.cpp
 )
 
 # Link libraries

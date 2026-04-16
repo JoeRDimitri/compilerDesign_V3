@@ -23,7 +23,6 @@ class parser{
 	class abstractSyntaxTree{
 		public:
 			class symbolTable;
-			class visitor;
 			//Composite Element
 			//For each node class, we implement an accept function 
 			//The accept function will take a visitor as an argument, then call the accept functino for all of its children. Once all the children are visited by the visitor (through the accept function) then the visitor visits the parent. 

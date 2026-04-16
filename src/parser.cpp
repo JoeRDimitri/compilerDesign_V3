@@ -1349,8 +1349,3 @@ void parser::abstractSyntaxTree::printSymbolTable(node *head)
 	}
 	out << sep0() << "\n";
 }
-
-// All logic is now in printSymbolTable; kept for ABI compatibility.
-void parser::abstractSyntaxTree::printSymbolTableRec(std::map<std::string, node::symbolTableEntry *> *link, int &depth, std::ofstream &ao)
-{
-}

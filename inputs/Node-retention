@@ -1,0 +1,179 @@
+NODE RETENTION REFERENCE
+========================
+Which C++ node types actually survive into the final AST, and which get absorbed.
+
+HOW passAlong WORKS
+-------------------
+passAlong(nodeType, newnode) does:
+  1. Pops the top of the semantic stack (the "source" node)
+  2. Copies ALL fields from source into newnode via copyNode()
+  3. Transfers source's children to newnode via adoptChildren()
+  4. Deletes the source node (its memory is freed)
+  5. Pushes newnode onto the semantic stack (or sets it as tree root if nodeType=="start")
+
+The KEY effect: the C++ runtime type CHANGES. If #classdecl pushed a classdeclNode,
+then #class does passAlong which pops it, copies data into a classNode, and deletes the
+classdeclNode. The tree now has a classNode whose semanticMeaning is still "classdecl".
+
+This means: visitor dispatch goes to visit(classNode&), NOT visit(classdeclNode&).
+
+
+========================================================================
+PASSALONG NODES — these are the ACTUAL C++ types in the final AST
+========================================================================
+Semantic Action   C++ Type Created     Absorbs Top-of-Stack    semanticMeaning
+---------------   ------------------   ---------------------   ---------------
+#start            startNode            (whatever is on top)    "start"
+#aparamstail      aparamstailNode      top node                from source
+#arithexpr        arithexprNode        top node                from source
+#arraysize        arraysizeNode        top node                from source
+#attributedecl    attributedeclNode    top node                from source
+#class            classNode            classdeclNode           "classdecl"
+#impl             implNode             impldefNode             "impldef"
+#func             funcNode             funcdefNode             "funcdef"
+#factor           factorNode           top node                from source
+#idnest2          idnest2Node          top node                from source
+#funcbody         funcbodyNode         reptfuncbody1Node       from source
+#funcdecl         funcdeclNode         top node                from source
+#indice           indiceNode           top node                from source
+#localvardecl     localvardeclNode     top node                from source
+#localvardeclorstat localvardeclorstatNode top node            from source
+#prog             progNode             reptprog0Node           from source
+#condition        conditionNode        top node                from source
+#then             thenNode             top node                from source
+#felse            felseNode            top node                from source
+#statblock        statblockNode        reptstatblock1Node      from source
+#returntype       returntypeNode       top node                "returntype"
+#term             termNode             top node                from source
+
+Visitor override needed:   visit(classNode&), visit(implNode&), visit(funcNode&), etc.
+Visitor override DEAD:     visit(classdeclNode&), visit(impldefNode&), visit(funcdefNode&), etc.
+
+
+========================================================================
+LEAF NODES (makeLeaf) — survive as-is, no absorption
+========================================================================
+Semantic Action   C++ Type        nodeValue set to
+---------------   -----------     ----------------
+#intnum           intNode         token text (e.g. "2")
+#floatnum         floatnumNode    token text (e.g. "3.5")
+#id               idNode          token text (e.g. "myVar")
+#type             typeNode        token text (e.g. "float")
+#addop            addopNode       token text (e.g. "+")
+#multop           multopNode      token text (e.g. "*")
+#relop            relopNode       token text (e.g. "==")
+#assign           assignNode      token text (e.g. "=")
+#sign             signNode        token text (e.g. "-")
+#visibility       visibilityNode  token text (e.g. "public")
+#void             voidNode        token text
+#self             selfNode        token text
+#if               ifNode          token text
+#while            whileNode       token text
+#read             readNode        token text
+#write            writeNode       token text
+#return           returnNode      token text
+#p                epsilonNode     token text (epsilon sentinel)
+
+These are always leaves (isLeaf=true, no children). They survive untouched unless
+a subsequent passAlong absorbs them (which only happens to epsilon sentinels).
+
+
+========================================================================
+SUBTREE NODES (makeSubTree) — may survive OR get absorbed by passAlong
+========================================================================
+These are created by makeSubTree, which pops N children and groups them.
+They survive in the tree IF no passAlong action comes after to absorb them.
+If a passAlong does follow, the subtree node is ABSORBED (its data/children
+are transferred to the passAlong node and the original is deleted).
+
+Semantic Action        C++ Type Created            Absorbed By
+---------------        -------------------         -----------
+#classdecl             classdeclNode               #class → classNode
+#impldef               impldefNode                 #impl → implNode
+#funcdef               funcdefNode                 #func → funcNode
+#reptprog0             reptprog0Node               #prog → progNode
+#reptfuncbody1         reptfuncbody1Node           #funcbody → funcbodyNode
+#reptstatblock1        reptstatblock1Node          #statblock → statblockNode
+#reptclassdecl4        reptclassdecl4Node          #class → classNode (indirect, via classdecl)
+                                                   
+#aparams               aparamsNode                 SURVIVES (no passAlong follows)
+#expr                  exprNode                    SURVIVES
+#expr2                 expr2Node                   SURVIVES
+#fparams               fparamsNode                 SURVIVES
+#param                 paramNode                   SURVIVES
+#funchead              funcheadNode                SURVIVES
+#relexpr               relexprNode                 SURVIVES
+#funcdeclfam           funcdeclfamNode             SURVIVES
+#attributedeclfam      attributedeclfamNode        SURVIVES
+#vardecl               vardeclNode                 SURVIVES
+#reptvardecl3          reptvardecl3Node            SURVIVES
+#reptfparams3          reptfparams3Node            SURVIVES
+#reptfparams4          reptfparams4Node            SURVIVES
+#reptimpldef3          reptimpldef3Node            SURVIVES
+#reptoptclassdecl22    reptoptclassdecl22Node      SURVIVES
+#optclassdecl2         optclassdecl2Node           SURVIVES
+#factor2               factor2Node                 SURVIVES
+#selfandidnest2        selfandidnest2Node          SURVIVES
+#reptvariable2         reptvariable2Node           SURVIVES
+#aparamsandid          aparamsandidNode            SURVIVES
+#reptvariable2andid    reptvariable2andidNode      SURVIVES
+
+
+========================================================================
+BINARY SUBTREE NODES (makeBinarySubTree / makeBinarySubTreeWithHead)
+========================================================================
+These pop 2-4 nodes and wire them as a binary structure. They always SURVIVE.
+
+Semantic Action        C++ Type Created
+---------------        -------------------
+#dot                   dotNode                (pops 2, mode 0)
+#rightrecarithexpr     rightrecarithexprNode  (pops 3, mode 1: middle promoted)
+#rightrecterm          rightrectermNode        (pops 3, mode 1: middle promoted)
+#reptstatement4        reptstatement4Node     (pops 3, mode 1: middle promoted)
+#whilestatement        whilestatementNode     (pops 3 with head)
+#readstatement         readstatementNode      (pops 2 with head)
+#writestatement        writestatementNode     (pops 2 with head)
+#freturnstatement      freturnstatementNode   (pops 2 with head)
+#ifstatement           ifstatementNode        (pops 4 with head)
+
+
+========================================================================
+ABSORPTION CHAINS — full sequence for key constructs
+========================================================================
+
+Class declaration:
+  #p → epsilonNode (sentinel)
+  ... member decls pushed ...
+  #reptclassdecl4 → reptclassdecl4Node (makeSubTree, pops to epsilon)
+  #classdecl → classdeclNode (makeSubTree, pops 3: id, optclassdecl2, reptclassdecl4)
+  #class → classNode (passAlong, ABSORBS classdeclNode → classNode with semanticMeaning="classdecl")
+
+Implementation:
+  #impldef → impldefNode (makeSubTree, pops 2: funchead, reptimpldef3)
+  #impl → implNode (passAlong, ABSORBS impldefNode → implNode with semanticMeaning="impldef")
+
+Function definition:
+  #funcdef → funcdefNode (makeSubTree, pops 2: funchead, funcbody)
+  #func → funcNode (passAlong, ABSORBS funcdefNode → funcNode with semanticMeaning="funcdef")
+
+Program:
+  #reptprog0 → reptprog0Node (makeSubTree, pops to epsilon)
+  #prog → progNode (passAlong, ABSORBS reptprog0Node)
+  #start → startNode (passAlong, ABSORBS progNode, becomes AST root)
+
+
+========================================================================
+VISITOR DISPATCH SUMMARY
+========================================================================
+When implementing a visitor, use these C++ types (the actual runtime types):
+
+  For class declarations:    visit(classNode&)      NOT visit(classdeclNode&)
+  For implementations:       visit(implNode&)       NOT visit(impldefNode&)
+  For function definitions:  visit(funcNode&)       NOT visit(funcdefNode&)
+  For function bodies:       visit(funcbodyNode&)   NOT visit(reptfuncbody1Node&)
+  For program root:          visit(progNode&)       NOT visit(reptprog0Node&)
+  For stat blocks:           visit(statblockNode&)  NOT visit(reptstatblock1Node&)
+  For tree root:             visit(startNode&)
+
+The semanticMeaning field preserves the original label (e.g. "classdecl", "impldef"),
+but the C++ type (and therefore virtual dispatch) uses the absorbing type.

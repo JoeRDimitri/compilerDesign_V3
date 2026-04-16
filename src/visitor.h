@@ -122,8 +122,11 @@ public:
 
 class SemanticCheckingVisitor : public visitor
 {
+public:
+    node *root = nullptr; // set to parser.AST.treeHead before the pass
     virtual ~SemanticCheckingVisitor() {}
-
     // Need to implement semnatic checking with the semantic checking visitor and not the sym tab creation visitor.
     void visit(startNode &head);
+    void visit(implNode &head);
+    void visit(impldefNode &head);
 };

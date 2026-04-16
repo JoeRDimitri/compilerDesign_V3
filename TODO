@@ -1,0 +1,69 @@
+TODO - Future Iterations
+========================
+
+1. Handle impl-before-class ordering
+   - Currently: if an impl block appears before its class declaration in source code,
+     SymTabCreationVisitor::visit(startNode&) reports "Missing Class Declaration"
+     because the class hasn't been inserted into the global symbol table yet.
+   - Fix: do a two-pass scan over startNode children:
+       Pass 1: insert all classdecl entries into the global map
+       Pass 2: process impldef entries (merging into already-registered classes)
+   - This decouples source ordering from symbol resolution.
+   - Location: visitor.cpp, SymTabCreationVisitor::visit(startNode&), ~line 148
+
+
+========================================================================
+SEMANTIC CHECKS — planned for SemanticCheckingVisitor
+========================================================================
+
+In visit(implNode&)    [implementation block checks]
+------------------------------------------------------
+  [IN PROGRESS] a. Declared function exists: the function name being implemented
+                   must exist in the class's symbol table (classEntry->link).
+  [IN PROGRESS] b. Return type matches declaration: the returntype in the impl's
+                   funchead must equal the declared return type in the class.
+  [ ] c. Parameter count matches declaration: count params in impl's funchead
+         against count in the corresponding class funcdecl entry's link map.
+  [ ] d. Parameter types match declaration (in order): for each position,
+         compare the impl param type to the decl param type.
+         Note: param order matters; map lookup by name is not sufficient here —
+         need to compare by position using an ordered list.
+  [ ] e. No duplicate implementations: the same class::function should not be
+         implemented more than once. Track in a set<pair<className, funcName>>.
+  [ ] f. Implemented function is not declared private (if language enforces it).
+
+In visit(classNode&)   [class declaration checks]
+--------------------------------------------------
+  [ ] g. Inherited class exists: every id in the isalist must be found in the
+         global symbol table as kind="class". Report error if not found.
+         Access: iterate child with semanticMeaning=="isalist", check each id's nodeValue.
+  [ ] h. No member name shadows inherited member (warning-level, optional).
+
+In visit(startNode&)   [global-scope checks]  — in SemanticCheckingVisitor
+---------------------------------------------------------------------------
+  [ ] i. Every declared class has at least one implementation block.
+         (Already done in SymTabCreationVisitor — may want to move/duplicate here.)
+  [ ] j. Exactly one main function exists and its return type is void.
+
+In visit(funcNode&)    [free function / main checks]
+-----------------------------------------------------
+  [ ] k. Return type consistency: if returntype != "void", verify a return
+         statement exists somewhere in reptimpldef3/funcbody children.
+  [ ] l. No duplicate free function names at global scope.
+
+In visit(vardeclNode&)  [local variable declaration checks]
+------------------------------------------------------------
+  [ ] m. If variable type is a class name (e.g. "LOCAL f1: LINEAR"), verify
+         that class exists in global symbol table.
+  [ ] n. If a constructor call (aparams) is present on the vardecl, verify:
+           - the class has a declared constructor
+           - argument count matches constructor parameter count
+           - argument types match constructor parameter types
+         Access: vardecl → dimlist → aparams children for the arguments.
+
+In visit(aparamsandidNode&)   [function call checks]
+----------------------------------------------------
+  [ ] o. Called function exists in the current scope or class scope.
+  [ ] p. Argument count matches the declared parameter count.
+  [ ] q. Argument types match declared parameter types (requires expression
+         type inference — may need a type-resolution pass first).

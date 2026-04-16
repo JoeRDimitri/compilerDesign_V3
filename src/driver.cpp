@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
 	//  auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("./outputs/compiler.log", true);
 	//  spdlog::set_default_logger(std::make_shared<spdlog::logger>("file_logger", file_sink));
 	//  spdlog::set_level(spdlog::level::info);
+	spdlog::set_level(spdlog::level::debug);
 	spdlog::info("** ** **IN MAIN DRIVER.CPP** ** **");
 	lexor *lex = new lexor();
 	if (argc >= 2)
@@ -88,6 +89,9 @@ int main(int argc, char *argv[])
 	std::cout << "------------------------------------------------------------------------------------" << std::endl;
 	parser.AST.treeHead->accept(parser.ref_toTableCreatorVisitor);
 	parser.AST.printSymbolTable(parser.AST.treeHead);
+	SemanticCheckingVisitor *semanticChecker = new SemanticCheckingVisitor();
+	semanticChecker->root = parser.AST.treeHead;
+	parser.AST.treeHead->accept(*semanticChecker);
 	std::cout << "Finished Building Symbol Table" << std::endl;
 	return 0;
 }

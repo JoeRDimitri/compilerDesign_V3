@@ -448,12 +448,49 @@ void SemanticCheckingVisitor::visit(impldefNode &head)
 
 void SemanticCheckingVisitor::visit(implNode &head)
 {
-
 	node::symbolTableEntry *symbol_table_entry = &head.stEntry;
+	// Implementation node
 	spdlog::debug("[SemanticCheck] visit(implNode): kind='{}' name='{}' semanticMeaning='{}'", symbol_table_entry->kind, symbol_table_entry->name, head.semanticMeaning);
+
+	// Check if the root node table exists guard.
+	if (!root)
+	{
+		spdlog::error("[SemanticCheck] FATAL UNRECOVERABLE ERROR. Reach Semantic Checking without a root node.");
+		exit(1);
+	}
+
+	// Now we can safely check if the class name exists in the global table
+	std::string className = symbol_table_entry->name;
+	// The root node symbol entry should have all the classes
+	auto &globalMap = root->stMap;
+
+	if (globalMap.count(className))
+	{
+		// Class declaration successfully found in global st
+		spdlog::info("[SemanticCheck]   Found class '{}' in global symbol table", className);
+		// Get this node from global st
+		auto *classEntry = globalMap[className];
+		// Now check if children match up to
+		// Children of a function can be 1. a function 2. a contructor 3. an attribute.
+		if (classEntry->hasLink && classEntry->link)
+		{
+			for (auto &[fname, fentry] : *classEntry->link)
+			{
+				// spdlog::debug("[SemanticCheck]     member: '{}' kind='{}' type='{}'", fname, fentry->kind, fentry->type);
+			}
+		}
+	}
+	else
+	{
+		spdlog::error("[SemanticCheck]   Class '{}' NOT found in global symbol table", className);
+	}
 
 	if (symbol_table_entry->hasLink && symbol_table_entry->link)
 	{
+		// We can get the class name:
+		std::string className = symbol_table_entry->name;
+		// Check 1: if the class name exists
+
 		std::string functionName_or_constructor;
 		std::string function_return_type;
 		std::string actual_return_type;
@@ -494,55 +531,30 @@ void SemanticCheckingVisitor::visit(implNode &head)
 
 	// This is the actual node type in the tree (passAlong converts impldefNode -> implNode)
 	// Look up the class in the global symbol table
-	if (root)
-	{
-		std::string className = symbol_table_entry->name;
-		auto &globalMap = root->stMap;
 
-		// Dump the entire global symbol table
-		// spdlog::info("[SemanticCheck] === Global Symbol Table ({} entries) ===", globalMap.size());
-		// for (auto &[key, entry] : globalMap)
-		// {
-		// 	spdlog::info("[SemanticCheck]   '{}' kind='{}' type='{}' hasLink={}",
-		// 				 key, entry->kind, entry->type, entry->hasLink);
-		// 	if (entry->hasLink && entry->link)
-		// 	{
-		// 		for (auto &[mname, mentry] : *entry->link)
-		// 		{
-		// 			spdlog::info("[SemanticCheck]       -> '{}' kind='{}' type='{}' visibility='{}'",
-		// 						 mname, mentry->kind, mentry->type, mentry->visibility);
-		// 			if (mentry->hasLink && mentry->link)
-		// 			{
-		// 				for (auto &[pname, pentry] : *mentry->link)
-		// 				{
-		// 					spdlog::info("[SemanticCheck]           -> '{}' kind='{}' type='{}'",
-		// 								 pname, pentry->kind, pentry->type);
-		// 				}
-		// 			}
-		// 		}
-		// 	}
-		// }
-		if (globalMap.count(className))
-		{
-			// Class declaration successfully found in global st
-			spdlog::info("[SemanticCheck]   Found class '{}' in global symbol table", className);
-			// Get this node from global st
-			auto *classEntry = globalMap[className];
-			// Now check if children match up to
-			// Children of a function can be 1. a function 2. a contructor 3. an attribute.
-			if (classEntry->hasLink && classEntry->link)
-			{
-				for (auto &[fname, fentry] : *classEntry->link)
-				{
-					// spdlog::debug("[SemanticCheck]     member: '{}' kind='{}' type='{}'", fname, fentry->kind, fentry->type);
-				}
-			}
-		}
-		else
-		{
-			spdlog::error("[SemanticCheck]   Class '{}' NOT found in global symbol table", className);
-		}
-	}
+	// Dump the entire global symbol table
+	// spdlog::info("[SemanticCheck] === Global Symbol Table ({} entries) ===", globalMap.size());
+	// for (auto &[key, entry] : globalMap)
+	// {
+	// 	spdlog::info("[SemanticCheck]   '{}' kind='{}' type='{}' hasLink={}",
+	// 				 key, entry->kind, entry->type, entry->hasLink);
+	// 	if (entry->hasLink && entry->link)
+	// 	{
+	// 		for (auto &[mname, mentry] : *entry->link)
+	// 		{
+	// 			spdlog::info("[SemanticCheck]       -> '{}' kind='{}' type='{}' visibility='{}'",
+	// 						 mname, mentry->kind, mentry->type, mentry->visibility);
+	// 			if (mentry->hasLink && mentry->link)
+	// 			{
+	// 				for (auto &[pname, pentry] : *mentry->link)
+	// 				{
+	// 					spdlog::info("[SemanticCheck]           -> '{}' kind='{}' type='{}'",
+	// 								 pname, pentry->kind, pentry->type);
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
 }
 
 void SemanticCheckingVisitor::visit(startNode &head)

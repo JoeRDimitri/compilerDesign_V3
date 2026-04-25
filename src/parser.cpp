@@ -688,6 +688,14 @@ void parser::semanticActions::makeLeaf(std::string nodeType, std::string lastTok
 // then wires the remaining nodes as its children and pushes the result onto the semantic stack.
 void parser::semanticActions::makeBinarySubTreeWithHead(std::string nodeType, int numOfPops, node *newnode)
 {
+	std::cout << nodeType << std::endl;
+	if ((int)semanticStackPtr->size() < numOfPops)
+	{
+		spdlog::error("[makeBinarySubTreeWithHead] need {} nodes but stack only has {} for nodeType='{}'",
+					  numOfPops, semanticStackPtr->size(), nodeType);
+		delete newnode;
+		return;
+	}
 	std::vector<node *> nodesOnStack;
 	std::vector<node *> children;
 	std::stack<node *> reverseChildren; // used to restore stack-pop order
@@ -695,11 +703,6 @@ void parser::semanticActions::makeBinarySubTreeWithHead(std::string nodeType, in
 	// pop numOfPops nodes, preserving left-to-right order via reverseChildren
 	for (int i = numOfPops - 1; i >= 0; i--)
 	{
-		if (semanticStackPtr->empty())
-		{
-			spdlog::error("[makeBinarySubTreeWithHead] semanticStack empty on pop {} of {} for nodeType='{}'", numOfPops - 1 - i, numOfPops, nodeType);
-			return;
-		}
 		reverseChildren.push(semanticStackPtr->top());
 		semanticStackPtr->pop();
 	}
@@ -722,29 +725,43 @@ void parser::semanticActions::makeBinarySubTreeWithHead(std::string nodeType, in
 	// wire sibling linked-list pointers across all children
 	for (int i = 0; i < children.size(); i++)
 	{
-		if (i == 0)
+		if (nodeType.compare("freturnstatement") == 0)
 		{
-			if (i + 1 < children.size())
-			{
-				children.at(i)->headOfSibling = children.at(i); // first child is sibling-list head
-				children.at(i)->rightSibling = children.at(i + 1);
-			}
+			std::cout << children.at(i)->nodeValue << std::endl;
 		}
-		else if (i == children.size() - 1)
+		if (children.size() == 1)
 		{
-			if (i - 1 > -1)
-			{
-				children.at(i)->headOfSibling = children.at(0);
-				children.at(i)->leftSibling = children.at(i - 1); // last child has no right sibling
-			}
+			children.at(0)->headOfSibling = children.at(0);
+			children.at(0)->leftSibling = nullptr;
+			children.at(0)->rightSibling = nullptr;
 		}
 		else
-		{
-			children.at(i)->headOfSibling = children.at(0);
-			children.at(i)->rightSibling = children.at(i + 1);
-			children.at(i)->leftSibling = children.at(i - 1);
+		{ /* existing if/else-if/else chain */
+			if (i == 0)
+			{
+				if (i + 1 < children.size())
+				{
+					children.at(i)->headOfSibling = children.at(i); // first child is sibling-list head
+					children.at(i)->rightSibling = children.at(i + 1);
+				}
+			}
+			else if (i == children.size() - 1)
+			{
+				if (i - 1 > -1)
+				{
+					children.at(i)->headOfSibling = children.at(0);
+					children.at(i)->leftSibling = children.at(i - 1); // last child has no right sibling
+				}
+			}
+			else
+			{
+				children.at(i)->headOfSibling = children.at(0);
+				children.at(i)->rightSibling = children.at(i + 1);
+				children.at(i)->leftSibling = children.at(i - 1);
+			}
 		}
 	}
+
 	// set parent pointer on every child back up to newnode
 	for (node *value : children)
 	{

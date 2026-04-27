@@ -252,7 +252,7 @@ bool parser::searchFirst(std::string nextToken, std::string topOfTheStack)
 
 void parser::semanticActions::handleAction(std::string semanticFunction, std::string lastTokenValue)
 {
-
+	// *********** OASS ALONG ***********
 	if (semanticFunction == "start")
 	{
 		startNode *newnode = new startNode();
@@ -363,7 +363,7 @@ void parser::semanticActions::handleAction(std::string semanticFunction, std::st
 		termNode *newnode = new termNode();
 		this->passAlong("term", newnode);
 	}
-
+	// *********** MAKE LEAF ***********
 	else if (semanticFunction == "intnum")
 	{
 		intNode *newnode = new intNode();
@@ -454,6 +454,7 @@ void parser::semanticActions::handleAction(std::string semanticFunction, std::st
 		floatnumNode *newnode = new floatnumNode();
 		this->makeLeaf("floatnum", lastTokenValue, newnode);
 	}
+	// *********** MAKE SUB TREE ***********
 
 	else if (semanticFunction == "reptclassdecl4")
 	{
@@ -706,6 +707,7 @@ void parser::semanticActions::makeBinarySubTreeWithHead(std::string nodeType, in
 		reverseChildren.push(semanticStackPtr->top());
 		semanticStackPtr->pop();
 	}
+
 	while (!reverseChildren.empty())
 	{
 		nodesOnStack.emplace_back(reverseChildren.top());
@@ -767,7 +769,12 @@ void parser::semanticActions::makeBinarySubTreeWithHead(std::string nodeType, in
 	{
 		value->parent = newnode;
 	}
-	newnode->children = children;
+	// Bad line of code, overwrites parent node (expr)'s children with the return statement, instead of appending.
+	//  newnode->children = children;
+	for (auto const &child : children)
+	{
+		newnode->children.emplace_back(child);
+	}
 	semanticStackPtr->push(newnode); // push completed subtree
 }
 

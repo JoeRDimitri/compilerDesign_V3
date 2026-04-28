@@ -1,7 +1,7 @@
 TODO - Future Iterations
 ========================
 
-1. Handle impl-before-class ordering
+  [ ] 1. Handle impl-before-class ordering
    - Currently: if an impl block appears before its class declaration in source code,
      SymTabCreationVisitor::visit(startNode&) reports "Missing Class Declaration"
      because the class hasn't been inserted into the global symbol table yet.
@@ -10,6 +10,10 @@ TODO - Future Iterations
        Pass 2: process impldef entries (merging into already-registered classes)
    - This decouples source ordering from symbol resolution.
    - Location: visitor.cpp, SymTabCreationVisitor::visit(startNode&), ~line 148
+  [ ] 2. Parameter types match declaration (in order): for each position,
+         compare the impl param type to the decl param type.
+         Note: param order matters; map lookup by name is not sufficient here —
+         need to compare by position using an ordered list.
 
 
 ========================================================================
@@ -18,19 +22,14 @@ SEMANTIC CHECKS — planned for SemanticCheckingVisitor
 
 In visit(implNode&)    [implementation block checks]
 ------------------------------------------------------
-  [IN PROGRESS] a. Declared function exists: the function name being implemented
+  [x] a. Declared function exists: the function name being implemented
                    must exist in the class's symbol table (classEntry->link).
-  [IN PROGRESS] b. Return type matches declaration: the returntype in the impl's
+  [x] b. Return type matches declaration: the returntype in the impl's
                    funchead must equal the declared return type in the class.
-  [ ] c. Parameter count matches declaration: count params in impl's funchead
+  [x] c. Parameter count matches declaration: count params in impl's funchead
          against count in the corresponding class funcdecl entry's link map.
-  [ ] d. Parameter types match declaration (in order): for each position,
-         compare the impl param type to the decl param type.
-         Note: param order matters; map lookup by name is not sufficient here —
-         need to compare by position using an ordered list.
-  [ ] e. No duplicate implementations: the same class::function should not be
+  [x] e. No duplicate implementations: the same class::function should not be
          implemented more than once. Track in a set<pair<className, funcName>>.
-  [ ] f. Implemented function is not declared private (if language enforces it).
 
 In visit(classNode&)   [class declaration checks]
 --------------------------------------------------
@@ -67,3 +66,4 @@ In visit(aparamsandidNode&)   [function call checks]
   [ ] p. Argument count matches the declared parameter count.
   [ ] q. Argument types match declared parameter types (requires expression
          type inference — may need a type-resolution pass first).
+

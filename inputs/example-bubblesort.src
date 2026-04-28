@@ -48,21 +48,21 @@
 /* sort the array */
 function bubbleSort(arr: integer[], size: integer) => void // 2.1, 2.2
 {
-  localvar n    : integer;                                 // 1.1
-  localvar i    : integer;                                 // 1.1
-  localvar j    : integer;                                 // 1.1
-  localvar temp : integer;                                 // 1.1
-  n = size;                                                // 3.1
-  i = 0;                                                   // 3.1  
-  j = 0;                                                   // 3.1
-  temp = 0;                                                // 3.1
+  local n    : integer;                                 // 1.1
+  local i    : integer;                                 // 1.1
+  local j    : integer;                                 // 1.1
+  local temp : integer;                                 // 1.1
+  n := size;                                                // 3.1
+  i := 0;                                                   // 3.1  
+  j := 0;                                                   // 3.1
+  temp := 0;                                                // 3.1
   while (i < n-1){                                         // 3.3, 5.1
-    j = 0;                                                 // 3.1
+    j := 0;                                                 // 3.1
     while (j < n-i-1){                                     // 3.3
       if (arr[j] > arr[j+1])                               // 3.2, 4.1, 5.1, 5.2
         then {
           // swap temp and arr[i]
-          temp = arr[j];                                   // 3.1, 4.1, 5.2
+          temp := arr[j];                                   // 3.1, 4.1, 5.2
           arr[j] = arr[j+1];                               // 3.1, 4.1, 5.2
           arr[j+1] = temp;                                 // 3.1, 4.1, 5.2
         } else ;

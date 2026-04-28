@@ -715,12 +715,13 @@ void parser::semanticActions::makeBinarySubTreeWithHead(std::string nodeType, in
 	}
 
 	// the last node in the ordered list becomes the parent; copy its data into newnode
-	node *parentNode = nodesOnStack[nodesOnStack.size() - 1];
+	// node *parentNode = nodesOnStack[nodesOnStack.size() - 1];
+	node *parentNode = nodesOnStack[0];
 	newnode->copyNode(parentNode, newnode, nodeType);
 	delete parentNode; // original parent shell is no longer needed after copy
 
 	// all nodes except the promoted parent become children (in reverse so leftmost is first)
-	for (int k = nodesOnStack.size() - 2; k >= 0; k--)
+	for (int k = 1; k < nodesOnStack.size(); k++)
 	{
 		children.emplace_back(nodesOnStack.at(k));
 	}

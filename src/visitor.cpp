@@ -158,29 +158,110 @@ void SymTabCreationVisitor::visit(startNode &head)
 		{
 			(*mp)[child->stEntry.name] = &child->stEntry;
 		}
-		else if (child->semanticMeaning == "impldef")
+	}
+	for (node *child : head.children)
+	{
+
+		if (child->semanticMeaning == "impldef")
 		{
+			// gets the class name
 			std::string className = child->stEntry.name;
+			// Checks if the current implementation was
 			if ((*mp).count(className) > 0 && (*mp)[className]->kind == "class")
 			{
+				// Found the class the function was declared in.
 				if (implementedClasses.find(className) == implementedClasses.end())
 				{
 					spdlog::info("Class Declaration found for " + className + ". Updating implementation.");
 				}
 				implementedClasses.insert(className);
 				auto *classEntry = (*mp)[className];
+
 				// Merge function entries from this impldef into the class's stMap
 				if (child->stEntry.hasLink && child->stEntry.link && classEntry->hasLink && classEntry->link)
 				{
+					spdlog::debug("[SymTabCreation] Merging impl of '{}' into class declaration.", className);
 					for (auto &[fname, fentry] : *child->stEntry.link)
 					{
-						// Copy visibility from class declaration's matching function head
+						spdlog::debug("[SymTabCreation]   Checking impl function '{}' (return type='{}').", fname, fentry->type);
+
+						// Check 1: function name exists in class declaration
 						if (classEntry->link->count(fname) > 0)
 						{
-							fentry->visibility = (*classEntry->link)[fname]->visibility;
+							node::symbolTableEntry *declaredFunc = (*classEntry->link)[fname];
+							spdlog::debug("[SymTabCreation]   [OK] '{}::{}' found in class declaration (declared return type='{}').", className, fname, declaredFunc->type);
+
+							// Copy visibility from class declaration
+							fentry->visibility = declaredFunc->visibility;
+							spdlog::debug("[SymTabCreation]   Copied visibility '{}' to impl entry.", fentry->visibility);
+
+							// Check 2: return type matches
+							if (!declaredFunc->type.empty() && declaredFunc->type != fentry->type)
+							{
+								spdlog::error("[SymTabCreation] Return type mismatch for '{}::{}': declared '{}', implemented '{}'.",
+											  className, fname, declaredFunc->type, fentry->type);
+							}
+							else
+							{
+								spdlog::debug("[SymTabCreation]   [OK] Return type '{}' matches for '{}::{}'.", fentry->type, className, fname);
+							}
+
+							// Check 3: parameters match
+							if (declaredFunc->hasLink && declaredFunc->link && fentry->hasLink && fentry->link)
+							{
+								// Build declared param map
+								std::map<std::string, std::string> declaredParams;
+								for (auto &[pname, pentry] : *declaredFunc->link)
+								{
+									if (pentry->kind == "parameter")
+									{
+										declaredParams[pname] = pentry->type;
+										spdlog::debug("[SymTabCreation]     Declared param: '{}' type='{}'.", pname, pentry->type);
+									}
+								}
+								// Build impl param map
+								std::map<std::string, std::string> implParams;
+								for (auto &[pname, pentry] : *fentry->link)
+								{
+									if (pentry->kind == "parameter")
+									{
+										implParams[pname] = pentry->type;
+										spdlog::debug("[SymTabCreation]     Impl param: '{}' type='{}'.", pname, pentry->type);
+									}
+								}
+								// Check each declared param exists in impl with matching type
+								for (auto &[pname, ptype] : declaredParams)
+								{
+									if (implParams.count(pname) == 0)
+										spdlog::error("[SymTabCreation] Parameter '{}' declared in '{}::{}' but missing in implementation.", pname, className, fname);
+									else if (implParams[pname] != ptype)
+										spdlog::error("[SymTabCreation] Parameter '{}' type mismatch in '{}::{}': declared '{}', implemented '{}'.", pname, className, fname, ptype, implParams[pname]);
+									else
+										spdlog::debug("[SymTabCreation]     [OK] Param '{}' type '{}' matches.", pname, ptype);
+								}
+								// Check for extra params in impl not in declaration
+								for (auto &[pname, ptype] : implParams)
+								{
+									if (declaredParams.count(pname) == 0)
+										spdlog::error("[SymTabCreation] Parameter '{}' in implementation of '{}::{}' not declared.", pname, className, fname);
+								}
+							}
+							else
+							{
+								spdlog::debug("[SymTabCreation]   No parameter links to compare for '{}::{}'.", className, fname);
+							}
+						}
+						else
+						{
+							spdlog::error("[SymTabCreation] Function '{}' implemented in class '{}' but never declared.", fname, className);
 						}
 						(*classEntry->link)[fname] = fentry;
+						spdlog::debug("[SymTabCreation]   Merged '{}::{}' into class symbol table.", className, fname);
 					}
+				}
+				else
+				{
+					spdlog::debug("[SymTabCreation] No link maps available to merge for impl of '{}'.", className);
 				}
 			}
 			else
@@ -448,113 +529,6 @@ void SemanticCheckingVisitor::visit(impldefNode &head)
 
 void SemanticCheckingVisitor::visit(implNode &head)
 {
-	node::symbolTableEntry *symbol_table_entry = &head.stEntry;
-	// Implementation node
-	spdlog::debug("[SemanticCheck] visit(implNode): kind='{}' name='{}' semanticMeaning='{}'", symbol_table_entry->kind, symbol_table_entry->name, head.semanticMeaning);
-
-	// Check if the root node table exists guard.
-	if (!root)
-	{
-		spdlog::error("[SemanticCheck] FATAL UNRECOVERABLE ERROR. Reach Semantic Checking without a root node.");
-		exit(1);
-	}
-
-	// Now we can safely check if the class name exists in the global table
-	std::string className = symbol_table_entry->name;
-	// The root node symbol entry should have all the classes
-	auto &globalMap = root->stMap;
-
-	if (globalMap.count(className))
-	{
-		// Class declaration successfully found in global st
-		spdlog::info("[SemanticCheck]   Found class '{}' in global symbol table", className);
-		// Get this node from global st
-		auto *classEntry = globalMap[className];
-		// Now check if children match up to
-		// Children of a function can be 1. a function 2. a contructor 3. an attribute.
-		if (classEntry->hasLink && classEntry->link)
-		{
-			for (auto &[fname, fentry] : *classEntry->link)
-			{
-				// spdlog::debug("[SemanticCheck]     member: '{}' kind='{}' type='{}'", fname, fentry->kind, fentry->type);
-			}
-		}
-	}
-	else
-	{
-		spdlog::error("[SemanticCheck]   Class '{}' NOT found in global symbol table", className);
-	}
-
-	if (symbol_table_entry->hasLink && symbol_table_entry->link)
-	{
-		// We can get the class name:
-		std::string className = symbol_table_entry->name;
-		// Check 1: if the class name exists
-
-		std::string functionName_or_constructor;
-		std::string function_return_type;
-		std::string actual_return_type;
-		std::unordered_map<std::string, std::string> parameter_list;
-		std::unordered_map<std::string, std::string> variable_list;
-		for (auto &[fname, fentry] : *symbol_table_entry->link)
-		{
-			if (fentry->kind.compare("function") == 0)
-			{
-				spdlog::debug("[SemanticCheck]     member: '{}' kind='{}' type='{}'", fname, fentry->kind, fentry->type);
-
-				// Properly a function or a constructor implementation since we are in implnode.
-				functionName_or_constructor = fentry->name;
-				function_return_type = fentry->type;
-				if (fentry->hasLink && fentry->link)
-				{
-					for (auto &[pname, pentry] : *fentry->link)
-					{
-						spdlog::debug("[SemanticCheck]     member: '{}' kind='{}' type='{}'", pname, pentry->kind, pentry->type);
-						if (pentry->kind.compare("parameter") == 0)
-						{
-							parameter_list.emplace(pname, pentry->type);
-						}
-						else if (pentry->kind.compare("variable") == 0)
-						{
-							variable_list.emplace(pname, pentry->type);
-						}
-					}
-				}
-			}
-			else
-			{
-				spdlog::error("[SemanticCheck] Incorrect implementation, neither function nore constructor for  member: '{}' kind='{}' type='{} ", fname, fentry->kind, fentry->type);
-			}
-			// spdlog::debug("[SemanticCheck]     member: '{}' kind='{}' type='{}'", fname, fentry->kind, fentry->type);
-		}
-	}
-
-	// This is the actual node type in the tree (passAlong converts impldefNode -> implNode)
-	// Look up the class in the global symbol table
-
-	// Dump the entire global symbol table
-	// spdlog::info("[SemanticCheck] === Global Symbol Table ({} entries) ===", globalMap.size());
-	// for (auto &[key, entry] : globalMap)
-	// {
-	// 	spdlog::info("[SemanticCheck]   '{}' kind='{}' type='{}' hasLink={}",
-	// 				 key, entry->kind, entry->type, entry->hasLink);
-	// 	if (entry->hasLink && entry->link)
-	// 	{
-	// 		for (auto &[mname, mentry] : *entry->link)
-	// 		{
-	// 			spdlog::info("[SemanticCheck]       -> '{}' kind='{}' type='{}' visibility='{}'",
-	// 						 mname, mentry->kind, mentry->type, mentry->visibility);
-	// 			if (mentry->hasLink && mentry->link)
-	// 			{
-	// 				for (auto &[pname, pentry] : *mentry->link)
-	// 				{
-	// 					spdlog::info("[SemanticCheck]           -> '{}' kind='{}' type='{}'",
-	// 								 pname, pentry->kind, pentry->type);
-	// 				}
-	// 			}
-	// 		}
-	// 	}
-	// }
 }
 
 void SemanticCheckingVisitor::visit(startNode &head)

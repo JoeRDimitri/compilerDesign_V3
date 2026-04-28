@@ -1,6 +1,6 @@
 #include "parser.h"
 
-bool parser::parse(const std::vector<token *> &vectorOfTokens)
+bool parser::parse(const std::vector<std::unique_ptr<token>> &vectorOfTokens)
 {
 	// File to write the derivation to.
 	std::ofstream derivationOut("./outputs/Derivation"); // Open file for writing
@@ -20,7 +20,7 @@ bool parser::parse(const std::vector<token *> &vectorOfTokens)
 	// Iterator to iterate overt the vector of tokens. Just a pointer iterator.
 	auto vectorIterator = vectorOfTokens.begin();
 	// Dereferencing the token point to get the actual token object.
-	token *currentToken = (*vectorIterator);
+	token *currentToken = vectorIterator->get();
 	// While we havent reached the end of the program.
 	while (parsingStack.top() != "$")
 	{
@@ -44,7 +44,7 @@ bool parser::parse(const std::vector<token *> &vectorOfTokens)
 				derivation.insert(derivation.begin() + lineIndex, currentToken->getLexeme());
 				lineIndex++;
 				vectorIterator++;
-				currentToken = (*vectorIterator);
+				currentToken = vectorIterator->get();
 			}
 			// Else we handle the error.
 			else
@@ -208,7 +208,7 @@ void parser::inverseRHSMultiplePush(tableEntry currentTableEntry, std::vector<st
 	}
 }
 
-void parser::skipError(token *&currentToken, std::vector<token *>::const_iterator &vectorIterator, std::ofstream &derivationOut, const std::string &lookahead, const std::string &topOfTheStack, const int &line, const int &column)
+void parser::skipError(token *&currentToken, std::vector<std::unique_ptr<token>>::const_iterator &vectorIterator, std::ofstream &derivationOut, const std::string &lookahead, const std::string &topOfTheStack, const int &line, const int &column)
 {
 	derivationOut << "Syntax error at (" << line << ", " << column << ")" << std::endl;
 	std::string nextToken = (*(vectorIterator + 1))->getLexeme();
@@ -223,10 +223,10 @@ void parser::skipError(token *&currentToken, std::vector<token *>::const_iterato
 		{
 			vectorIterator++;
 			nextToken = (*(vectorIterator + 1))->getLexeme();
-			currentToken = (*vectorIterator);
+			currentToken = vectorIterator->get();
 		}
 		vectorIterator++;
-		currentToken = (*vectorIterator);
+		currentToken = vectorIterator->get();
 	}
 }
 

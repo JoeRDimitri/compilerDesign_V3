@@ -82,19 +82,19 @@ private:
 	// function that update the string that is provided. Overloaded function
 	int addAndMove(std::string &tempLexeme);
 	// Function to handle error
-	token *errorProtocol(std::string type);
+	std::unique_ptr<token> errorProtocol(std::string type);
 	// Function returns a valid token
-	token *validToken(std::string type, int lineCounter = 0);
+	std::unique_ptr<token> validToken(std::string type, int lineCounter = 0);
 	// for the linecomment
 	void getLine(std::string &tempLexeme);
 
-	token *id();
-	token *num(int decision);
-	token *fraction();
-	token *flt();
-	token *res();
-	token *cmt();
-	token *invalidChar();
+	std::unique_ptr<token> id();
+	std::unique_ptr<token> num(int decision);
+	std::unique_ptr<token> fraction();
+	std::unique_ptr<token> flt();
+	std::unique_ptr<token> res();
+	std::unique_ptr<token> cmt();
+	std::unique_ptr<token> invalidChar();
 
 public:
 	// Constructor
@@ -118,7 +118,7 @@ public:
 	// Destructor
 	~lexor() { spdlog::info("Lexor destructor called."); };
 	// Overall flow control. Returns the next token in input file.
-	token *getNextToken();
+	std::unique_ptr<token> getNextToken();
 	// Function that runs the first time that we read from a text file. This should only be called a single time in the entire program.
 	bool static virginProtocol(std::string filelocation);
 	// Bypass stdin prompt: open the file directly and mark as ready.

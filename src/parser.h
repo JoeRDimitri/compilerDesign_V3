@@ -62,9 +62,9 @@ public:
 	SymTabCreationVisitor *tableCreatorVisitor = new SymTabCreationVisitor();
 	visitor &ref_toTableCreatorVisitor = *tableCreatorVisitor;
 	bool searchFirst(std::string lookahead, std::string topOfTheStack);
-	bool parse(const std::vector<token *> &);
+	bool parse(const std::vector<std::unique_ptr<token>> &);
 	void inverseRHSMultiplePush(tableEntry t, std::vector<std::string> &vec, const int &lineIndex);
-	void skipError(token *&currentToken, std::vector<token *>::const_iterator &vectorIterator, std::ofstream &, const std::string &lexeme, const std::string &topOfTheStack, const int &line, const int &column);
+	void skipError(token *&currentToken, std::vector<std::unique_ptr<token>>::const_iterator &vectorIterator, std::ofstream &, const std::string &lexeme, const std::string &topOfTheStack, const int &line, const int &column);
 	bool search(const std::string &lexeme, const std::string &topOfTheStack);
 
 	parser()

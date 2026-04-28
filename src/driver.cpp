@@ -13,11 +13,11 @@ int main(int argc, char *argv[])
 	//  spdlog::set_level(spdlog::level::info);
 	spdlog::set_level(spdlog::level::debug);
 	spdlog::info("** ** **IN MAIN DRIVER.CPP** ** **");
-	lexor *lex = new lexor();
+	lexor lex;
 	if (argc >= 2)
-		lex->setInputFile(argv[1]);
+		lex.setInputFile(argv[1]);
 	spdlog::warn("Current working directory check :{}", std::filesystem::current_path().string());
-	std::vector<token *> vectorOfTokens;
+	std::vector<std::unique_ptr<token>> vectorOfTokens;
 	try
 	{
 		spdlog::warn("Entering the token loop from the driver.cpp file.");
@@ -25,9 +25,9 @@ int main(int argc, char *argv[])
 		{
 			try
 			{
-				token *currentToken = lex->getNextToken();
+				std::unique_ptr<token> currentToken = lex.getNextToken();
 				if (currentToken->getTypeName().find("cmt") == std::string::npos && currentToken->getTypeName().find("comment") == std::string::npos)
-					vectorOfTokens.emplace_back(currentToken);
+					vectorOfTokens.emplace_back(std::move(currentToken));
 			}
 			catch (const std::invalid_argument &e)
 			{
@@ -38,8 +38,7 @@ int main(int argc, char *argv[])
 	}
 	catch (const EndOfFileException &e)
 	{
-		token *lastToken = new token("$", "$", -1, -1);
-		vectorOfTokens.emplace_back(lastToken);
+		vectorOfTokens.emplace_back(std::make_unique<token>("$", "$", -1, -1));
 		spdlog::warn("Reached the end of the Script file with a total of {} Tokens found in the file.", vectorOfTokens.size());
 	}
 	catch (const std::exception &e)
@@ -48,7 +47,6 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 	std::cout << "Deleted lex objext" << std::endl;
-	delete lex;
 	std::cout << "------------------------------------------------------------------------------------" << std::endl;
 	spdlog::info("Entering Second phase, the parsing phase.");
 	parser parser;

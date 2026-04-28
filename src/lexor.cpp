@@ -111,7 +111,7 @@ int lexor::addAndMove(std::string &templexeme)
 	return tempLineCounter;
 }
 
-token *lexor::errorProtocol(std::string type)
+std::unique_ptr<token> lexor::errorProtocol(std::string type)
 {
 
 	while (!isWhiteSpace() && !isReservedWord() && currentCharacter != '=')
@@ -121,8 +121,8 @@ token *lexor::errorProtocol(std::string type)
 
 	if (type.compare("id") == 0)
 	{
-		token *t = new token("invalidid", tempLexeme, line, column);
-		erroneousHandler.handleError("Lexical error", "Invalid Identifier", tempLexeme, line, column, t);
+		auto t = std::make_unique<token>("invalidid", tempLexeme, line, column);
+		erroneousHandler.handleError("Lexical error", "Invalid Identifier", tempLexeme, line, column, t.get());
 		return t;
 	}
 	else if (type.compare("intnum") == 0)
@@ -133,20 +133,20 @@ token *lexor::errorProtocol(std::string type)
 			while (!isWhiteSpace() && !isReservedWord() && currentCharacter != '=')
 				addAndMove(tempLexeme);
 		}
-		token *t = new token("invalidnum", tempLexeme, line, column);
-		erroneousHandler.handleError("Lexical error", "Invalid Number", tempLexeme, line, column, t);
+		auto t = std::make_unique<token>("invalidnum", tempLexeme, line, column);
+		erroneousHandler.handleError("Lexical error", "Invalid Number", tempLexeme, line, column, t.get());
 		return t;
 	}
 	else if (type.compare("frac") == 0)
 	{
-		token *t = new token("invalidnum", tempLexeme, line, column);
-		erroneousHandler.handleError("Lexical error", "Invalid Number", tempLexeme, line, column, t);
+		auto t = std::make_unique<token>("invalidnum", tempLexeme, line, column);
+		erroneousHandler.handleError("Lexical error", "Invalid Number", tempLexeme, line, column, t.get());
 		return t;
 	}
 	else if (type.compare("invChar") == 0)
 	{
-		token *t = new token("invalidchar", tempLexeme, line, column);
-		erroneousHandler.handleError("Lexical error", "Invalid Character", tempLexeme, line, column, t);
+		auto t = std::make_unique<token>("invalidchar", tempLexeme, line, column);
+		erroneousHandler.handleError("Lexical error", "Invalid Character", tempLexeme, line, column, t.get());
 		return t;
 	}
 	// fallback to avoid warning: should never happen
@@ -154,7 +154,7 @@ token *lexor::errorProtocol(std::string type)
 }
 
 // restored function signature for validToken
-token *lexor::validToken(std::string type, int lineCounter)
+std::unique_ptr<token> lexor::validToken(std::string type, int lineCounter)
 {
 	std::string tempLexeme = currentLexeme;
 	currentLexeme = "";
@@ -163,55 +163,55 @@ token *lexor::validToken(std::string type, int lineCounter)
 	{
 		if (isReservedWord(tempLexeme))
 		{
-			token *t = new token(tokenMap.at(tempLexeme), tempLexeme, line, column);
-			fileousHandler.writeToken(t);
+			std::unique_ptr<token> t = std::make_unique<token>(tokenMap.at(tempLexeme), tempLexeme, line, column);
+			fileousHandler.writeToken(t.get());
 			return t;
 		}
 		else
 		{
-			token *t = new token("id", tempLexeme, line, column);
-			fileousHandler.writeToken(t);
+			std::unique_ptr<token> t = std::make_unique<token>("id", tempLexeme, line, column);
+			fileousHandler.writeToken(t.get());
 			return t;
 		}
 	}
 	else if (type.compare("intnum") == 0)
 	{
-		token *t = new token("intnum", tempLexeme, line, column);
-		fileousHandler.writeToken(t);
+		std::unique_ptr<token> t = std::make_unique<token>("intnum", tempLexeme, line, column);
+		fileousHandler.writeToken(t.get());
 		return t;
 	}
 	else if (type.compare("frac") == 0)
 	{
-		token *t = new token("floatnum", tempLexeme, line, column);
-		fileousHandler.writeToken(t);
+		std::unique_ptr<token> t = std::make_unique<token>("floatnum", tempLexeme, line, column);
+		fileousHandler.writeToken(t.get());
 		return t;
 	}
 	else if (type.compare("res") == 0)
 	{
 		if (tokenMap.count(tempLexeme) == 0)
 		{
-			token *t = new token("invalidchar", tempLexeme, line, column);
-			erroneousHandler.handleError("Lexical error", "Invalid Character", tempLexeme, line, column, t);
+			std::unique_ptr<token> t = std::make_unique<token>("invalidchar", tempLexeme, line, column);
+			erroneousHandler.handleError("Lexical error", "Invalid Character", tempLexeme, line, column, t.get());
 			return t;
 		}
 		std::string value = tokenMap.at(tempLexeme);
-		token *t = new token(value, tempLexeme, line, column);
-		fileousHandler.writeToken(t);
+		std::unique_ptr<token> t = std::make_unique<token>(value, tempLexeme, line, column);
+		fileousHandler.writeToken(t.get());
 		return t;
 	}
 	else if (type.compare("linecomment") == 0)
 	{
 		getLine(tempLexeme);
-		token *t = new token("linecomment", tempLexeme, line, column);
-		fileousHandler.writeToken(t);
+		std::unique_ptr<token> t = std::make_unique<token>("linecomment", tempLexeme, line, column);
+		fileousHandler.writeToken(t.get());
 		column = 0;
 		return t;
 	}
 
 	else if (type.compare("blockcomment") == 0)
 	{
-		token *t = new token("blockcmt", tempLexeme, line, column);
-		fileousHandler.writeToken(t);
+		std::unique_ptr<token> t = std::make_unique<token>("blockcmt", tempLexeme, line, column);
+		fileousHandler.writeToken(t.get());
 		line += lineCounter;
 		return t;
 	}
@@ -227,7 +227,7 @@ void lexor::getLine(std::string &tempLexeme)
 	}
 }
 
-token *lexor::id()
+std::unique_ptr<token> lexor::id()
 {
 
 	// lexeme is still empty at this point
@@ -261,7 +261,7 @@ token *lexor::id()
 	return validToken("id");
 }
 
-token *lexor::num(int decision)
+std::unique_ptr<token> lexor::num(int decision)
 {
 
 	// lexeme is still empty at this point
@@ -343,10 +343,10 @@ token *lexor::num(int decision)
 	}
 
 	std::cout << "CODE SHOULD NOT REACH HERE :: TOKEN* LEXOR::NUM()\n returning an empty token.";
-	return new token();
+	return std::make_unique<token>();
 }
 
-token *lexor::fraction()
+std::unique_ptr<token> lexor::fraction()
 {
 	// Double check that the currentCharacter == '.'
 	if (currentCharacter == '.')
@@ -356,7 +356,7 @@ token *lexor::fraction()
 	else
 	{
 		std::cout << "INCORRECT CHARACTER, EXPECTED '.' in FRACTION() \n RETURN EMPTY TOKEN";
-		return new token();
+		return std::make_unique<token>();
 	}
 
 	// Continuing after confirming'.'
@@ -399,7 +399,7 @@ token *lexor::fraction()
 	return errorProtocol("frac");
 }
 
-token *lexor::flt()
+std::unique_ptr<token> lexor::flt()
 {
 	// Double check currentCharacter == 'e'
 	if (currentCharacter == 'e')
@@ -409,7 +409,7 @@ token *lexor::flt()
 	else
 	{
 		std::cout << "INCORRECT CHARACTER, EXPECTED 'e' in FLT()\n RETURN EMPTY TOKEN";
-		return new token();
+		return std::make_unique<token>();
 	}
 	// Continuing after confirming'e'
 	/*
@@ -438,7 +438,7 @@ token *lexor::flt()
 	return errorProtocol("frac");
 }
 
-token *lexor::res()
+std::unique_ptr<token> lexor::res()
 {
 	std::string charAsString1{currentCharacter};
 	// confirming the decision
@@ -449,7 +449,7 @@ token *lexor::res()
 	else
 	{
 		std::cout << "INCORRECT CHARACTER, EXPECTED a map item in RES()\n RETURN EMPTY TOKEN";
-		return new token();
+		return std::make_unique<token>();
 	}
 	// Check if it is possibly a comment
 	if (charAsString1.compare("/") == 0)
@@ -477,7 +477,7 @@ token *lexor::res()
 	return validToken("res");
 }
 
-token *lexor::cmt()
+std::unique_ptr<token> lexor::cmt()
 {
 	if (currentLexeme.compare("//") == 0)
 	{
@@ -542,12 +542,12 @@ token *lexor::cmt()
 	}
 }
 
-token *lexor::invalidChar()
+std::unique_ptr<token> lexor::invalidChar()
 {
 	return errorProtocol("invChar");
 }
 
-token *lexor::getNextToken()
+std::unique_ptr<token> lexor::getNextToken()
 {
 	// Check if we've run this file before. IF we have not then we begin the virgin protocol
 	// Virgin protocol is used to get the establish file connection.

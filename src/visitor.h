@@ -87,6 +87,8 @@ public:
     virtual void visit(rightrecarithexprNode &n) {};
     virtual void visit(floatnumNode &n) {};
     virtual ~visitor() {} // Virtual destructor for proper cleanup
+
+    void flatten_children(node &n, const std::unordered_set<std::string> &node_types_needed, std::vector<std::pair<int, node *>> &results, int lvl = 0);
 };
 
 class SymTabCreationVisitor : public visitor
@@ -122,11 +124,20 @@ public:
 
 class SemanticCheckingVisitor : public visitor
 {
+    static std::unordered_map<std::string, int> value_type_priority;
+
 public:
     node *root = nullptr; // set to parser.AST.treeHead before the pass
+    SemanticCheckingVisitor()
+    {
+        value_type_priority["float"] = 1;
+        value_type_priority["int"] = 2;
+    };
     virtual ~SemanticCheckingVisitor() {}
     // Need to implement semnatic checking with the semantic checking visitor and not the sym tab creation visitor.
     void visit(startNode &head);
     void visit(implNode &head);
     void visit(impldefNode &head);
+    void visit(assignNode &n);
+    void visit(exprNode &n);
 };

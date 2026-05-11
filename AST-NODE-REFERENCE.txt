@@ -1,0 +1,166 @@
+AST SYMBOL → C++ NODE CLASS REFERENCE
+======================================
+"AST label" is what appears in the .outast file.
+"C++ class" is the node type you implement visit() on in visitor.cpp.
+
+Some labels are MISLEADING because the node's semanticMeaning is set
+to a different string than its class name — those are called out explicitly.
+
+================================================================================
+STRUCTURAL / PROGRAM NODES
+================================================================================
+AST label       C++ class               Notes
+-----------     -------------------     ----------------------------------------
+[prog]          startNode               Root of the tree (not printed with a label)
+prog            reptprog0Node           List of top-level class/impl/func defs
+classdecl       classdeclNode           Class declaration
+                                         children: id, isalist, {(reptclassdecl4)
+{               reptclassdecl4Node      Member list inside a class body
+isalist         optclassdecl2Node       Inherited class list (isa ...)
+                reptoptclassdecl22Node  Additional ids in the isa list
+impldef         impldefNode             Implementation block
+                                         children: funchead, reptimpldef3
+reptimpldef3    reptimpldef3Node        Statement list inside an impl body
+funcdef         funcdefNode             Free function definition
+                                         children: funchead, funcbody
+funcbody        funcbodyNode            Body of a function (passAlong wrapper)
+funcbody        reptfuncbody1Node       !! SAME LABEL — statement list inside body
+                                            (reptfuncbody1 semanticMeaning = "funcbody")
+
+================================================================================
+FUNCTION / METHOD DECLARATION NODES
+================================================================================
+AST label       C++ class               Notes
+-----------     -------------------     ----------------------------------------
+funchead        funcheadNode            Function signature (id, params, returntype)
+funcdecl        funcdeclNode            Forward declaration (passAlong wrapper)
+funcdecl        funcdeclfamNode         !! SAME LABEL — visibility + funcdecl pair
+                                            inside a class body
+funcparams      fparamsNode             Formal parameter list
+param           paramNode               Single parameter (id + type + dimlist)
+param           reptfparams4Node        !! SAME LABEL — list of extra params
+                                            (reptfparams4 semanticMeaning = "param")
+returntype      returntypeNode          Return type of a function
+attributedecl   attributedeclNode       Attribute (field) declaration (passAlong)
+attributedecl   attributedeclfamNode    !! SAME LABEL — visibility + attributedecl pair
+
+================================================================================
+VARIABLE / TYPE NODES
+================================================================================
+AST label       C++ class               Notes
+-----------     -------------------     ----------------------------------------
+vardecl         vardeclNode             Variable declaration
+                                         children: id, type, dimlist
+dimlist         reptvardecl3Node        Array dimension list for a vardecl
+dimlist         reptfparams3Node        !! SAME LABEL — array dims for a param
+localvardecl    localvardeclNode        Local variable declaration (passAlong)
+type            typeNode                Leaf: the type name (int / float / id)
+id              idNode                  Leaf: any identifier
+returntype      returntypeNode          Leaf-ish: wraps type or void
+void            voidNode                Leaf: void keyword
+visibility      visibilityNode          Leaf: public / private
+
+================================================================================
+STATEMENT NODES
+================================================================================
+AST label       C++ class               Notes
+-----------     -------------------     ----------------------------------------
+assign          reptstatement4Node      Assignment statement — label is MISLEADING
+                                         (copies assignNode's ":=" leaf into itself)
+                                         children: [0]=expr (RHS), [1]=term (LHS)
+while           whilestatementNode      While loop — promoted from whileNode leaf
+                                         children: relexpr, reptstatblock1
+if              ifstatementNode         If statement — promoted from ifNode leaf
+                                         children: relexpr, then, else, statblock/etc
+read            readstatementNode       Read statement — promoted from readNode leaf
+write           writestatementNode      Write statement — promoted from writeNode leaf
+return          freturnstatementNode    Return statement — promoted from returnNode leaf
+reptstatblock1  reptstatblock1Node      List of statements inside a statblock
+
+================================================================================
+EXPRESSION / OPERATOR NODES
+================================================================================
+AST label       C++ class               Notes
+-----------     -------------------     ----------------------------------------
+expr            exprNode                Expression (arithexpr + optional relop)
+                                         children: [0]=arithexpr, [1]=expr2
+expr2           expr2Node               Relational tail of an expr
+                                         children: [0]=relop, [1]=arithexpr
+relexpr         relexprNode             Relational expression (used in conditions)
+                                         children: [0]=arithexpr, [1]=relop, [2]=arithexpr
+addop           rightrecarithexprNode   Add/sub/or operation — label is MISLEADING
+                                         (copies addopNode's "+"/"-"/"or" leaf)
+                                         children: [0]=RHS term, [1]=LHS arithexpr
+multop          rightrectermNode        Mul/div/and operation — label is MISLEADING
+                                         (copies multopNode's "*"/"/"/and" leaf)
+                                         children: [0]=RHS factor, [1]=LHS factor
+arithexpr       arithexprNode           Arithmetic expression (passAlong)
+term            termNode                Term (passAlong wrapper)
+term            reptvariable2andidNode  !! SAME LABEL — variable reference (LHS of assign)
+                                         children: [0]=id, [1]=reptvariable2 (indices)
+factor          factorNode              Factor (passAlong)
+factor2         factor2Node             Negated/signed factor (not / sign + factor)
+functioncall    aparamsandidNode        Function call expression
+                                         children: [0]=id (name), [1]=aparams (args)
+aparams         aparamsNode             Actual argument list
+dot             dotNode                 Member access (obj.member)
+                                         children: [0]=LHS, [1]=RHS
+
+================================================================================
+SELF / DOT ACCESS NODES
+================================================================================
+AST label       C++ class               Notes
+-----------     -------------------     ----------------------------------------
+self            selfNode                Leaf: "self" keyword
+selfandidnest2  selfandidnest2Node      self + method/field access chain
+idnest2         idnest2Node             Intermediate dot-chain node (passAlong)
+reptvariable2   reptvariable2Node       Array index list on a variable access
+
+================================================================================
+LITERAL LEAF NODES
+================================================================================
+AST label       C++ class               Notes
+-----------     -------------------     ----------------------------------------
+intnum          intNode                 Integer literal
+floatnum        floatnumNode            Float literal
+sign            signNode                Unary +/-
+relop           relopNode               Relational operator (==, <>, <, >, <=, >=)
+addop           addopNode               *** RAW LEAF — only on stack briefly,
+                                            consumed by rightrecarithexpr ***
+multop          multopNode              *** RAW LEAF — consumed by rightrecterm ***
+assign          assignNode              *** RAW LEAF — consumed by reptstatement4 ***
+if              ifNode                  *** RAW LEAF — consumed by ifstatement ***
+while           whileNode               *** RAW LEAF — consumed by whilestatement ***
+read            readNode                *** RAW LEAF — consumed by readstatement ***
+write           writeNode               *** RAW LEAF — consumed by writestatement ***
+return          returnNode              *** RAW LEAF — consumed by freturnstatement ***
+
+================================================================================
+NODES YOU NEED visit() IMPLEMENTATIONS FOR (semantic checking)
+================================================================================
+Priority order for a typical type-checking / symbol table pass:
+
+  SYMBOL TABLE CREATION:
+    classdeclNode        — declare class type
+    funcdeclNode         — declare member function signature
+    funcheadNode         — extract name, params, return type
+    vardeclNode          — declare variable with type
+    paramNode            — declare parameter
+    impldefNode          — attach impl to class
+
+  TYPE CHECKING:
+    reptstatement4Node   — check LHS type == RHS type (assign)
+    exprNode             — propagate type upward
+    rightrecarithexprNode— check operand types for +/-/or
+    rightrectermNode     — check operand types for *//and
+    relexprNode          — check comparable types, result is bool
+    aparamsandidNode     — check arg types match func signature (call)
+    reptvariable2andidNode — resolve variable type, handle array indexing
+    dotNode              — resolve member access type
+
+  CONTROL FLOW / STATEMENTS:
+    whilestatementNode   — condition must be bool
+    ifstatementNode      — condition must be bool
+    freturnstatementNode — return type must match funchead returntype
+    readstatementNode    — variable must be readable type
+    writestatementNode   — expression must be writable type

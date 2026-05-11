@@ -1,6 +1,8 @@
 #include "visitor.h"
 #include <typeinfo>
 
+std::unordered_map<std::string, int> SemanticCheckingVisitor::value_type_priority;
+
 std::string SymTabCreationVisitor::get(std::string search, node &head)
 {
 	for (node *child : head.children)
@@ -538,5 +540,48 @@ void SemanticCheckingVisitor::visit(startNode &head)
 	{
 		spdlog::debug("[SemanticCheck]   child nodeType='{}' semanticMeaning='{}' C++ type={}",
 					  child->nodeType, child->semanticMeaning, typeid(*child).name());
+	}
+}
+
+void SemanticCheckingVisitor::visit(assignNode &n)
+{
+	std::unordered_map<std::string, node *> assignment_nodes;
+	std::vector<node *> &children = n.children;
+	for (node *child : children)
+	{
+		if (child->semanticMeaning.compare("term") == 0)
+		{
+			assignment_nodes[child->semanticMeaning] = child;
+		}
+		else if (child->semanticMeaning.compare("expr") == 0)
+		{
+			assignment_nodes[child->semanticMeaning] = child;
+		}
+	}
+	// In an assignment we need to evaluate the right side of the
+
+	if (assignment_nodes.count("expr") > 0)
+	{
+		std::vector<node *> &children_of_expr = assignment_nodes["expr"]->children;
+	}
+	else
+	{
+		spdlog::error("[SemanticCheck]   ERROR, not found a expr child under assignment node.");
+		return;
+	}
+}
+
+void SemanticCheckingVisitor::visit(exprNode &n)
+{
+	// Need to evaluate the expr.
+	// flatten children function, recursively gets all the nodes needed to execute the current visitor.
+}
+void visitor::flatten_children(node &n, const std::unordered_set<std::string> &node_types_needed, std::vector<std::pair<int, node *>> &results, int lvl)
+{
+	for (node *child : n.children)
+	{
+		if (node_types_needed.count(child->semanticMeaning))
+			results.push_back({lvl, child});
+		flatten_children(*child, node_types_needed, results, lvl + 1);
 	}
 }

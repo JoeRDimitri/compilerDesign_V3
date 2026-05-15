@@ -8,3 +8,10 @@ struct tableEntry
 	int column;
 	std::string derivationRule;
 };
+
+struct leafNodeValues
+{
+	int integerValue;
+	float floatValue;
+	std::string inferredType;
+};

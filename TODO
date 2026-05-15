@@ -84,47 +84,98 @@ In visit(aparamsandidNode&)   [function call checks]
 
 In type inference pass   [expression type resolution — req 10, 11]
 ------------------------------------------------------------------
-  [ ] s. Expression type inference: annotate each expression node with its
-         resolved type (bottom-up pass, new visitor or recursive helper):
-           - intlit → "integer",  floatlit → "float",  stringlit → "string"
-           - identifier → declared type from scope chain lookup
-           - arithmetic (+,-,*,/): int op int → int; float op float → float;
-             mixed → type error
-           - relational (<,>,==,!=,<=,>=) → "integer" (boolean as int)
-           - dot access → resolve via item v
-           - function call → declared return type of the called function
-         Store result on AST node (e.g. node.inferredType) for later visitors.
-  [ ] t. Undeclared identifier checks (req 11): during the type inference walk,
-         check every identifier against the active scope chain. Emit:
-           "use of undeclared variable <name>"
-           "use of undeclared free function <name>"
-           "use of undeclared member function <name>"
-           "use of undeclared class <name>"
+  ITEM s — Expression type inference (build bottom-up, one sub-step at a time)
+  [ ] s1. Add `std::string inferredType` field to the AST node struct/class
+          so any node can carry its resolved type.
+  [ ] s2. Annotate literal nodes with fixed types:
+            intlit   → inferredType = "integer"
+            floatlit → inferredType = "float"
+            stringlit → inferredType = "string"
+  [ ] s3. Annotate identifier nodes: look up the identifier's name in the
+          active scope chain; set inferredType to the declared type found,
+          or leave blank/error if not found (error handling is item t1).
+  [ ] s4. Annotate arithmetic expression nodes (+, -, *, /):
+            int   op int   → "integer"
+            float op float → "float"
+            mixed          → emit "type mismatch in arithmetic expression"
+                             and set inferredType = "error"
+  [ ] s5. Annotate relational expression nodes (<, >, ==, !=, <=, >=):
+            result is always "integer" (boolean-as-int convention).
+  [ ] s6. Annotate function call nodes: look up the called function in the
+          active scope/class table; set inferredType = declared return type.
+  [ ] s7. Annotate dot-access nodes: after item v resolves the member,
+          set inferredType = member's declared type (wired last, depends on v).
+
+  ITEM t — Undeclared identifier errors (piggyback on s3/s6 walks)
+  [ ] t1. In s3 (identifier lookup): if the name is not found in the scope
+          chain, emit "use of undeclared variable <name>".
+  [ ] t2. In s6 (function call lookup): if the free function is not found
+          in the global table, emit "use of undeclared free function <name>".
+  [ ] t3. In dot-RHS lookup (v3 below): if the member function is not found
+          in the class table, emit "use of undeclared member function <name>".
+  [ ] t4. Wherever a type name is used as a class reference (vardecl, param),
+          check it exists in the global symbol table as kind="class"; emit
+          "use of undeclared class <name>" if missing.
 
 In visit(assignNode&)   [assignment statement checks — req 10]
 --------------------------------------------------------------
-  [ ] u. Assignment type checking: resolve LHS and RHS types using item s.
-         If types differ, emit:
-         "type error in assignment: cannot assign <rhsType> to <lhsType>".
+  ITEM u — Assignment type checking (depends on s being complete)
+  [ ] u1. In visit(assignNode&), call the type-inference helper on the LHS
+          child to get lhsType.
+  [ ] u2. Call the type-inference helper on the RHS child to get rhsType.
+  [ ] u3. If lhsType != rhsType (and neither is "error"), emit:
+          "type error in assignment: cannot assign <rhsType> to <lhsType>".
 
 In visit(dotNode&)   ["." operator checks — req 15]
 ----------------------------------------------------
-  [ ] v. Dot operator validation:
-         (a) If LHS is not a class type, emit:
-             "dot operator applied to non-class type <type>".
-         (b) Look up RHS in the LHS class's symbol table.
-             Data member missing: "undeclared data member <name> in class <className>".
-             Member function missing: "undeclared member function <name> in class <className>".
-         Requires item s for LHS type resolution.
+  ITEM v — Dot operator validation (depends on s3 for LHS type)
+  [ ] v1. In visit(dotNode&), infer the type of the LHS child (call s3/s4
+          helper); store as lhsType.
+  [ ] v2. If lhsType is not a known class name, emit:
+          "dot operator applied to non-class type <lhsType>".
+          Set inferredType = "error" and return early.
+  [ ] v3. Look up the RHS identifier name in the symbol table of the class
+          named lhsType:
+            - If a data member: set inferredType = member's declared type.
+            - If a member function: set inferredType = function's return type.
+            - If not found: emit the appropriate undeclared-member error
+              (handled by t3).
 
 In visit(arrayIndexNode&)   [array access checks — req 13]
 ----------------------------------------------------------
-  [ ] w. Array dimension consistency:
-         (a) Index count must equal declared dimensions; emit:
-             "wrong number of dimensions for array <name>: expected <n>, got <m>".
-         (b) Each index expression must be integer type; emit:
-             "array index must be of integer type, got <type>".
-         (c) Array passed as parameter must have compatible dimensionality; emit:
-             "incompatible array dimensionality for parameter <name>".
-         Requires items s and t.
+  ITEM w — Array dimension consistency (depends on s and t)
+  [ ] w1. In visit(arrayIndexNode&), count the number of index expressions
+          provided (children of the index-list node).
+  [ ] w2. Look up the declared dimension count for the array identifier from
+          its symbol table entry.
+  [ ] w3. If counts differ, emit:
+          "wrong number of dimensions for array <name>: expected <n>, got <m>".
+  [ ] w4. For each index expression, check inferredType == "integer"; if not,
+          emit "array index must be of integer type, got <type>".
+  [ ] w5. When an array is passed as a function argument, compare its
+          declared dimensionality to the parameter's declared dimensionality;
+          emit "incompatible array dimensionality for parameter <name>"
+          if they differ.
+
+In visit(funcNode&) / visit(implNode&)   [return-type expression check]
+-----------------------------------------------------------------------
+  ITEM k(b) — Return expression type must match declared return type
+              (depends on s; complement to the already-done count check)
+  [ ] kb1. Locate the return statement node inside the function body.
+  [ ] kb2. Call the type-inference helper on the return expression child
+           to get returnExprType.
+  [ ] kb3. Compare returnExprType to the function's declared return type;
+           if they differ, emit:
+           "type error in return: expected <declaredType>, got <returnExprType>".
+
+In visit(aparamsandidNode&)   [argument type checks — req 12]
+-------------------------------------------------------------
+  ITEM q — Argument types match declared parameter types (depends on s)
+  [ ] q1. For each argument expression in the call, call the type-inference
+          helper to get its type; collect into an ordered list argTypes.
+  [ ] q2. Retrieve the declared parameter types for the called function
+          (ordered list from symbol table entry).
+  [ ] q3. For each position i where argTypes[i] != paramTypes[i], emit:
+          "type mismatch for argument <i+1> in call to <funcName>:
+           expected <paramType>, got <argType>".
 

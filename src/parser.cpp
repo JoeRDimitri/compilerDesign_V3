@@ -689,7 +689,6 @@ void parser::semanticActions::makeLeaf(std::string nodeType, std::string lastTok
 // then wires the remaining nodes as its children and pushes the result onto the semantic stack.
 void parser::semanticActions::makeBinarySubTreeWithHead(std::string nodeType, int numOfPops, node *newnode)
 {
-	std::cout << nodeType << std::endl;
 	if ((int)semanticStackPtr->size() < numOfPops)
 	{
 		spdlog::error("[makeBinarySubTreeWithHead] need {} nodes but stack only has {} for nodeType='{}'",
@@ -728,10 +727,6 @@ void parser::semanticActions::makeBinarySubTreeWithHead(std::string nodeType, in
 	// wire sibling linked-list pointers across all children
 	for (int i = 0; i < children.size(); i++)
 	{
-		if (nodeType.compare("freturnstatement") == 0)
-		{
-			std::cout << children.at(i)->nodeValue << std::endl;
-		}
 		if (children.size() == 1)
 		{
 			children.at(0)->headOfSibling = children.at(0);
@@ -1153,6 +1148,13 @@ void parser::abstractSyntaxTree::traverseTree(node *head, std::string prefix, bo
 
 	// Build display label: show semanticMeaning, and for leaves append the value
 	std::string label = head->semanticMeaning;
+	std::string cppType = typeid(*head).name();
+	// Strip the leading length prefix that GCC emits (e.g. "12floatnumNode" -> "floatnumNode")
+	std::size_t alpha = cppType.find_first_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+	if (alpha != std::string::npos)
+		cppType = cppType.substr(alpha);
+	if (cppType != label && cppType != label + "Node")
+		label += " [" + cppType + "]";
 	if (head->isLeaf && !head->nodeValue.empty())
 	{
 		label += " (" + head->nodeValue + ")";

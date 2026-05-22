@@ -124,7 +124,7 @@ public:
 
 class SemanticCheckingVisitor : public visitor
 {
-    static std::unordered_map<std::string, int> value_type_priority;
+    inline static std::unordered_map<std::string, int> value_type_priority;
 
 public:
     node *root = nullptr; // set to parser.AST.treeHead before the pass

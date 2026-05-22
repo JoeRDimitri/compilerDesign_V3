@@ -1,6 +1,9 @@
 #include "visitor.h"
 #include <typeinfo>
 
+void SemanticCheckingVisitor::visit(assignNode &n) {}
+void SemanticCheckingVisitor::visit(exprNode &n) {}
+
 std::string SymTabCreationVisitor::get(std::string search, node &head)
 {
 	for (node *child : head.children)
@@ -563,3 +566,20 @@ void SemanticCheckingVisitor::visit(floatnumNode &n)
 	spdlog::debug("[SemanticCheck] floatnumNode: nodeValue='{}' nodeType='{}' semanticMeaning='{}'",
 				  n.nodeValue, n.nodeType, n.semanticMeaning);
 }
+
+// void SemanticCheckingVisitor::visit(paramNode &n)
+// {
+// 	int childrenCount = n.children.size();
+// 	node *leftChild = n.children[0];
+// 	node *leftChild = n.children[0];
+
+// 	if (childrenCount == 2)
+// 	{
+// 		// Check that left and right type oif children
+// 		if (n.children[0]->nodeType.compare("id") == 0 && n.c)
+// 	}
+// 	else if (childrenCount != 2)
+// 	{
+// 		spdlog::error("[SemanticCheckingVisitor] Semantic Checking paramNode :: Amount of childrne should not be other than two.");
+// 	}
+// }

@@ -1,0 +1,82 @@
+{
+  "topic": "Error Recovery — Semantic Stack Balancing",
+  "status": "UNSOLVED",
+  "codeReverted": true,
+  "rootCause": {
+    "description": "When skipError fires it pops a symbol off the parse stack but orphans #semantic-action items sitting below it. Those actions still fire later but their expected AST nodes were never pushed. make*SubTree functions then pop garbage/stale pointers and segfault.",
+    "exitCode": -1073741819,
+    "triggerInput": "example-bubblesort.src with '=' instead of ':=' (wrong assignment operator)",
+    "crashSite": "makeBinarySubTreeWithHead in src/parser.cpp — called for 'whilestatement', pops 3 nodes, one or more are stale pointers"
+  },
+  "parseStackAtCrash": [
+    "':='    <- terminal, mismatch with '=' -> skipError called",
+    "#assign <- orphaned, never fires or fires on wrong token",
+    "<expr>  <- expands but with wrong current token",
+    "#reptstatement4 <- pops 3 nodes: assign leaf + lhs + rhs, one is corrupt",
+    "';'"
+  ],
+  "attempts": [
+    {
+      "id": 1,
+      "name": "Drain adjacent #actions inside skipError",
+      "description": "After each pop in skipError, while-loop peeks at parsingStack.top(); if it starts with '#', pops it and pushes an epsilonNode placeholder onto the semantic stack.",
+      "files": ["src/parser.cpp"],
+      "result": "FAILED",
+      "reason": "Only catches actions immediately adjacent to the skipped terminal. Actions for deeply nested rules (whilestatement pops condition + blocks each built from sub-actions) were still orphaned. The drain only fired for #statement one level up."
+    },
+    {
+      "id": 2,
+      "name": "parseError flag on semanticActions, guard every make* function",
+      "description": "Added 'bool parseError = false' to semanticActions in parser.h. Set it in skipError on every error. Added early-exit guards at top of makeLeaf, makeBinarySubTreeWithHead, makeBinarySubTree, makeSubTree, passAlong (both overloads). Each guard pops expected N items and pushes one epsilonNode placeholder instead.",
+      "files": ["src/parser.h", "src/parser.cpp"],
+      "subAttempts": [
+        {
+          "variant": "pop with delete",
+          "result": "FAILED",
+          "reason": "Nodes still referenced via sibling/parent pointers set during earlier normal-mode operations. Deleting them caused use-after-free crashes."
+        },
+        {
+          "variant": "pop without delete",
+          "result": "FAILED",
+          "reasons": [
+            "parseError trips on ANY minor error including ones skipError handles without corrupting the stack. Even correct bubblesort.src crashed (exit -1073741819) because some minor error set the flag.",
+            "passAlong('start') in error mode set astPtr->treeHead = nullptr, causing null dereference later in the driver when it tried to traverse the tree."
+          ]
+        }
+      ],
+      "regressions": ["example-bubblesort.src (correct) now also crashes", "polynomial still passes"]
+    }
+  ],
+  "nextSteps": [
+    {
+      "id": 1,
+      "description": "Only set parseError when skipError is called during a rule mid-way through building a semantic subtree. Check if parsingStack has pending '#' items below the skipped symbol before setting the flag — not on all errors."
+    },
+    {
+      "id": 2,
+      "description": "In passAlong error mode, push epsilon onto the semantic stack even for nodeType='start'. Do not set treeHead=nullptr. Let the driver guard: if (astPtr->treeHead == nullptr) skip traversal."
+    },
+    {
+      "id": 3,
+      "name": "Alternative: pre-pad semantic stack before each make* call",
+      "description": "Before every makeBinarySubTree(N) / makeBinarySubTreeWithHead(N) call, check if semanticStackPtr->size() >= N. If not, push (N - size) epsilonNode placeholders to bring it up to N, then proceed normally. No flag needed, no guard needed, works for any deficit regardless of cause. Safest approach.",
+      "pros": ["No flag — avoids false positives", "No architectural change", "Works for any partial-parse scenario", "Easy to test in isolation"],
+      "cons": ["Silent — doesn't report which node was missing", "Could mask bugs in normal parse paths"]
+    }
+  ],
+  "keyFiles": {
+    "skipError": "src/parser.cpp line ~211",
+    "makeBinarySubTreeWithHead": "src/parser.cpp line ~714",
+    "makeBinarySubTree": "src/parser.cpp line ~800",
+    "makeSubTree": "src/parser.cpp line ~900",
+    "passAlong": "src/parser.cpp line ~1069",
+    "semanticActions": "src/parser.h lines ~40-55",
+    "epsilonNode": "src/node.h line 71 — has accept(), safe to use as placeholder"
+  },
+  "importantConstraints": [
+    "epsilonNode is the correct placeholder type — it already has accept(visitor&) so visitor dispatch is safe",
+    "Do NOT delete popped nodes in error mode — they may still be referenced via sibling/parent pointers",
+    "semanticActions has direct access to parsingStack via the parent parser object — no pointer-back needed since skipError is a parser method and semanticHandler is a parser member",
+    "The default node() constructor does NOT initialize pointer fields (headOfSibling, leftSibling, rightSibling, parent) to nullptr — only the parameterized constructors do. epsilonNode uses the default constructor."
+  ]
+}

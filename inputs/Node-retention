@@ -1,179 +1,294 @@
 NODE RETENTION REFERENCE
 ========================
-Which C++ node types actually survive into the final AST, and which get absorbed.
+Quick reference: for each C++ node type that survives in the final AST,
+what does it represent and what are its children (left to right).
 
-HOW passAlong WORKS
--------------------
-passAlong(nodeType, newnode) does:
-  1. Pops the top of the semantic stack (the "source" node)
-  2. Copies ALL fields from source into newnode via copyNode()
-  3. Transfers source's children to newnode via adoptChildren()
-  4. Deletes the source node (its memory is freed)
-  5. Pushes newnode onto the semantic stack (or sets it as tree root if nodeType=="start")
+The one rule to remember: when a passAlong action fires (e.g. #class, #impl),
+it pops the top node, copies its data into a NEW C++ type, and deletes the old one.
+The C++ type changes; the semanticMeaning field stays the same.
+Visitor dispatch is based on C++ type, so use the SURVIVING type in your visit().
 
-The KEY effect: the C++ runtime type CHANGES. If #classdecl pushed a classdeclNode,
-then #class does passAlong which pops it, copies data into a classNode, and deletes the
-classdeclNode. The tree now has a classNode whose semanticMeaning is still "classdecl".
+HOW KEYWORD LEAVES DISAPPEAR (makeBinarySubTreeWithHead):
+  write/read/return/if/while statements all use makeBinarySubTreeWithHead(count).
+  It pops `count` nodes and restores them in push order. The FIRST one (the keyword
+  leaf) is promoted into the new node via copyNode — its semanticMeaning is absorbed.
+  The keyword leaf does NOT survive as a child. Only the remaining nodes do.
 
-This means: visitor dispatch goes to visit(classNode&), NOT visit(classdeclNode&).
+HOW ASSIGNMENT CHILDREN ARE ORDERED (makeBinarySubTree mode 1):
+  Pops first=expr(top), second=assign(middle, promoted), third=variable(bottom).
+  Result: children[0]=variable(LHS), children[1]=expr(RHS).
+  The doc note about "top-of-stack first" was wrong; the code does {third,first}.
 
-
-========================================================================
-PASSALONG NODES — these are the ACTUAL C++ types in the final AST
-========================================================================
-Semantic Action   C++ Type Created     Absorbs Top-of-Stack    semanticMeaning
----------------   ------------------   ---------------------   ---------------
-#start            startNode            (whatever is on top)    "start"
-#aparamstail      aparamstailNode      top node                from source
-#arithexpr        arithexprNode        top node                from source
-#arraysize        arraysizeNode        top node                from source
-#attributedecl    attributedeclNode    top node                from source
-#class            classNode            classdeclNode           "classdecl"
-#impl             implNode             impldefNode             "impldef"
-#func             funcNode             funcdefNode             "funcdef"
-#factor           factorNode           top node                from source
-#idnest2          idnest2Node          top node                from source
-#funcbody         funcbodyNode         reptfuncbody1Node       from source
-#funcdecl         funcdeclNode         top node                from source
-#indice           indiceNode           top node                from source
-#localvardecl     localvardeclNode     top node                from source
-#localvardeclorstat localvardeclorstatNode top node            from source
-#prog             progNode             reptprog0Node           from source
-#condition        conditionNode        top node                from source
-#then             thenNode             top node                from source
-#felse            felseNode            top node                from source
-#statblock        statblockNode        reptstatblock1Node      from source
-#returntype       returntypeNode       top node                "returntype"
-#term             termNode             top node                from source
-
-Visitor override needed:   visit(classNode&), visit(implNode&), visit(funcNode&), etc.
-Visitor override DEAD:     visit(classdeclNode&), visit(impldefNode&), visit(funcdefNode&), etc.
+HOW DOT CHILDREN ARE ORDERED (makeBinarySubTree mode 0):
+  Pops first=top(member/action), second=object.
+  Result: children[0]=member/action(RHS), children[1]=object(LHS).
 
 
 ========================================================================
-LEAF NODES (makeLeaf) — survive as-is, no absorption
-========================================================================
-Semantic Action   C++ Type        nodeValue set to
----------------   -----------     ----------------
-#intnum           intNode         token text (e.g. "2")
-#floatnum         floatnumNode    token text (e.g. "3.5")
-#id               idNode          token text (e.g. "myVar")
-#type             typeNode        token text (e.g. "float")
-#addop            addopNode       token text (e.g. "+")
-#multop           multopNode      token text (e.g. "*")
-#relop            relopNode       token text (e.g. "==")
-#assign           assignNode      token text (e.g. "=")
-#sign             signNode        token text (e.g. "-")
-#visibility       visibilityNode  token text (e.g. "public")
-#void             voidNode        token text
-#self             selfNode        token text
-#if               ifNode          token text
-#while            whileNode       token text
-#read             readNode        token text
-#write            writeNode       token text
-#return           returnNode      token text
-#p                epsilonNode     token text (epsilon sentinel)
-
-These are always leaves (isLeaf=true, no children). They survive untouched unless
-a subsequent passAlong absorbs them (which only happens to epsilon sentinels).
-
-
-========================================================================
-SUBTREE NODES (makeSubTree) — may survive OR get absorbed by passAlong
-========================================================================
-These are created by makeSubTree, which pops N children and groups them.
-They survive in the tree IF no passAlong action comes after to absorb them.
-If a passAlong does follow, the subtree node is ABSORBED (its data/children
-are transferred to the passAlong node and the original is deleted).
-
-Semantic Action        C++ Type Created            Absorbed By
----------------        -------------------         -----------
-#classdecl             classdeclNode               #class → classNode
-#impldef               impldefNode                 #impl → implNode
-#funcdef               funcdefNode                 #func → funcNode
-#reptprog0             reptprog0Node               #prog → progNode
-#reptfuncbody1         reptfuncbody1Node           #funcbody → funcbodyNode
-#reptstatblock1        reptstatblock1Node          #statblock → statblockNode
-#reptclassdecl4        reptclassdecl4Node          #class → classNode (indirect, via classdecl)
-                                                   
-#aparams               aparamsNode                 SURVIVES (no passAlong follows)
-#expr                  exprNode                    SURVIVES
-#expr2                 expr2Node                   SURVIVES
-#fparams               fparamsNode                 SURVIVES
-#param                 paramNode                   SURVIVES
-#funchead              funcheadNode                SURVIVES
-#relexpr               relexprNode                 SURVIVES
-#funcdeclfam           funcdeclfamNode             SURVIVES
-#attributedeclfam      attributedeclfamNode        SURVIVES
-#vardecl               vardeclNode                 SURVIVES
-#reptvardecl3          reptvardecl3Node            SURVIVES
-#reptfparams3          reptfparams3Node            SURVIVES
-#reptfparams4          reptfparams4Node            SURVIVES
-#reptimpldef3          reptimpldef3Node            SURVIVES
-#reptoptclassdecl22    reptoptclassdecl22Node      SURVIVES
-#optclassdecl2         optclassdecl2Node           SURVIVES
-#factor2               factor2Node                 SURVIVES
-#selfandidnest2        selfandidnest2Node          SURVIVES
-#reptvariable2         reptvariable2Node           SURVIVES
-#aparamsandid          aparamsandidNode            SURVIVES
-#reptvariable2andid    reptvariable2andidNode      SURVIVES
-
-
-========================================================================
-BINARY SUBTREE NODES (makeBinarySubTree / makeBinarySubTreeWithHead)
-========================================================================
-These pop 2-4 nodes and wire them as a binary structure. They always SURVIVE.
-
-Semantic Action        C++ Type Created
----------------        -------------------
-#dot                   dotNode                (pops 2, mode 0)
-#rightrecarithexpr     rightrecarithexprNode  (pops 3, mode 1: middle promoted)
-#rightrecterm          rightrectermNode        (pops 3, mode 1: middle promoted)
-#reptstatement4        reptstatement4Node     (pops 3, mode 1: middle promoted)
-#whilestatement        whilestatementNode     (pops 3 with head)
-#readstatement         readstatementNode      (pops 2 with head)
-#writestatement        writestatementNode     (pops 2 with head)
-#freturnstatement      freturnstatementNode   (pops 2 with head)
-#ifstatement           ifstatementNode        (pops 4 with head)
-
-
-========================================================================
-ABSORPTION CHAINS — full sequence for key constructs
+SURVIVING NODE TYPES — what each one IS and what children it has
 ========================================================================
 
-Class declaration:
-  #p → epsilonNode (sentinel)
-  ... member decls pushed ...
-  #reptclassdecl4 → reptclassdecl4Node (makeSubTree, pops to epsilon)
-  #classdecl → classdeclNode (makeSubTree, pops 3: id, optclassdecl2, reptclassdecl4)
-  #class → classNode (passAlong, ABSORBS classdeclNode → classNode with semanticMeaning="classdecl")
+--- Statements ---
 
-Implementation:
-  #impldef → impldefNode (makeSubTree, pops 2: funchead, reptimpldef3)
-  #impl → implNode (passAlong, ABSORBS impldefNode → implNode with semanticMeaning="impldef")
+reptstatement4Node   Assignment statement  (e.g.  x := expr ;)
+  nodeValue          ":="
+  2 children:
+  children[0]        reptvariable2andidNode   — LHS variable (id + optional indices)
+  children[1]        exprNode                 — RHS value
+  NOTE: makeBinarySubTree mode 1 pops expr(top), assign(middle, absorbed), variable(bottom).
+  children = {variable, expr} so children[0]=LHS, children[1]=RHS.
 
-Function definition:
-  #funcdef → funcdefNode (makeSubTree, pops 2: funchead, funcbody)
-  #func → funcNode (passAlong, ABSORBS funcdefNode → funcNode with semanticMeaning="funcdef")
+freturnstatementNode  Return statement  (e.g.  return ( expr ) ;)
+  semanticMeaning    "return"  (absorbed from the return keyword leaf)
+  1 child:
+  children[0]        exprNode             — returned expression
 
-Program:
-  #reptprog0 → reptprog0Node (makeSubTree, pops to epsilon)
-  #prog → progNode (passAlong, ABSORBS reptprog0Node)
-  #start → startNode (passAlong, ABSORBS progNode, becomes AST root)
+writestatementNode   Write statement  (e.g.  write ( expr ) ;)
+  semanticMeaning    "write"  (absorbed from the write keyword leaf)
+  1 child:
+  children[0]        exprNode             — expression to write
+
+readstatementNode    Read statement  (e.g.  read ( variable ) ;)
+  semanticMeaning    "read"  (absorbed from the read keyword leaf)
+  1 child:
+  children[0]        reptvariable2andidNode — variable to read into
+
+ifstatementNode      If statement  (e.g.  if (...) then ... else ... ;)
+  semanticMeaning    "if"  (absorbed from the if keyword leaf)
+  3 children:
+  children[0]        conditionNode        — condition (relexpr)
+  children[1]        thenNode             — then branch (statblock)
+  children[2]        felseNode            — else branch (statblock)
+
+whilestatementNode   While statement  (e.g.  while (...) statblock ;)
+  semanticMeaning    "while"  (absorbed from the while keyword leaf)
+  2 children:
+  children[0]        conditionNode        — condition (relexpr)
+  children[1]        statblockNode        — loop body
+
+dotNode              Dot-access chain  (e.g.  a.b  or  self.f().g)
+  2 children (object pushed first, member/action pushed second):
+  children[0]        member/action node   — RHS: the method call, member access, or
+                                            assignment being performed on the object
+                                            (aparamsandidNode, reptvariable2andidNode,
+                                             or reptstatement4Node)
+  children[1]        object node          — LHS: the object being accessed
+                                            (selfandidnest2Node or reptvariable2andidNode)
+
+--- Expressions ---
+
+exprNode             Expression (arithExpr optionally followed by a relop + arithExpr)
+  1 child (no relop):
+    children[0]      arithexprNode
+  2 children (with relop — epsilon child is filtered):
+    children[0]      expr2Node            — relop + second arithexpr
+    children[1]      arithexprNode        — first arithexpr
+
+arithexprNode        Arithmetic expression  (term with optional +/- chain)
+  1 child:
+  children[0]        termNode             — if no addop chain
+                  OR rightrecarithexprNode — if an addop chain was built
+
+rightrecarithexprNode  One node in an addOp chain  (e.g.  + term)
+  nodeValue          "+", "-", or "or"
+  2 children:
+  children[0]        left operand         — arithexprNode or prior rightrecarithexprNode
+  children[1]        right operand        — termNode
+
+termNode             Term  (factor with optional */ chain)
+  1 child:
+  children[0]        factorNode           — if no multop chain
+                  OR rightrectermNode     — if a multop chain was built
+
+rightrectermNode     One node in a multOp chain  (e.g.  * factor)
+  nodeValue          "*", "/", or "and"
+  2 children:
+  children[0]        left operand         — termNode or prior rightrectermNode
+  children[1]        right operand        — factorNode
+
+factorNode           Factor  (literal, variable, parenthesised expr, function call)
+  1 child:
+  children[0]        intNode | floatnumNode | reptvariable2andidNode | aparamsandidNode
+
+factor2Node          Negated / signed factor  (e.g.  not f   or   -f)
+  2 children:
+  children[0]        signNode or 'not' keyword leaf
+  children[1]        factorNode
+
+aparamsandidNode     Function call  (id ( args ))
+  2 children:
+  children[0]        idNode               — function name
+  children[1]        aparamsNode          — argument list
+
+reptvariable2andidNode  Variable reference with optional indices  (e.g.  a[i][j])
+  2 children:
+  children[0]        idNode               — variable name
+  children[1]        reptvariable2Node    — index list (epsilon-equivalent if no indices)
+
+aparamsNode          Actual argument list
+  0..N children (epsilon-terminated):
+  children[0..N-1]   exprNode             — one per argument
+
+indiceNode           One array index  (e.g.  [ expr ])
+  1 child:
+  children[0]        arithexprNode        — index expression
+
+--- Declarations ---
+
+classNode            Class declaration  (semanticMeaning = "classdecl")
+  stEntry.name       class name
+  stEntry.type       inherited class names (from isalist)
+  stMap              symbol table: member variables + member functions
+  3 children (optclassdecl2 is epsilon-equivalent and invisible when no inheritance):
+  children[0]        idNode               — class name
+  children[1]        optclassdecl2Node    — isalist (not visible in AST if no base classes)
+  children[2]        reptclassdecl4Node   — class body ({ member declarations })
+
+funcNode             Free function or main  (semanticMeaning = "funcdef")
+  stEntry.name       function name
+  stEntry.type       return type
+  stMap              symbol table: params + locals
+  2 children:
+  children[0]        funcheadNode         — function signature (id, params, returntype)
+  children[1]        funcbodyNode         — function body (locals + statements)
+
+implNode             Method implementation  (semanticMeaning = "impldef")
+  stEntry.name       class name
+  stMap              keyed by function name → funcEntry
+  2 children:
+  children[0]        funcheadNode         — method signature (class id, method id, params, returntype)
+  children[1]        reptimpldef3Node     — method body (locals + statements)
+
+funcdeclfamNode      Member function declaration  (visibility + funchead)
+  stEntry.name       function name
+  stEntry.type       return type
+  stEntry.visibility "public" or "private"
+  2 children:
+  children[0]        visibilityNode       — "public" or "private"
+  children[1]        funcdeclNode         — function signature (id, params, returntype)
+
+attributedeclfamNode Member variable declaration  (visibility + vardecl)
+  stEntry.name       variable name
+  stEntry.type       variable type
+  stEntry.visibility "public" or "private"
+  2 children:
+  children[0]        visibilityNode       — "public" or "private"
+  children[1]        attributedeclNode    — variable declaration (id + type)
+
+funcdeclNode         Function signature inside a class
+  stEntry.name       function name
+  stEntry.type       return type
+  stEntry.link       → fparams stMap
+  1..3 children (epsilon-terminated; id absent for constructors, returntype absent for constructors):
+  children[0]        idNode               — method name  (absent for constructors)
+  children[?]        fparamsNode          — parameter list (always present)
+  children[?]        returntypeNode       — return type leaf  (absent for constructors)
+
+funcheadNode         Function header (free function or impl method)
+  stEntry.name       function name
+  stEntry.type       return type
+  stEntry.link       → funcparams stMap
+  Variable children (epsilon-terminated):
+  Free function:     idNode, fparamsNode (if params exist), returntypeNode/voidNode
+  Impl method:       idNode(class name), idNode(method name), fparamsNode, returntypeNode/voidNode
+
+funcbodyNode         Function body
+  stMap              local variable declarations
+  0..N children (epsilon-terminated):
+  children[0..N-1]   localvardeclNode and/or statement nodes (in source order)
+
+vardeclNode          Variable declaration  (id : type [dims] ;)
+  stEntry.name       variable name
+  stEntry.type       variable type
+  2–3 children:
+  children[0]        idNode               — variable name
+  children[1]        typeNode             — variable type
+  children[2]        reptvardecl3Node     — dimension list / dimlist (absent if no dimensions)
+
+localvardeclNode     Local variable declaration  (local id : type ;)
+  stEntry.name       variable name
+  stEntry.type       variable type
+  2–3 children:
+  children[0]        idNode               — variable name
+  children[1]        typeNode             — variable type
+  children[2]        reptvardecl3Node     — dimension list / dimlist (absent if no dimensions)
+
+attributedeclNode    Class attribute declaration  (attribute id : type ;)
+  stEntry.name       attribute name
+  stEntry.type       attribute type
+  2 children:
+  children[0]        idNode               — attribute name
+  children[1]        typeNode             — attribute type
+
+paramNode            Function parameter
+  stEntry.name       parameter name
+  stEntry.type       parameter type
+  2 children (epsilon-terminated):
+  children[0]        idNode               — parameter name
+  children[1]        typeNode             — parameter type
+
+--- Structural ---
+
+startNode            AST root  (the whole program)
+  stMap              global symbol table: class + free function entries
+  0..N children (epsilon-terminated):
+  children[0..N-1]   classNode, implNode, or funcNode  (in source order)
+
+statblockNode        Block of statements  ({ stmt stmt ... })
+  0..N children (epsilon-terminated):
+  children[0..N-1]   statement nodes (reptstatement4Node, writestatementNode, etc.)
+
+conditionNode        Condition in if/while  (semanticMeaning = "relexpr")
+  NOTE: conditionNode IS the relexpr — it passAlongs from relexprNode and inherits
+  its 3 children directly. There is no wrapper relexprNode child.
+  3 children:
+  children[0]        arithexprNode        — left-hand side of comparison
+  children[1]        relopNode            — relational operator (==, <>, <, >, <=, >=)
+  children[2]        arithexprNode        — right-hand side of comparison
+
+thenNode             Then-branch of if  (or body of while, semanticMeaning = "reptstatblock1")
+  0..N children (epsilon-terminated):
+  children[0..N-1]   statement nodes
+
+felseNode            Else-branch of if  (semanticMeaning = "reptstatblock1" or epsilon if absent)
+  0..N children (epsilon-terminated; empty when there is no else clause):
+  children[0..N-1]   statement nodes
+
+reptimpldef3Node     Body of a method implementation
+  0..N children (epsilon-terminated):
+  children[0..N-1]   localvardeclNode and/or statement nodes (in source order)
+
+--- Leaves (0 children) ---
+
+idNode              identifier              nodeValue = name
+intNode             integer literal         nodeValue = "42"
+floatnumNode        float literal           nodeValue = "3.14"
+typeNode            type keyword            nodeValue = "int" | "float" | <classname>
+addopNode           additive operator       nodeValue = "+" | "-" | "or"
+multopNode          multiplicative operator nodeValue = "*" | "/" | "and"
+relopNode           relational operator     nodeValue = "==" | "<>" | "<" | ">" | "<=" | ">="
+assignNode          assignment operator     nodeValue = ":="  (leaf only; its data is absorbed
+                                            into reptstatement4Node by makeBinarySubTree mode 1)
+signNode            unary sign              nodeValue = "+" | "-"
+visibilityNode      visibility keyword      nodeValue = "public" | "private"
+voidNode            void keyword            nodeValue = "void"
+selfNode            self keyword
+ifNode              if keyword
+whileNode           while keyword
+readNode            read keyword
+writeNode           write keyword
+returnNode          return keyword
+epsilonNode         stack sentinel — never appears in the final tree
 
 
 ========================================================================
-VISITOR DISPATCH SUMMARY
+PASSALONG ABSORPTION — write your visitor for the RIGHT column
 ========================================================================
-When implementing a visitor, use these C++ types (the actual runtime types):
-
-  For class declarations:    visit(classNode&)      NOT visit(classdeclNode&)
-  For implementations:       visit(implNode&)       NOT visit(impldefNode&)
-  For function definitions:  visit(funcNode&)       NOT visit(funcdefNode&)
-  For function bodies:       visit(funcbodyNode&)   NOT visit(reptfuncbody1Node&)
-  For program root:          visit(progNode&)       NOT visit(reptprog0Node&)
-  For stat blocks:           visit(statblockNode&)  NOT visit(reptstatblock1Node&)
-  For tree root:             visit(startNode&)
-
-The semanticMeaning field preserves the original label (e.g. "classdecl", "impldef"),
-but the C++ type (and therefore virtual dispatch) uses the absorbing type.
+Original type (deleted)    Surviving C++ type (use this)   semanticMeaning
+-----------------------    ----------------------------    ---------------
+classdeclNode              classNode                       "classdecl"
+impldefNode                implNode                        "impldef"
+funcdefNode                funcNode                        "funcdef"
+reptprog0Node              progNode                        from source
+reptfuncbody1Node          funcbodyNode                    from source
+reptstatblock1Node         statblockNode                   from source

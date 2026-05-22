@@ -1,8 +1,6 @@
 #include "visitor.h"
 #include <typeinfo>
 
-std::unordered_map<std::string, int> SemanticCheckingVisitor::value_type_priority;
-
 std::string SymTabCreationVisitor::get(std::string search, node &head)
 {
 	for (node *child : head.children)
@@ -182,20 +180,20 @@ void SymTabCreationVisitor::visit(startNode &head)
 				// Merge function entries from this impldef into the class's stMap
 				if (child->stEntry.hasLink && child->stEntry.link && classEntry->hasLink && classEntry->link)
 				{
-					spdlog::debug("[SymTabCreation] Merging impl of '{}' into class declaration.", className);
+					// spdlog::debug("[SymTabCreation] Merging impl of '{}' into class declaration.", className);
 					for (auto &[fname, fentry] : *child->stEntry.link)
 					{
-						spdlog::debug("[SymTabCreation]   Checking impl function '{}' (return type='{}').", fname, fentry->type);
+						// spdlog::debug("[SymTabCreation]   Checking impl function '{}' (return type='{}').", fname, fentry->type);
 
 						// Check 1: function name exists in class declaration
 						if (classEntry->link->count(fname) > 0)
 						{
 							node::symbolTableEntry *declaredFunc = (*classEntry->link)[fname];
-							spdlog::debug("[SymTabCreation]   [OK] '{}::{}' found in class declaration (declared return type='{}').", className, fname, declaredFunc->type);
+							// spdlog::debug("[SymTabCreation]   [OK] '{}::{}' found in class declaration (declared return type='{}').", className, fname, declaredFunc->type);
 
 							// Copy visibility from class declaration
 							fentry->visibility = declaredFunc->visibility;
-							spdlog::debug("[SymTabCreation]   Copied visibility '{}' to impl entry.", fentry->visibility);
+							// spdlog::debug("[SymTabCreation]   Copied visibility '{}' to impl entry.", fentry->visibility);
 
 							// Check 2: return type matches
 							if (!declaredFunc->type.empty() && declaredFunc->type != fentry->type)
@@ -205,7 +203,7 @@ void SymTabCreationVisitor::visit(startNode &head)
 							}
 							else
 							{
-								spdlog::debug("[SymTabCreation]   [OK] Return type '{}' matches for '{}::{}'.", fentry->type, className, fname);
+								// spdlog::debug("[SymTabCreation]   [OK] Return type '{}' matches for '{}::{}'.", fentry->type, className, fname);
 							}
 
 							// Check 3: parameters match
@@ -218,7 +216,7 @@ void SymTabCreationVisitor::visit(startNode &head)
 									if (pentry->kind == "parameter")
 									{
 										declaredParams[pname] = pentry->type;
-										spdlog::debug("[SymTabCreation]     Declared param: '{}' type='{}'.", pname, pentry->type);
+										// spdlog::debug("[SymTabCreation]     Declared param: '{}' type='{}'.", pname, pentry->type);
 									}
 								}
 								// Build impl param map
@@ -228,7 +226,7 @@ void SymTabCreationVisitor::visit(startNode &head)
 									if (pentry->kind == "parameter")
 									{
 										implParams[pname] = pentry->type;
-										spdlog::debug("[SymTabCreation]     Impl param: '{}' type='{}'.", pname, pentry->type);
+										// spdlog::debug("[SymTabCreation]     Impl param: '{}' type='{}'.", pname, pentry->type);
 									}
 								}
 								// Check each declared param exists in impl with matching type
@@ -238,8 +236,8 @@ void SymTabCreationVisitor::visit(startNode &head)
 										spdlog::error("[SymTabCreation] Parameter '{}' declared in '{}::{}' but missing in implementation.", pname, className, fname);
 									else if (implParams[pname] != ptype)
 										spdlog::error("[SymTabCreation] Parameter '{}' type mismatch in '{}::{}': declared '{}', implemented '{}'.", pname, className, fname, ptype, implParams[pname]);
-									else
-										spdlog::debug("[SymTabCreation]     [OK] Param '{}' type '{}' matches.", pname, ptype);
+									// else
+									// spdlog::debug("[SymTabCreation]     [OK] Param '{}' type '{}' matches.", pname, ptype);
 								}
 								// Check for extra params in impl not in declaration
 								for (auto &[pname, ptype] : implParams)
@@ -250,7 +248,7 @@ void SymTabCreationVisitor::visit(startNode &head)
 							}
 							else
 							{
-								spdlog::debug("[SymTabCreation]   No parameter links to compare for '{}::{}'.", className, fname);
+								// spdlog::debug("[SymTabCreation]   No parameter links to compare for '{}::{}'.", className, fname);
 							}
 						}
 						else
@@ -258,12 +256,12 @@ void SymTabCreationVisitor::visit(startNode &head)
 							spdlog::error("[SymTabCreation] Function '{}' implemented in class '{}' but never declared.", fname, className);
 						}
 						(*classEntry->link)[fname] = fentry;
-						spdlog::debug("[SymTabCreation]   Merged '{}::{}' into class symbol table.", className, fname);
+						// spdlog::debug("[SymTabCreation]   Merged '{}::{}' into class symbol table.", className, fname);
 					}
 				}
 				else
 				{
-					spdlog::debug("[SymTabCreation] No link maps available to merge for impl of '{}'.", className);
+					// spdlog::debug("[SymTabCreation] No link maps available to merge for impl of '{}'.", className);
 				}
 			}
 			else
@@ -526,7 +524,7 @@ void SymTabCreationVisitor::visit(funcNode &head)
 void SemanticCheckingVisitor::visit(impldefNode &head)
 {
 	node::symbolTableEntry *symbol_table_entry = &head.stEntry;
-	spdlog::debug("[SemanticCheck] visit(impldefNode): kind='{}' name='{}'", symbol_table_entry->kind, symbol_table_entry->name);
+	// spdlog::debug("[SemanticCheck] visit(impldefNode): kind='{}' name='{}'", symbol_table_entry->kind, symbol_table_entry->name);
 }
 
 void SemanticCheckingVisitor::visit(implNode &head)
@@ -535,53 +533,50 @@ void SemanticCheckingVisitor::visit(implNode &head)
 
 void SemanticCheckingVisitor::visit(startNode &head)
 {
-	spdlog::debug("[SemanticCheck] visit(startNode): children count={}", head.children.size());
 	for (node *child : head.children)
 	{
-		spdlog::debug("[SemanticCheck]   child nodeType='{}' semanticMeaning='{}' C++ type={}",
-					  child->nodeType, child->semanticMeaning, typeid(*child).name());
+		// spdlog::debug("[SemanticCheck]   child nodeType='{}' semanticMeaning='{}' C++ type={}",
+		//				  child->nodeType, child->semanticMeaning, typeid(*child).name());
 	}
 }
 
-void SemanticCheckingVisitor::visit(assignNode &n)
+void SemanticCheckingVisitor::visit(reptstatement4Node &n)
 {
-	std::unordered_map<std::string, node *> assignment_nodes;
-	std::vector<node *> &children = n.children;
-	for (node *child : children)
+	// Need to check the left and right side of the assignnode to validate if the assignment is valid
+	// Get left child
+	// assignnode is supposed to be a binary
+	if (n.children.size() != 2 && n.children.at(0) != nullptr && n.children.at(1) != nullptr)
 	{
-		if (child->semanticMeaning.compare("term") == 0)
-		{
-			assignment_nodes[child->semanticMeaning] = child;
-		}
-		else if (child->semanticMeaning.compare("expr") == 0)
-		{
-			assignment_nodes[child->semanticMeaning] = child;
-		}
-	}
-	// In an assignment we need to evaluate the right side of the
-
-	if (assignment_nodes.count("expr") > 0)
-	{
-		std::vector<node *> &children_of_expr = assignment_nodes["expr"]->children;
-	}
-	else
-	{
-		spdlog::error("[SemanticCheck]   ERROR, not found a expr child under assignment node.");
+		spdlog::error("[SemanticCheck] AssignNode ERROR : NOT BINARY TREE");
 		return;
 	}
+
+	node *leftchild = n.children.at(0); // LHS variable (reptvariable2andidNode)
+										// quick checks
+	// spdlog::debug("[SemanticCheck]   Left child nodeType='{}' semanticMeaning='{}' C++ type={}",
+	//				  leftchild->nodeType, leftchild->semanticMeaning, typeid(*leftchild).name());
+	node *rightchild = n.children.at(1); // RHS expression (exprNode)
 }
 
-void SemanticCheckingVisitor::visit(exprNode &n)
+void SemanticCheckingVisitor::visit(floatnumNode &n)
 {
-	// Need to evaluate the expr.
-	// flatten children function, recursively gets all the nodes needed to execute the current visitor.
+	spdlog::debug("[SemanticCheck] floatnumNode: nodeValue='{}' nodeType='{}' semanticMeaning='{}'",
+				  n.nodeValue, n.nodeType, n.semanticMeaning);
 }
-void visitor::flatten_children(node &n, const std::unordered_set<std::string> &node_types_needed, std::vector<std::pair<int, node *>> &results, int lvl)
+
+void SemanticCheckingVisitor::visit(paramNode &n)
 {
-	for (node *child : n.children)
+	int childrenCount = n.children.size();
+	node *leftChild = n.children[0];
+	node *leftChild = n.children[0];
+
+	if (childrenCount == 2)
 	{
-		if (node_types_needed.count(child->semanticMeaning))
-			results.push_back({lvl, child});
-		flatten_children(*child, node_types_needed, results, lvl + 1);
+		// Check that left and right type oif children
+		if (n.children[0]->nodeType.compare("id") == 0 && n.c)
+	}
+	else if (childrenCount != 2)
+	{
+		spdlog::error("[SemanticCheckingVisitor] Semantic Checking paramNode :: Amount of childrne should not be other than two.");
 	}
 }

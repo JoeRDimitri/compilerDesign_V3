@@ -845,21 +845,23 @@ void parser::semanticActions::makeBinarySubTree(std::string nodeType, int i, nod
 		node *third = semanticStackPtr->top();
 		semanticStackPtr->pop();
 
-		std::vector<node *> v = {first, third};
+		// third was pushed first (LHS), first was pushed last (RHS)
+		// children[0] = LHS (third), children[1] = RHS (first)
+		std::vector<node *> v = {third, first};
 		newnode->nodeType = nodeType;
 		newnode->semanticMeaning = nodeType;
 		newnode->copyNode(second, newnode, nodeType); // copy second's data into newnode
 		newnode->children = v;
 		delete second; // second has been replaced by newnode, free its memory
-		// wire sibling pointers: first <-> third
-		first->headOfSibling = first;
-		first->leftSibling = nullptr;
-		first->rightSibling = third;
-		first->parent = newnode;
-		third->headOfSibling = first;
-		third->leftSibling = first;
-		third->rightSibling = nullptr;
+		// wire sibling pointers: third (LHS) <-> first (RHS)
+		third->headOfSibling = third;
+		third->leftSibling = nullptr;
+		third->rightSibling = first;
 		third->parent = newnode;
+		first->headOfSibling = third;
+		first->leftSibling = third;
+		first->rightSibling = nullptr;
+		first->parent = newnode;
 		semanticStackPtr->push(newnode);
 	}
 }

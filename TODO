@@ -20,12 +20,17 @@ TODO - Future Iterations
 SEMANTIC CHECKS — planned for SemanticCheckingVisitor
 ========================================================================
 
+Priority order — do in this sequence (later items depend on earlier ones):
+  TIER 1 (foundation):  s, t
+  TIER 2 (require s+t):  u, v, w, k(b), q
+  TIER 3 (independent):  r, g, j, l, m, n
+
 In visit(implNode&)    [implementation block checks]
 ------------------------------------------------------
   [x] a. Declared function exists: the function name being implemented
-                   must exist in the class's symbol table (classEntry->link).
+         must exist in the class's symbol table (classEntry->link).
   [x] b. Return type matches declaration: the returntype in the impl's
-                   funchead must equal the declared return type in the class.
+         funchead must equal the declared return type in the class.
   [x] c. Parameter count matches declaration: count params in impl's funchead
          against count in the corresponding class funcdecl entry's link map.
   [x] e. No duplicate implementations: the same class::function should not be
@@ -38,16 +43,23 @@ In visit(classNode&)   [class declaration checks]
          Access: iterate child with semanticMeaning=="isalist", check each id's nodeValue.
   [ ] h. No member name shadows inherited member (warning-level, optional).
 
-In visit(startNode&)   [global-scope checks]  — in SemanticCheckingVisitor
+In visit(startNode&)   [global-scope checks]
 ---------------------------------------------------------------------------
   [ ] i. Every declared class has at least one implementation block.
          (Already done in SymTabCreationVisitor — may want to move/duplicate here.)
   [ ] j. Exactly one main function exists and its return type is void.
+  [ ] r. Circular class dependency: build a directed graph where edge A→B means
+         class A has a data member of type B or inherits from B. Run DFS/Kahn's
+         cycle detection. For each cycle report:
+         "circular class dependency involving <classA> and <classB>".
+         Run after symbol table is fully built.
 
 In visit(funcNode&)    [free function / main checks]
 -----------------------------------------------------
-  [ ] k. Return type consistency: if returntype != "void", verify a return
-         statement exists somewhere in reptimpldef3/funcbody children.
+  [ ] k. Return type consistency:
+         (a) if returntype != "void", verify a return statement exists.
+         (b) The type of the return expression must equal the declared return type.
+             Requires expression type inference (item s) to be done first.
   [ ] l. No duplicate free function names at global scope.
 
 In visit(vardeclNode&)  [local variable declaration checks]
@@ -63,7 +75,56 @@ In visit(vardeclNode&)  [local variable declaration checks]
 In visit(aparamsandidNode&)   [function call checks]
 ----------------------------------------------------
   [ ] o. Called function exists in the current scope or class scope.
+         Error: "use of undeclared free function <name>" or
+                "use of undeclared member function <name>" depending on context.
   [ ] p. Argument count matches the declared parameter count.
-  [ ] q. Argument types match declared parameter types (requires expression
-         type inference — may need a type-resolution pass first).
+  [ ] q. Argument types match declared parameter types.
+         Requires expression type inference (item s) to be done first.
+         Array parameters: check compatible dimensionality (item w).
+
+In type inference pass   [expression type resolution — req 10, 11]
+------------------------------------------------------------------
+  [ ] s. Expression type inference: annotate each expression node with its
+         resolved type (bottom-up pass, new visitor or recursive helper):
+           - intlit → "integer",  floatlit → "float",  stringlit → "string"
+           - identifier → declared type from scope chain lookup
+           - arithmetic (+,-,*,/): int op int → int; float op float → float;
+             mixed → type error
+           - relational (<,>,==,!=,<=,>=) → "integer" (boolean as int)
+           - dot access → resolve via item v
+           - function call → declared return type of the called function
+         Store result on AST node (e.g. node.inferredType) for later visitors.
+  [ ] t. Undeclared identifier checks (req 11): during the type inference walk,
+         check every identifier against the active scope chain. Emit:
+           "use of undeclared variable <name>"
+           "use of undeclared free function <name>"
+           "use of undeclared member function <name>"
+           "use of undeclared class <name>"
+
+In visit(assignNode&)   [assignment statement checks — req 10]
+--------------------------------------------------------------
+  [ ] u. Assignment type checking: resolve LHS and RHS types using item s.
+         If types differ, emit:
+         "type error in assignment: cannot assign <rhsType> to <lhsType>".
+
+In visit(dotNode&)   ["." operator checks — req 15]
+----------------------------------------------------
+  [ ] v. Dot operator validation:
+         (a) If LHS is not a class type, emit:
+             "dot operator applied to non-class type <type>".
+         (b) Look up RHS in the LHS class's symbol table.
+             Data member missing: "undeclared data member <name> in class <className>".
+             Member function missing: "undeclared member function <name> in class <className>".
+         Requires item s for LHS type resolution.
+
+In visit(arrayIndexNode&)   [array access checks — req 13]
+----------------------------------------------------------
+  [ ] w. Array dimension consistency:
+         (a) Index count must equal declared dimensions; emit:
+             "wrong number of dimensions for array <name>: expected <n>, got <m>".
+         (b) Each index expression must be integer type; emit:
+             "array index must be of integer type, got <type>".
+         (c) Array passed as parameter must have compatible dimensionality; emit:
+             "incompatible array dimensionality for parameter <name>".
+         Requires items s and t.
 

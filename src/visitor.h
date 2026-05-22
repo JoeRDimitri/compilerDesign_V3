@@ -140,4 +140,5 @@ public:
     void visit(impldefNode &head);
     void visit(assignNode &n);
     void visit(exprNode &n);
+    void visit(reptstatement4Node &n);
 };

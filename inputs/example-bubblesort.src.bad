@@ -52,23 +52,23 @@ function bubbleSort(arr: integer[], size: integer) => void // 2.1, 2.2
   local i    : integer;                                 // 1.1
   local j    : integer;                                 // 1.1
   local temp : integer;                                 // 1.1
-  n := size;                                                // 3.1
-  i := 0;                                                   // 3.1  
-  j := 0;                                                   // 3.1
-  temp := 0;                                                // 3.1
+  n = size;                                                // 3.1
+  i = 0;                                                   // 3.1  
+  j = 0;                                                   // 3.1
+  temp = 0;                                                // 3.1
   while (i < n-1){                                         // 3.3, 5.1
-    j := 0;                                                 // 3.1
+    j = 0;                                                 // 3.1
     while (j < n-i-1){                                     // 3.3
       if (arr[j] > arr[j+1])                               // 3.2, 4.1, 5.1, 5.2
         then {
           // swap temp and arr[i]
-          temp := arr[j];                                   // 3.1, 4.1, 5.2
-          arr[j] := arr[j+1];                               // 3.1, 4.1, 5.2
-          arr[j+1] := temp;                                 // 3.1, 4.1, 5.2
+          temp = arr[j];                                   // 3.1, 4.1, 5.2
+          arr[j] = arr[j+1];                               // 3.1, 4.1, 5.2
+          arr[j+1] = temp;                                 // 3.1, 4.1, 5.2
         } else ;
-          j := j+1;                                         // 3.1, 5.1
+          j = j+1;                                         // 3.1, 5.1
       };
-      i := i+1;                                             // 3.1, 5.1
+      i = i+1;                                             // 3.1, 5.1
   };
 }
    
@@ -77,11 +77,11 @@ function printArray(arr: integer[], size: integer) => void // 2.1, 2.2
 {
   localvar n: integer;                                     // 1.1
   localvar i: integer;                                     // 1.1
-  n := size;                                                // 3.1
-  i := 0;                                                   // 3.1
+  n = size;                                                // 3.1
+  i = 0;                                                   // 3.1
   while (i<n){                                             // 3.3, 5.1
     write(arr[i]);                                         // 3.4, 4.1, 5.2
-    i := i+1;                                               // 3.1, 5.1
+    i = i+1;                                               // 3.1, 5.1
   };
 } 
 
@@ -89,13 +89,13 @@ function printArray(arr: integer[], size: integer) => void // 2.1, 2.2
 function main() => void
 {
   localvar arr: integer[7];                                // 1.1
-  arr[0] := 64;                                             // 3.1 
-  arr[1] := 34;                                             // 3.1
-  arr[2] := 25;                                             // 3.1
-  arr[3] := 12;                                             // 3.1
-  arr[4] := 22;                                             // 3.1
-  arr[5] := 11;                                             // 3.1
-  arr[6] := 90;                                             // 3.1
+  arr[0] = 64;                                             // 3.1 
+  arr[1] = 34;                                             // 3.1
+  arr[2] = 25;                                             // 3.1
+  arr[3] = 12;                                             // 3.1
+  arr[4] = 22;                                             // 3.1
+  arr[5] = 11;                                             // 3.1
+  arr[6] = 90;                                             // 3.1
   printarray(arr, 7);                                      // 2.1, 2.2
   /* assumes that the array is passed as a reference */
   bubbleSort(arr, 7);                                      // 2.1, 2.2 

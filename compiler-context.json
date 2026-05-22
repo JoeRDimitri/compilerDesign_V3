@@ -1,0 +1,836 @@
+{
+  "_meta": {
+    "title": "CompilerDesignV2 — AST Node & Symbol Table Reference",
+    "description": "Machine-readable reference documenting every surviving AST node: its C++ type, nodeType string, semanticMeaning pattern, nodeValue pattern, stEntry fields set by SymTabCreationVisitor, and children layout. Also tracks design decisions and code evolution. Keep this file updated as the compiler evolves.",
+    "last_updated": "2026-05-21",
+    "source_files": ["src/node.h", "src/visitor.h", "src/visitor.cpp", "inputs/Node-retention"]
+  },
+
+  "field_glossary": {
+    "nodeType": "String set at construction by the parser; matches the C++ class name of the node (e.g. 'fparams', 'param'). Used for type-checking children: child->nodeType == 'fparams'.",
+    "semanticMeaning": "String set at construction; describes the structural role this node plays within its parent's grammar production. Often equals nodeType but can differ (e.g. a classNode has semanticMeaning='classdecl'). Used when scanning a parent's children by role: child->semanticMeaning == 'funchead'.",
+    "nodeValue": "Raw token text from the source file. Only meaningful on LEAF nodes (idNode, intNode, floatnumNode, typeNode, addopNode, etc.). Empty string on interior nodes.",
+    "stEntry": {
+      "name": "The declared identifier string assembled from a descendant id leaf's nodeValue. Set by SymTabCreationVisitor.",
+      "kind": "Semantic category string. Values: 'class' | 'function' | 'function head' | 'function body' | 'implementation' | 'variable' | 'attribute' | 'parameter'.",
+      "type": "Declared type or return type string (e.g. 'integer', 'float', 'MyClass', 'void'). For classNode, concatenated inherited class names.",
+      "visibility": "'public' or 'private'. Only set on class member entries (attributedeclfamNode, funcdeclfamNode).",
+      "hasLink": "Boolean. True when this entry owns a nested scope.",
+      "link": "Pointer to a std::map<string, symbolTableEntry*> representing the scope owned by this entry. Null when hasLink=false."
+    },
+    "stMap": "The map that lives directly on a node object (node::stMap). Scoped nodes (classNode, funcNode, implNode, funcbodyNode, fparamsNode) populate their own stMap and then point stEntry.link at it."
+  },
+
+  "nodes": {
+
+    "startNode": {
+      "cpp_class": "startNode",
+      "nodeType": "start",
+      "semanticMeaning": "start",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": {
+        "name": "",
+        "kind": "",
+        "type": "",
+        "visibility": "",
+        "hasLink": false,
+        "link": null,
+        "notes": "stEntry is unused. The global symbol table lives in startNode.stMap."
+      },
+      "stMap": "Global symbol table. Keys are class names and free-function names. Values point to classNode.stEntry or funcNode.stEntry.",
+      "children": [
+        { "index": "0..N-1", "type": "classNode | implNode | funcNode", "role": "top-level declarations in source order" }
+      ],
+      "visitor_sets": "SymTabCreationVisitor::visit(startNode) populates stMap from children. Also validates: every class declaration has an implementation, no duplicate class declarations, impl matches a declared class.",
+      "notes": "AST root."
+    },
+
+    "classNode": {
+      "cpp_class": "classNode",
+      "nodeType": "class",
+      "semanticMeaning": "classdecl",
+      "nodeValue": "",
+      "is_leaf": false,
+      "passalong_from": "classdeclNode",
+      "stEntry": {
+        "name": "class identifier (e.g. 'Animal')",
+        "kind": "class",
+        "type": "concatenated inherited class names from isalist (empty if no inheritance)",
+        "visibility": "",
+        "hasLink": true,
+        "link": "points to classNode.stMap"
+      },
+      "stMap": "Members of the class. Keys = member names. Values = attributedeclfamNode.stEntry or funcdeclfamNode.stEntry pointers.",
+      "children": [
+        { "index": 0, "type": "idNode", "role": "class name" },
+        { "index": 1, "type": "optclassdecl2Node", "role": "isalist — inherited classes (absent / epsilon if no base classes)" },
+        { "index": 2, "type": "reptclassdecl4Node", "role": "class body (member declarations)" }
+      ],
+      "visitor_sets": "SymTabCreationVisitor::visit(classNode): sets kind/name/hasLink/link, populates stMap from attributedecl and funcdecl children. Duplicate member names emit spdlog::error.",
+      "notes": "passAlong from classdeclNode — C++ type changes to classNode, semanticMeaning stays 'classdecl'."
+    },
+
+    "implNode": {
+      "cpp_class": "implNode",
+      "nodeType": "impl",
+      "semanticMeaning": "impldef",
+      "nodeValue": "",
+      "is_leaf": false,
+      "passalong_from": "impldefNode",
+      "stEntry": {
+        "name": "class name this impl belongs to (e.g. 'Animal')",
+        "kind": "implementation",
+        "type": "",
+        "visibility": "",
+        "hasLink": true,
+        "link": "points to implNode.stMap"
+      },
+      "stMap": "Function entries for this implementation block. Keys = method names. Values = funcheadNode.stEntry pointers (kind='function').",
+      "children": [
+        { "index": 0, "type": "funcheadNode", "role": "method signature (class id, method id, params, returntype)" },
+        { "index": 1, "type": "reptimpldef3Node", "role": "method body (locals + statements)" }
+      ],
+      "visitor_sets": "SymTabCreationVisitor::visit(implNode): sets kind/name/hasLink/link. Builds a funcEntry from funcheadNode, merges localvardecls from reptimpldef3 into funcEntry.link, stores in stMap[funcName].",
+      "notes": "passAlong from impldefNode. startNode.visit() cross-checks each implNode against its classNode declaration: validates return type, param names/types, function name existence. Merges impl entries into the class's stMap."
+    },
+
+    "funcNode": {
+      "cpp_class": "funcNode",
+      "nodeType": "func",
+      "semanticMeaning": "funcdef",
+      "nodeValue": "",
+      "is_leaf": false,
+      "passalong_from": "funcdefNode",
+      "stEntry": {
+        "name": "function name (e.g. 'main', 'sort')",
+        "kind": "function",
+        "type": "return type string (e.g. 'integer', 'void')",
+        "visibility": "",
+        "hasLink": true,
+        "link": "points to funcNode.stMap"
+      },
+      "stMap": "Union of funcheadNode.stEntry.link (params) and funcbodyNode.stEntry.link (locals). Keys = param/local names.",
+      "children": [
+        { "index": 0, "type": "funcheadNode", "role": "function signature" },
+        { "index": 1, "type": "funcbodyNode", "role": "function body" }
+      ],
+      "visitor_sets": "SymTabCreationVisitor::visit(funcNode): kind='function', name/type from funcheadNode.stEntry, stMap = merge of funchead.link + funcbody.link.",
+      "notes": "Also visit(funcdefNode) runs on the same node (funcdef survives as funcNode via passalong). Same logic in both — funcNode is the surviving type."
+    },
+
+    "funcheadNode": {
+      "cpp_class": "funcheadNode",
+      "nodeType": "funchead",
+      "semanticMeaning": "funchead",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": {
+        "name": "function name (first idNode child). 'constructor' if no id child found.",
+        "kind": "function head",
+        "type": "return type from returntypeNode/voidNode child nodeValue",
+        "visibility": "",
+        "hasLink": true,
+        "link": "points to funcparams child node's stMap (the fparamsNode equivalent)"
+      },
+      "stMap": "Not directly populated — link points to funcparams child's stMap.",
+      "children": {
+        "free_function": [
+          { "index": "0", "type": "idNode", "role": "function name" },
+          { "index": "?", "type": "fparamsNode", "role": "parameter list (semanticMeaning='funcparams')" },
+          { "index": "?", "type": "returntypeNode | voidNode", "role": "return type" }
+        ],
+        "impl_method": [
+          { "index": "0", "type": "idNode", "role": "class name" },
+          { "index": "1", "type": "idNode", "role": "method name" },
+          { "index": "?", "type": "fparamsNode", "role": "parameter list" },
+          { "index": "?", "type": "returntypeNode | voidNode", "role": "return type" }
+        ]
+      },
+      "visitor_sets": "SymTabCreationVisitor::visit(funcheadNode): scans direct children for first id (name), returntype, funcparams (link). Constructors detected by empty name.",
+      "notes": "Children are epsilon-terminated so indices are variable. Use semanticMeaning to identify children, not fixed indices."
+    },
+
+    "funcbodyNode": {
+      "cpp_class": "funcbodyNode",
+      "nodeType": "funcbody",
+      "semanticMeaning": "funcbody",
+      "nodeValue": "",
+      "is_leaf": false,
+      "passalong_from": "reptfuncbody1Node",
+      "stEntry": {
+        "name": "copied from parent funcNode.stEntry.name after merge",
+        "kind": "function body",
+        "type": "",
+        "visibility": "",
+        "hasLink": true,
+        "link": "points to funcbodyNode.stMap"
+      },
+      "stMap": "Local variable declarations. Keys = local variable names. Values = localvardeclNode.stEntry pointers.",
+      "children": [
+        { "index": "0..N-1", "type": "localvardeclNode | statement nodes", "role": "local declarations and statements in source order" }
+      ],
+      "visitor_sets": "SymTabCreationVisitor::visit(funcbodyNode): collects vardecl children into stMap. Duplicate local names emit spdlog::error.",
+      "notes": "passAlong from reptfuncbody1Node."
+    },
+
+    "funcdeclfamNode": {
+      "cpp_class": "funcdeclfamNode",
+      "nodeType": "funcdeclfam",
+      "semanticMeaning": "funcdecl",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": {
+        "name": "function name",
+        "kind": "function head",
+        "type": "return type",
+        "visibility": "'public' or 'private'",
+        "hasLink": true,
+        "link": "points to fparams stMap from funcdeclNode child"
+      },
+      "stMap": "Not directly populated.",
+      "children": [
+        { "index": 0, "type": "visibilityNode", "role": "visibility keyword" },
+        { "index": 1, "type": "funcdeclNode", "role": "function signature" }
+      ],
+      "visitor_sets": "SymTabCreationVisitor::visit(funcdeclfamNode): reads visibility from visibilityNode child, then digs into funcdeclNode grandchildren for id/returntype/funcparams.",
+      "notes": "Appears as children of classNode. Its stEntry is what classNode.stMap stores under the function name."
+    },
+
+    "funcdeclNode": {
+      "cpp_class": "funcdeclNode",
+      "nodeType": "funcdecl",
+      "semanticMeaning": "funcdecl",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": {
+        "name": "function name (recursive search via get('id', head))",
+        "kind": "function",
+        "type": "return type (recursive search via get('returntype', head))",
+        "visibility": "",
+        "hasLink": true,
+        "link": "points to fparamsNode child's stMap"
+      },
+      "stMap": "Not directly populated.",
+      "children": {
+        "notes": "epsilon-terminated; id absent for constructors, returntype absent for constructors",
+        "items": [
+          { "index": "0?", "type": "idNode", "role": "method name (absent for constructors)" },
+          { "index": "?", "type": "fparamsNode", "role": "parameter list" },
+          { "index": "?", "type": "returntypeNode", "role": "return type (absent for constructors)" }
+        ]
+      },
+      "visitor_sets": "SymTabCreationVisitor::visit(funcdeclNode): kind='function', name=get('id'), type=get('returntype'), link=fparamsNode.stMap.",
+      "notes": "Lives inside funcdeclfamNode inside a classNode body."
+    },
+
+    "attributedeclfamNode": {
+      "cpp_class": "attributedeclfamNode",
+      "nodeType": "attributedeclfam",
+      "semanticMeaning": "attributedecl",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": {
+        "name": "attribute name (from vardecl child stEntry.name)",
+        "kind": "attribute",
+        "type": "attribute type (from vardecl child stEntry.type)",
+        "visibility": "'public' or 'private'",
+        "hasLink": false,
+        "link": null
+      },
+      "stMap": "Not populated.",
+      "children": [
+        { "index": 0, "type": "visibilityNode", "role": "visibility keyword" },
+        { "index": 1, "type": "attributedeclNode", "role": "variable declaration" }
+      ],
+      "visitor_sets": "SymTabCreationVisitor::visit(attributedeclfamNode): kind='attribute', name/type from vardecl child stEntry, visibility from visibilityNode child nodeValue.",
+      "notes": "Its stEntry is what classNode.stMap stores under the attribute name."
+    },
+
+    "attributedeclNode": {
+      "cpp_class": "attributedeclNode",
+      "nodeType": "attributedecl",
+      "semanticMeaning": "attributedecl",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": {
+        "name": "attribute name via get('id', head)",
+        "kind": "variable",
+        "type": "attribute type via get('type', head)",
+        "visibility": "",
+        "hasLink": false,
+        "link": null
+      },
+      "stMap": "Not populated.",
+      "children": [
+        { "index": 0, "type": "idNode", "role": "attribute name" },
+        { "index": 1, "type": "typeNode", "role": "attribute type" }
+      ],
+      "visitor_sets": "SymTabCreationVisitor::visit(attributedeclNode): kind='variable', name=get('id'), type=get('type')."
+    },
+
+    "fparamsNode": {
+      "cpp_class": "fparamsNode",
+      "nodeType": "fparams",
+      "semanticMeaning": "funcparams",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": {
+        "name": "",
+        "kind": "",
+        "type": "",
+        "visibility": "",
+        "hasLink": false,
+        "link": null,
+        "notes": "stEntry unused — the table lives in stMap."
+      },
+      "stMap": "Parameter table. Keys = parameter names. Values = paramNode.stEntry pointers.",
+      "children": [
+        { "index": "0..N-1", "type": "paramNode", "role": "one per parameter" }
+      ],
+      "visitor_sets": "SymTabCreationVisitor::visit(fparamsNode): iterates paramNode children, inserts stEntry pointers into stMap. Duplicate param names emit spdlog::error."
+    },
+
+    "paramNode": {
+      "cpp_class": "paramNode",
+      "nodeType": "param",
+      "semanticMeaning": "param",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": {
+        "name": "parameter name via get('id', head)",
+        "kind": "parameter",
+        "type": "parameter type via get('type', head)",
+        "visibility": "",
+        "hasLink": false,
+        "link": null
+      },
+      "stMap": "Not populated.",
+      "children": [
+        { "index": 0, "type": "idNode", "role": "parameter name" },
+        { "index": 1, "type": "typeNode", "role": "parameter type" }
+      ],
+      "visitor_sets": "SymTabCreationVisitor::visit(paramNode): kind='parameter', name=get('id'), type=get('type').",
+      "semantic_check_notes": "SemanticCheckingVisitor::visit(paramNode) is partially implemented — checks children count == 2 but type comparison logic is incomplete."
+    },
+
+    "localvardeclNode": {
+      "cpp_class": "localvardeclNode",
+      "nodeType": "localvardecl",
+      "semanticMeaning": "vardecl",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": {
+        "name": "variable name via get('id', head)",
+        "kind": "variable",
+        "type": "variable type via get('type', head)",
+        "visibility": "",
+        "hasLink": false,
+        "link": null
+      },
+      "stMap": "Not populated.",
+      "children": [
+        { "index": 0, "type": "idNode", "role": "variable name" },
+        { "index": 1, "type": "typeNode", "role": "variable type" },
+        { "index": "2?", "type": "reptvardecl3Node", "role": "dimension list (absent if no array dims)" }
+      ],
+      "visitor_sets": "SymTabCreationVisitor::visit(localvardeclNode): kind='variable', name=get('id'), type=get('type')."
+    },
+
+    "reptimpldef3Node": {
+      "cpp_class": "reptimpldef3Node",
+      "nodeType": "reptimpldef3",
+      "semanticMeaning": "reptimpldef3",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": { "notes": "Unused — visitor reads children directly from implNode visitor." },
+      "stMap": "Not populated.",
+      "children": [
+        { "index": "0..N-1", "type": "localvardeclNode | statement nodes", "role": "method body: locals then statements" }
+      ]
+    },
+
+    "reptstatement4Node": {
+      "cpp_class": "reptstatement4Node",
+      "nodeType": "reptstatement4",
+      "semanticMeaning": ":=",
+      "nodeValue": ":=",
+      "is_leaf": false,
+      "stEntry": {
+        "name": "",
+        "kind": "",
+        "type": "TO BE SET during semantic checking (resolved LHS type for type propagation)",
+        "visibility": "",
+        "hasLink": false,
+        "link": null
+      },
+      "stMap": "Not populated.",
+      "children": [
+        { "index": 0, "type": "reptvariable2andidNode", "role": "LHS variable being assigned to" },
+        { "index": 1, "type": "exprNode", "role": "RHS expression value" }
+      ],
+      "construction_note": "makeBinarySubTree mode 1: pops expr(top), assign(middle, absorbed), variable(bottom). Children = {variable, expr}.",
+      "semantic_check_notes": "SemanticCheckingVisitor::visit(reptstatement4Node) partially implemented: validates binary structure, captures left/right children but does not yet resolve or compare types."
+    },
+
+    "freturnstatementNode": {
+      "cpp_class": "freturnstatementNode",
+      "nodeType": "freturnstatement",
+      "semanticMeaning": "return",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": { "type": "TO BE SET during semantic checking (resolved return type)", "notes": "all other fields unused" },
+      "children": [
+        { "index": 0, "type": "exprNode", "role": "returned expression" }
+      ]
+    },
+
+    "writestatementNode": {
+      "cpp_class": "writestatementNode",
+      "nodeType": "writestatement",
+      "semanticMeaning": "write",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": { "notes": "Unused." },
+      "children": [
+        { "index": 0, "type": "exprNode", "role": "expression to write" }
+      ]
+    },
+
+    "readstatementNode": {
+      "cpp_class": "readstatementNode",
+      "nodeType": "readstatement",
+      "semanticMeaning": "read",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": { "notes": "Unused." },
+      "children": [
+        { "index": 0, "type": "reptvariable2andidNode", "role": "variable to read into" }
+      ]
+    },
+
+    "ifstatementNode": {
+      "cpp_class": "ifstatementNode",
+      "nodeType": "ifstatement",
+      "semanticMeaning": "if",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": { "notes": "Unused." },
+      "children": [
+        { "index": 0, "type": "conditionNode", "role": "condition (relexpr)" },
+        { "index": 1, "type": "thenNode", "role": "then branch" },
+        { "index": 2, "type": "felseNode", "role": "else branch (empty children if no else)" }
+      ]
+    },
+
+    "whilestatementNode": {
+      "cpp_class": "whilestatementNode",
+      "nodeType": "whilestatement",
+      "semanticMeaning": "while",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": { "notes": "Unused." },
+      "children": [
+        { "index": 0, "type": "conditionNode", "role": "loop condition" },
+        { "index": 1, "type": "statblockNode", "role": "loop body" }
+      ]
+    },
+
+    "dotNode": {
+      "cpp_class": "dotNode",
+      "nodeType": "dot",
+      "semanticMeaning": "dot",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": {
+        "type": "TO BE SET during semantic checking (resolved type of the member access result)",
+        "notes": "name/kind/visibility unused"
+      },
+      "children": [
+        { "index": 0, "type": "aparamsandidNode | reptvariable2andidNode | reptstatement4Node", "role": "RHS member or action" },
+        { "index": 1, "type": "selfandidnest2Node | reptvariable2andidNode", "role": "LHS object being accessed" }
+      ],
+      "construction_note": "makeBinarySubTree mode 0: pops member(top), object(bottom). children[0]=member, children[1]=object.",
+      "semantic_check_notes": "To resolve: look up children[1]'s type in the global stMap to get the class entry, then look up children[0]'s name in that class's stMap."
+    },
+
+    "conditionNode": {
+      "cpp_class": "conditionNode",
+      "nodeType": "condition",
+      "semanticMeaning": "relexpr",
+      "nodeValue": "",
+      "is_leaf": false,
+      "passalong_from": "relexprNode",
+      "stEntry": { "notes": "Unused. conditionNode IS the relexpr — it passAlongs directly." },
+      "children": [
+        { "index": 0, "type": "arithexprNode", "role": "left-hand operand" },
+        { "index": 1, "type": "relopNode", "role": "relational operator" },
+        { "index": 2, "type": "arithexprNode", "role": "right-hand operand" }
+      ]
+    },
+
+    "thenNode": {
+      "cpp_class": "thenNode",
+      "nodeType": "then",
+      "semanticMeaning": "reptstatblock1",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": { "notes": "Unused." },
+      "children": [
+        { "index": "0..N-1", "type": "statement nodes", "role": "then-branch statements" }
+      ]
+    },
+
+    "felseNode": {
+      "cpp_class": "felseNode",
+      "nodeType": "felse",
+      "semanticMeaning": "reptstatblock1",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": { "notes": "Unused." },
+      "children": [
+        { "index": "0..N-1", "type": "statement nodes", "role": "else-branch statements (empty children = no else clause)" }
+      ]
+    },
+
+    "statblockNode": {
+      "cpp_class": "statblockNode",
+      "nodeType": "statblock",
+      "semanticMeaning": "statblock",
+      "nodeValue": "",
+      "is_leaf": false,
+      "passalong_from": "reptstatblock1Node",
+      "stEntry": { "notes": "Unused." },
+      "children": [
+        { "index": "0..N-1", "type": "statement nodes", "role": "statements in source order" }
+      ]
+    },
+
+    "exprNode": {
+      "cpp_class": "exprNode",
+      "nodeType": "expr",
+      "semanticMeaning": "expr",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": {
+        "type": "TO BE SET during semantic checking (resolved expression type)",
+        "notes": "All other fields unused. Type should be propagated up from child nodes."
+      },
+      "children": {
+        "no_relop": [
+          { "index": 0, "type": "arithexprNode", "role": "the expression value" }
+        ],
+        "with_relop": [
+          { "index": 0, "type": "expr2Node", "role": "relop + second arithexpr" },
+          { "index": 1, "type": "arithexprNode", "role": "first arithexpr" }
+        ]
+      }
+    },
+
+    "arithexprNode": {
+      "cpp_class": "arithexprNode",
+      "nodeType": "arithexpr",
+      "semanticMeaning": "arithexpr",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": { "type": "TO BE SET during semantic checking", "notes": "propagated from child" },
+      "children": [
+        { "index": 0, "type": "termNode | rightrecarithexprNode", "role": "term or addop chain root" }
+      ]
+    },
+
+    "rightrecarithexprNode": {
+      "cpp_class": "rightrecarithexprNode",
+      "nodeType": "rightrecarithexpr",
+      "semanticMeaning": "rightrecarithexpr",
+      "nodeValue": "'+' | '-' | 'or'",
+      "is_leaf": false,
+      "stEntry": { "type": "TO BE SET during semantic checking", "notes": "result type of this addop" },
+      "children": [
+        { "index": 0, "type": "arithexprNode | rightrecarithexprNode", "role": "left operand" },
+        { "index": 1, "type": "termNode", "role": "right operand" }
+      ]
+    },
+
+    "termNode": {
+      "cpp_class": "termNode",
+      "nodeType": "term",
+      "semanticMeaning": "term",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": { "type": "TO BE SET during semantic checking", "notes": "propagated from child" },
+      "children": [
+        { "index": 0, "type": "factorNode | rightrectermNode", "role": "factor or multop chain root" }
+      ]
+    },
+
+    "rightrectermNode": {
+      "cpp_class": "rightrectermNode",
+      "nodeType": "rightrectterm",
+      "semanticMeaning": "rightrectterm",
+      "nodeValue": "'*' | '/' | 'and'",
+      "is_leaf": false,
+      "stEntry": { "type": "TO BE SET during semantic checking", "notes": "result type of this multop" },
+      "children": [
+        { "index": 0, "type": "termNode | rightrectermNode", "role": "left operand" },
+        { "index": 1, "type": "factorNode", "role": "right operand" }
+      ]
+    },
+
+    "factorNode": {
+      "cpp_class": "factorNode",
+      "nodeType": "factor",
+      "semanticMeaning": "factor",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": { "type": "TO BE SET during semantic checking", "notes": "propagated from child" },
+      "children": [
+        { "index": 0, "type": "intNode | floatnumNode | reptvariable2andidNode | aparamsandidNode", "role": "the factor value" }
+      ]
+    },
+
+    "factor2Node": {
+      "cpp_class": "factor2Node",
+      "nodeType": "factor2",
+      "semanticMeaning": "factor2",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": { "type": "TO BE SET during semantic checking", "notes": "same type as child factorNode" },
+      "children": [
+        { "index": 0, "type": "signNode | 'not' leaf", "role": "unary operator" },
+        { "index": 1, "type": "factorNode", "role": "operand" }
+      ]
+    },
+
+    "aparamsandidNode": {
+      "cpp_class": "aparamsandidNode",
+      "nodeType": "aparamsandid",
+      "semanticMeaning": "aparamsandid",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": { "type": "TO BE SET during semantic checking (return type of the called function)", "notes": "name could be set to function name for lookup" },
+      "children": [
+        { "index": 0, "type": "idNode", "role": "function name" },
+        { "index": 1, "type": "aparamsNode", "role": "argument list" }
+      ]
+    },
+
+    "reptvariable2andidNode": {
+      "cpp_class": "reptvariable2andidNode",
+      "nodeType": "reptvariable2andid",
+      "semanticMeaning": "reptvariable2andid",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": { "type": "TO BE SET during semantic checking (declared type of the variable)", "notes": "name could be set to variable name for lookup" },
+      "children": [
+        { "index": 0, "type": "idNode", "role": "variable name" },
+        { "index": 1, "type": "reptvariable2Node", "role": "index list (epsilon-equivalent if no indices)" }
+      ]
+    },
+
+    "aparamsNode": {
+      "cpp_class": "aparamsNode",
+      "nodeType": "aparams",
+      "semanticMeaning": "aparams",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": { "notes": "Unused." },
+      "children": [
+        { "index": "0..N-1", "type": "exprNode", "role": "one actual argument per parameter" }
+      ]
+    },
+
+    "indiceNode": {
+      "cpp_class": "indiceNode",
+      "nodeType": "indice",
+      "semanticMeaning": "indice",
+      "nodeValue": "",
+      "is_leaf": false,
+      "stEntry": { "notes": "Unused." },
+      "children": [
+        { "index": 0, "type": "arithexprNode", "role": "index expression" }
+      ]
+    },
+
+    "idNode": {
+      "cpp_class": "idNode",
+      "nodeType": "id",
+      "semanticMeaning": "id",
+      "nodeValue": "the identifier string from source (e.g. 'foo', 'Animal', 'x')",
+      "is_leaf": true,
+      "stEntry": { "notes": "Unused — raw text is in nodeValue." },
+      "children": []
+    },
+
+    "intNode": {
+      "cpp_class": "intNode",
+      "nodeType": "int",
+      "semanticMeaning": "intlit",
+      "nodeValue": "integer literal text (e.g. '42', '0')",
+      "is_leaf": true,
+      "stEntry": { "type": "TO BE SET during semantic checking to 'integer'", "notes": "set stEntry.type='integer' in semantic pass" },
+      "children": []
+    },
+
+    "floatnumNode": {
+      "cpp_class": "floatnumNode",
+      "nodeType": "floatnum",
+      "semanticMeaning": "floatlit",
+      "nodeValue": "float literal text (e.g. '3.14', '1.0e2')",
+      "is_leaf": true,
+      "stEntry": { "type": "TO BE SET during semantic checking to 'float'", "notes": "SemanticCheckingVisitor::visit(floatnumNode) currently only logs debug — should set stEntry.type='float'" },
+      "children": []
+    },
+
+    "typeNode": {
+      "cpp_class": "typeNode",
+      "nodeType": "type",
+      "semanticMeaning": "type",
+      "nodeValue": "type keyword from source (e.g. 'integer', 'float', 'Animal')",
+      "is_leaf": true,
+      "stEntry": { "notes": "Unused — raw text is in nodeValue. Parent nodes read this via get('type', head)." },
+      "children": []
+    },
+
+    "addopNode": {
+      "cpp_class": "addopNode",
+      "nodeType": "addop",
+      "semanticMeaning": "addop",
+      "nodeValue": "'+' | '-' | 'or'",
+      "is_leaf": true,
+      "stEntry": { "notes": "Unused." },
+      "children": []
+    },
+
+    "multopNode": {
+      "cpp_class": "multopNode",
+      "nodeType": "multop",
+      "semanticMeaning": "multop",
+      "nodeValue": "'*' | '/' | 'and'",
+      "is_leaf": true,
+      "stEntry": { "notes": "Unused." },
+      "children": []
+    },
+
+    "relopNode": {
+      "cpp_class": "relopNode",
+      "nodeType": "relop",
+      "semanticMeaning": "relop",
+      "nodeValue": "'==' | '<>' | '<' | '>' | '<=' | '>='",
+      "is_leaf": true,
+      "stEntry": { "notes": "Unused." },
+      "children": []
+    },
+
+    "visibilityNode": {
+      "cpp_class": "visibilityNode",
+      "nodeType": "visibility",
+      "semanticMeaning": "visibility",
+      "nodeValue": "'public' | 'private'",
+      "is_leaf": true,
+      "stEntry": { "notes": "Unused — raw text is in nodeValue. Parent reads via child->nodeValue." },
+      "children": []
+    },
+
+    "voidNode": {
+      "cpp_class": "voidNode",
+      "nodeType": "void",
+      "semanticMeaning": "returntype",
+      "nodeValue": "void",
+      "is_leaf": true,
+      "stEntry": { "notes": "Unused." },
+      "children": []
+    },
+
+    "signNode": {
+      "cpp_class": "signNode",
+      "nodeType": "sign",
+      "semanticMeaning": "sign",
+      "nodeValue": "'+' | '-'",
+      "is_leaf": true,
+      "stEntry": { "notes": "Unused." },
+      "children": []
+    },
+
+    "selfNode": {
+      "cpp_class": "selfNode",
+      "nodeType": "self",
+      "semanticMeaning": "self",
+      "nodeValue": "self",
+      "is_leaf": true,
+      "stEntry": { "type": "TO BE SET during semantic checking (type of enclosing class)", "notes": "Needs enclosing class context to resolve." },
+      "children": []
+    }
+  },
+
+  "symbol_table_lookup_patterns": {
+    "description": "Common patterns for resolving identifiers during SemanticCheckingVisitor passes.",
+    "global_lookup": "root->stMap[name] — finds a class or free function by name.",
+    "class_member_lookup": "root->stMap[className]->link->count(memberName) — checks if a class has a member.",
+    "function_param_local_lookup": "root->stMap[funcName]->link->count(varName) — checks params/locals of a free function.",
+    "class_method_param_local_lookup": "root->stMap[className]->link->at(methodName)->link->count(varName) — checks params/locals of a class method.",
+    "type_propagation_rule": "Set node->stEntry.type bottom-up. Leaf intNode -> 'integer', floatnumNode -> 'float', typeNode -> nodeValue. For operators: if both operands are same type, result is that type; mixed integer/float should resolve to float or emit error per language rules.",
+    "variable_resolution_rule": "For reptvariable2andidNode: read children[0] (idNode) nodeValue as the name. Look up in innermost scope first (local stMap), then enclosing function stMap (via root), then class stMap. The resolved stEntry.type becomes this node's stEntry.type.",
+    "function_call_resolution_rule": "For aparamsandidNode: read children[0] (idNode) nodeValue as function name. Look up in root->stMap or current class stMap. Verify argument count and types match declared parameters. Set stEntry.type = declared return type.",
+    "dot_resolution_rule": "For dotNode: resolve children[1] (object) type -> look up that class in root->stMap -> look up children[0] (member/method name) in that class's link. Set stEntry.type = member type or method return type."
+  },
+
+  "semantic_checks_status": {
+    "description": "Current implementation status of semantic checks as of last update.",
+    "implemented_in_SymTabCreationVisitor": [
+      "Duplicate class declarations (startNode)",
+      "Class declared without implementation (startNode)",
+      "Duplicate attribute declarations within a class (classNode)",
+      "Duplicate function declarations within a class (classNode)",
+      "Duplicate parameter names within a function (fparamsNode)",
+      "Duplicate local variable declarations within a function body (funcbodyNode)",
+      "Function implemented but not declared in class (startNode impl merge)",
+      "Return type mismatch between declaration and implementation (startNode impl merge)",
+      "Parameter name/type mismatch between declaration and implementation (startNode impl merge)"
+    ],
+    "partially_implemented_in_SemanticCheckingVisitor": [
+      "reptstatement4Node: binary structure validated; LHS/RHS captured but types not yet compared",
+      "floatnumNode: logs debug only; stEntry.type not yet set to 'float'",
+      "paramNode: children count validated; type comparison logic incomplete (syntax error in code)"
+    ],
+    "not_yet_implemented": [
+      "Type propagation for all expression nodes (exprNode, arithexprNode, termNode, factorNode, rightrecarithexprNode, rightrectermNode)",
+      "Variable reference resolution (reptvariable2andidNode — look up in scoped stMaps)",
+      "Function call argument type checking (aparamsandidNode)",
+      "Dot-access type resolution (dotNode)",
+      "Assignment LHS/RHS type compatibility check (reptstatement4Node)",
+      "Return expression type vs function return type check (freturnstatementNode)",
+      "Self keyword type resolution (selfNode)",
+      "Array index type must be integer (indiceNode)",
+      "Undeclared identifier detection",
+      "Use of variable before declaration"
+    ]
+  },
+
+  "passalong_table": {
+    "description": "When a passAlong action fires, the original C++ type is deleted and a new one is created. The semanticMeaning is preserved. Visitor dispatch is by C++ type so always write visit() for the SURVIVING type.",
+    "entries": [
+      { "original": "classdeclNode", "surviving": "classNode",    "semanticMeaning": "classdecl" },
+      { "original": "impldefNode",   "surviving": "implNode",     "semanticMeaning": "impldef" },
+      { "original": "funcdefNode",   "surviving": "funcNode",     "semanticMeaning": "funcdef" },
+      { "original": "reptfuncbody1Node", "surviving": "funcbodyNode", "semanticMeaning": "from source" },
+      { "original": "reptstatblock1Node", "surviving": "statblockNode", "semanticMeaning": "from source" },
+      { "original": "reptprog0Node", "surviving": "progNode",     "semanticMeaning": "from source" },
+      { "original": "relexprNode",   "surviving": "conditionNode", "semanticMeaning": "relexpr" }
+    ]
+  },
+
+  "construction_rules": {
+    "makeBinarySubTree_mode0_dot": "Pops member(top) and object(bottom). children = {member, object}. children[0]=member(RHS), children[1]=object(LHS).",
+    "makeBinarySubTree_mode1_assign": "Pops expr(top), assign(middle, absorbed into node), variable(bottom). children = {variable, expr}. children[0]=LHS, children[1]=RHS.",
+    "makeBinarySubTreeWithHead_statements": "write/read/return/if/while: pops count nodes, first (keyword leaf) is absorbed via copyNode into the new node type. Keyword leaf does NOT appear as a child. Remaining nodes become children in push order."
+  },
+
+  "evolution_log": [
+    {
+      "date": "2026-05-21",
+      "description": "Initial machine-readable reference document created. Captures full node inventory, stEntry field assignments per visitor, semantic check status, passalong table, and lookup patterns.",
+      "source": "Derived from inputs/Node-retention, src/visitor.h, src/visitor.cpp, src/node.h"
+    }
+  ]
+}

@@ -236,6 +236,75 @@ namespace
 		return params;
 	}
 
+	std::vector<std::string> collectOrderedParamTypes(node *functionNode)
+	{
+		// Collect parameter types in source order to enforce full signature matching.
+		std::vector<std::string> paramTypes;
+		if (!functionNode)
+			return paramTypes;
+
+		auto scan = [&](auto &&self, node *current) -> void
+		{
+			if (!current)
+				return;
+
+			if (current->semanticMeaning == "param")
+			{
+				for (node *child : current->children)
+				{
+					if (child && child->semanticMeaning == "type")
+					{
+						paramTypes.push_back(child->nodeValue);
+						break;
+					}
+				}
+			}
+
+			for (node *child : current->children)
+			{
+				self(self, child);
+			}
+		};
+
+		scan(scan, functionNode);
+		return paramTypes;
+	}
+
+	std::string collectDeclaredReturnType(node *functionNode)
+	{
+		if (!functionNode)
+			return "";
+
+		auto scan = [&](auto &&self, node *current) -> std::string
+		{
+			if (!current)
+				return "";
+
+			if (current->semanticMeaning == "returntype")
+			{
+				if (!current->nodeValue.empty())
+					return current->nodeValue;
+				if (!current->stEntry.type.empty())
+					return current->stEntry.type;
+			}
+
+			for (node *child : current->children)
+			{
+				std::string found = self(self, child);
+				if (!found.empty())
+					return found;
+			}
+
+			return "";
+		};
+
+		std::string declaredType = scan(scan, functionNode);
+		if (!declaredType.empty())
+			return declaredType;
+
+		return functionNode->stEntry.type;
+	}
+
 	std::unordered_set<std::string> collectClassAttributes(node *classDeclNode)
 	{
 		// Gather every class member name declared inside the class body.
@@ -934,16 +1003,23 @@ void SemanticCheckingVisitor::visit(implNode &head)
 
 			if (declFunctionNode != nullptr)
 			{
-				const auto declaredParams = collectParamTypes(declFunctionNode);
-				const auto implParams = collectParamTypes(funcHeadNode);
-				if (declaredParams == implParams)
+				std::string declaredReturnType = collectDeclaredReturnType(declFunctionNode);
+				const std::string implReturnType = collectDeclaredReturnType(funcHeadNode);
+				const auto declaredParamTypes = collectOrderedParamTypes(declFunctionNode);
+				const auto implParamTypes = collectOrderedParamTypes(funcHeadNode);
+				if (funcName == "constructor" && declaredReturnType.empty())
 				{
-					spdlog::info("[SemanticCheck][PASS][Parameters] '{}::{}' parameter list matches its declaration.", className, funcName);
+					declaredReturnType = "void";
+				}
+
+				if (declaredReturnType == implReturnType && declaredParamTypes == implParamTypes)
+				{
+					spdlog::info("[SemanticCheck][PASS][Signature] '{}::{}' implementation signature matches declaration (name, ordered parameter types, return type).", className, funcName);
 				}
 				else
 				{
 					canGenerateMachineCode = false;
-					spdlog::error("[SemanticCheck][FAIL][Parameters] '{}::{}' parameter list does not match its declaration.", className, funcName);
+					spdlog::error("[SemanticCheck][FAIL][Signature] '{}::{}' implementation signature does not match declaration.", className, funcName);
 				}
 			}
 

@@ -737,3 +737,20 @@ void rightrecarithexprNode::accept(visitor &v)
 	}
 	v.visit(*this);
 }
+
+std::string &node::get_name()
+{
+	return this->stEntry.name;
+}
+std::string &node::get_type()
+{
+	return this->stEntry.type;
+}
+std::string &node::get_kind()
+{
+	return this->stEntry.kind;
+}
+std::string &node::get_visibility()
+{
+	return this->stEntry.visibility;
+}

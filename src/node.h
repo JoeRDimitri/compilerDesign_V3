@@ -29,9 +29,14 @@ public:
 	bool isLeaf = false;
 	symbolTableEntry stEntry;
 	std::map<std::string, symbolTableEntry *> stMap;
+	std::string inferredType;
 
 	void copyNode(node *oldnode, node *newnode, std::string nameOfNewNode);
 
+	std::string &get_name();
+	std::string &get_type();
+	std::string &get_kind();
+	std::string &get_visibility();
 	node() {};
 	node(std::string type, std::string semanticMeaning) : headOfSibling(nullptr), leftSibling(nullptr), rightSibling(nullptr), parent(nullptr), children(), nodeType(type), semanticMeaning(semanticMeaning) {}
 	node(std::string type, std::string semanticMeaning, std::string lastTokenValue) : headOfSibling(nullptr), leftSibling(nullptr), rightSibling(nullptr), parent(nullptr), children(), nodeType(type), semanticMeaning(semanticMeaning), nodeValue(lastTokenValue) {}

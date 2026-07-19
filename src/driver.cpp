@@ -46,7 +46,6 @@ int main(int argc, char *argv[])
 		std::cerr << "Caught a generic exception: " << e.what() << std::endl;
 		return 1;
 	}
-	std::cout << "Deleted lex objext" << std::endl;
 	std::cout << "------------------------------------------------------------------------------------" << std::endl;
 	spdlog::info("Entering Second phase, the parsing phase.");
 	parser parser;

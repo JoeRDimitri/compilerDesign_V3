@@ -23,6 +23,17 @@ HOW DOT CHILDREN ARE ORDERED (makeBinarySubTree mode 0):
   Pops first=top(member/action), second=object.
   Result: children[0]=member/action(RHS), children[1]=object(LHS).
 
+SEMANTIC CHECKING VISITOR STATUS (June 2026):
+  - visit(exprNode): expects 2 children [epsilon|expr2, arithexpr].
+    - epsilon path: expression type is propagated from arithexpr.
+    - expr2 path: expression type is currently set to integer (boolean-like result).
+  - visit(paramNode): does not assume fixed child count; resolves id/type by nodeType lookup.
+  - visit(implNode): checks [funchead, reptimpldef3] and compares signature return vs body return.
+  - visit(freturnstatementNode): expects exactly 1 expr child.
+  - visit(assignNode) and visit(reptstatement4Node): enforce binary-shape guards.
+  - visit(arithexprNode): non-leaf propagation checks child availability before dereference.
+  - remove_node: currently not active in arithexpr flow (call is commented out).
+
 
 ========================================================================
 SURVIVING NODE TYPES — what each one IS and what children it has
@@ -64,7 +75,9 @@ whilestatementNode   While statement  (e.g.  while (...) statblock ;)
   semanticMeaning    "while"  (absorbed from the while keyword leaf)
   2 children:
   children[0]        conditionNode        — condition (relexpr)
-  children[1]        statblockNode        — loop body
+  children[1]        thenNode             — loop body
+  NOTE: grammar fires #condition, then <statBlock> #then, then #whilestatement.
+  The body is wrapped by #then into a thenNode before #whilestatement pops it.
 
 dotNode              Dot-access chain  (e.g.  a.b  or  self.f().g)
   2 children (object pushed first, member/action pushed second):
@@ -78,42 +91,57 @@ dotNode              Dot-access chain  (e.g.  a.b  or  self.f().g)
 --- Expressions ---
 
 exprNode             Expression (arithExpr optionally followed by a relop + arithExpr)
-  1 child (no relop):
-    children[0]      arithexprNode
-  2 children (with relop — epsilon child is filtered):
+  always 2 children (makeSubTree pops whichever of {epsilon,expr2} is on top, then arithexpr):
+  No relop  (<expr2> fired EPSILON #p, so epsilonNode is on top):
+    children[0]      epsilonNode          — placeholder; accept() is a no-op, type unused
+    children[1]      arithexprNode        — the sole arithmetic expression
+  With relop  (<expr2> fired #expr2, so expr2Node is on top):
     children[0]      expr2Node            — relop + second arithexpr
     children[1]      arithexprNode        — first arithexpr
 
-arithexprNode        Arithmetic expression  (term with optional +/- chain)
-  1 child:
-  children[0]        termNode             — if no addop chain
-                  OR rightrecarithexprNode — if an addop chain was built
+arithexprNode        Arithmetic expression  (passAlong — retypes what was on top of the stack)
+  Inherits children from the source node:
+  — No addop chain: passAlong from termNode → same structure/children as termNode
+  — With addop chain: passAlong from rightrecarithexprNode → 2 children:
+      children[0]    termNode or prior rightrecarithexprNode  — LHS operand
+      children[1]    termNode                                 — RHS operand
+  NOTE: for a literal, isLeaf=true and semanticMeaning="intnum" or "floatnum".
 
 rightrecarithexprNode  One node in an addOp chain  (e.g.  + term)
   nodeValue          "+", "-", or "or"
-  2 children:
-  children[0]        left operand         — arithexprNode or prior rightrecarithexprNode
+  2 children (makeBinarySubTree mode 1: pops term(top), addop(promoted), prior(bottom)):
+  children[0]        left operand         — termNode (first occurrence) or prior rightrecarithexprNode
   children[1]        right operand        — termNode
 
-termNode             Term  (factor with optional */ chain)
-  1 child:
-  children[0]        factorNode           — if no multop chain
-                  OR rightrectermNode     — if a multop chain was built
+termNode             Term  (passAlong — retypes what was on top of the stack)
+  Inherits children from the source node:
+  — No multop chain: passAlong from factorNode → same structure/children as factorNode
+  — With multop chain: passAlong from rightrectermNode → 2 children:
+      children[0]    factorNode or prior rightrectermNode  — LHS operand
+      children[1]    factorNode                            — RHS operand
 
 rightrectermNode     One node in a multOp chain  (e.g.  * factor)
   nodeValue          "*", "/", or "and"
-  2 children:
-  children[0]        left operand         — termNode or prior rightrectermNode
+  2 children (makeBinarySubTree mode 1: pops factor(top), multop(promoted), prior(bottom)):
+  children[0]        left operand         — factorNode (first occurrence) or prior rightrectermNode
   children[1]        right operand        — factorNode
 
-factorNode           Factor  (literal, variable, parenthesised expr, function call)
-  1 child:
-  children[0]        intNode | floatnumNode | reptvariable2andidNode | aparamsandidNode
+factorNode           Factor  (passAlong — retypes what was on top of the stack)
+  Inherits children from the source node. Distinguish by semanticMeaning:
+  — "intnum"       isLeaf=true, 0 children, nodeValue = integer literal
+  — "floatnum"     isLeaf=true, 0 children, nodeValue = float literal
+  — "term"         (from reptvariable2andidNode): 2 children:
+                     children[0] idNode, children[1] reptvariable2Node
+  — "functioncall" (from aparamsandidNode): 2 children:
+                     children[0] idNode, children[1] aparamsNode
+  — parenthesised arithexpr: inherits inner arithexprNode's children
 
-factor2Node          Negated / signed factor  (e.g.  not f   or   -f)
-  2 children:
-  children[0]        signNode or 'not' keyword leaf
-  children[1]        factorNode
+factor2Node          Signed factor  (e.g.  -f   or   +f)
+  2 children (makeSubTree else-branch pops top-first: factorNode is on top, signNode below):
+  children[0]        factorNode           — the operand
+  children[1]        signNode             — sign leaf (nodeValue = "+" or "-")
+  NOTE: the 'not' alternative in the grammar has no semantic action to push a leaf,
+        so only the sign (<sign> <factor> #factor2) path is functional.
 
 aparamsandidNode     Function call  (id ( args ))
   2 children:
@@ -200,32 +228,37 @@ funcbodyNode         Function body
 vardeclNode          Variable declaration  (id : type [dims] ;)
   stEntry.name       variable name
   stEntry.type       variable type
-  2–3 children:
+  always 3 children (makeSubTree fixed-count 3; reptvardecl3Node is always pushed by #reptvardecl3):
   children[0]        idNode               — variable name
   children[1]        typeNode             — variable type
-  children[2]        reptvardecl3Node     — dimension list / dimlist (absent if no dimensions)
+  children[2]        reptvardecl3Node     — dimension list (semanticMeaning="epsilon" if no dims)
 
 localvardeclNode     Local variable declaration  (local id : type ;)
   stEntry.name       variable name
   stEntry.type       variable type
-  2–3 children:
+  always 3 children (passAlong from vardeclNode which always has 3 children):
   children[0]        idNode               — variable name
   children[1]        typeNode             — variable type
-  children[2]        reptvardecl3Node     — dimension list / dimlist (absent if no dimensions)
+  children[2]        reptvardecl3Node     — dimension list (semanticMeaning="epsilon" if no dims)
 
 attributedeclNode    Class attribute declaration  (attribute id : type ;)
   stEntry.name       attribute name
   stEntry.type       attribute type
-  2 children:
+  always 3 children (passAlong from vardeclNode which always has 3 children):
   children[0]        idNode               — attribute name
   children[1]        typeNode             — attribute type
+  children[2]        reptvardecl3Node     — dimension list (semanticMeaning="epsilon" if no dims)
 
 paramNode            Function parameter
   stEntry.name       parameter name
   stEntry.type       parameter type
-  2 children (epsilon-terminated):
+  always 3 children (epsilon-terminated; reptfparams3Node always pushed by #reptfparams3):
   children[0]        idNode               — parameter name
   children[1]        typeNode             — parameter type
+  children[2]        reptfparams3Node     — dimension list (semanticMeaning="epsilon" if no dims)
+  Semantic pass note:
+  SemanticCheckingVisitor resolves type/name by searching for "type" and "id" child nodes,
+  so it remains robust even if parse-stack shaping introduces extra children.
 
 --- Structural ---
 
@@ -292,3 +325,109 @@ funcdefNode                funcNode                        "funcdef"
 reptprog0Node              progNode                        from source
 reptfuncbody1Node          funcbodyNode                    from source
 reptstatblock1Node         statblockNode                   from source
+relexprNode                conditionNode                   "relexpr"
+
+
+========================================================================
+COMPLETE NODE TYPE INDEX  (all C++ classes defined in node.h)
+========================================================================
+Status legend:
+  FINAL        — survives in the final AST; write a visit() for it
+  LEAF         — terminal, no children; only visit() needed
+  ABSORBED     — deleted by a passalong action; see table above
+  INTERMEDIATE — created during parsing but never retained in the final AST
+  UNUSED       — class exists in node.h but is never instantiated
+
+nodeType value = the string stored in node::nodeType at runtime (set by makeLeaf /
+                 passAlong / makeSubTree / makeBinarySubTree in parser.cpp).
+semanticMeaning = what is stored in node::semanticMeaning (differs from nodeType for
+                  several nodes; see column below).
+
+C++ class               Status       nodeType value          semanticMeaning value
+----------------------  -----------  ----------------------  --------------------------
+addopNode               LEAF         "addop"                 "addop"
+aparamsNode             FINAL        "aparams"               "aparams"
+aparamsandidNode        FINAL        "aparamsandid"          "functioncall"
+aparamstailNode         INTERMEDIATE "aparamstail"           (copies from popped node)
+arithexprNode           FINAL        "arithexpr"             (copies from popped node)
+arraysizeNode           INTERMEDIATE "arraysize"             (copies from popped node)
+assignNode              LEAF         "assign"                "assign"
+attributedeclNode       FINAL        "attributedecl"         (copies from popped node)
+attributedeclfamNode    FINAL        "attributedeclfam"      "attributedecl"
+classdeclNode           ABSORBED     "classdecl"             "classdecl"          → classNode
+classNode               FINAL        "class"                 (copies from popped node)
+conditionNode           FINAL        "condition"             (copies from popped node)
+dotNode                 FINAL        "dot"                   "dot"
+epsilonNode             LEAF         "epsilon"               "epsilon"
+expr2Node               FINAL        "expr2"                 "expr2"
+exprNode                FINAL        "expr"                  "expr"
+factor2Node             FINAL        "factor2"               "factor2"
+factorNode              FINAL        "factor"                (copies from popped node)
+felseNode               FINAL        "felse"                 (copies from popped node)
+floatNode               UNUSED       —                       —   (defined but never created)
+floatnumNode            LEAF         "floatnum"              "floatnum"
+fparamsNode             FINAL        "fparams"               "funcparams"
+freturnstatementNode    FINAL        "freturnstatement"      (absorbed from returnNode)
+funcdeclfamNode         FINAL        "funcdecl"              "funcdecl"           (NOTE: nodeType is "funcdecl", same as funcdeclNode)
+funcdeclNode            FINAL        "funcdecl"              (copies from popped node)
+funcbodyNode            FINAL        "funcbody"              (copies from popped node)
+funcdefNode             ABSORBED     "funcdef"               "funcdef"            → funcNode
+funcheadNode            FINAL        "funchead"              "funchead"
+funcNode                FINAL        "func"                  (copies from popped node)
+idNode                  LEAF         "id"                    "id"
+idnest2Node             INTERMEDIATE "idnest2"               (copies from popped node)
+ifNode                  LEAF         "if"                    "if"
+ifstatementNode         FINAL        "ifstatement"           (absorbed from ifNode)
+impldefNode             ABSORBED     "impldef"               "impldef"            → implNode
+implNode                FINAL        "impl"                  (copies from popped node)
+indiceNode              FINAL        "indice"                (copies from popped node)
+intNode                 LEAF         "intnum"                "intnum"
+localvardeclNode        FINAL        "localvardecl"          (copies from popped node)
+localvardeclorstatNode  INTERMEDIATE "localvardeclorstat"    (copies from popped node)
+multopNode              LEAF         "multop"                "multop"
+optclassdecl2Node       FINAL        "optclassdecl2"         "isalist"
+paramNode               FINAL        "param"                 "param"
+progNode                FINAL        "prog"                  (copies from popped node)
+readNode                LEAF         "read"                  "read"
+readstatementNode       FINAL        "readstatement"         (absorbed from readNode)
+relexprNode             ABSORBED     "relexpr"               "relexpr"            → conditionNode
+relopNode               LEAF         "relop"                 "relop"
+reptclassdecl4Node      FINAL        "reptclassdecl4"        "{"
+reptfparams3Node        INTERMEDIATE "reptfparams3"          "dimlist"
+reptfparams4Node        INTERMEDIATE "reptfparams4"          "param"
+reptfuncbody1Node       ABSORBED     "reptfuncbody1"         "funcbody"           → funcbodyNode
+reptimpldef3Node        FINAL        "reptimpldef3"          "reptimpldef3"
+reptoptclassdecl22Node  INTERMEDIATE "reptoptclassdecl22"    "reptoptclassdecl22"
+reptprog0Node           ABSORBED     "reptprog0"             "prog"               → progNode
+reptstatblock1Node      ABSORBED     "reptstatblock1"        "reptstatblock1"     → statblockNode
+reptstatement4Node      FINAL        "reptstatement4"        (absorbed from assignNode, so ":=")
+reptvardecl3Node        FINAL        "reptvardecl3"          "dimlist"
+reptvariable2Node       FINAL        "reptvariable2"         "reptvariable2"
+reptvariable2andidNode  FINAL        "reptvariable2andid"    "term"
+returnNode              LEAF         "return"                "return"
+returntypeNode          FINAL        "returntype"            "returntype"
+rightrecarithexprNode   FINAL        "rightrecarithexpr"     "rightrecarithexpr"
+rightrectermNode        FINAL        "rightrecterm"          "rightrecterm"
+selfNode                LEAF         "self"                  "self"
+selfandidnest2Node      FINAL        "selfandidnest2"        "selfandidnest2"
+signNode                LEAF         "sign"                  "sign"
+startNode               FINAL        "start"                 (copies from popped node; tree root)
+statblockNode           FINAL        "statblock"             (copies from popped node)
+termNode                FINAL        "term"                  (copies from popped node)
+thenNode                FINAL        "then"                  (copies from popped node)
+typeNode                LEAF         "type"                  "type"
+vardeclNode             FINAL        "vardecl"               "vardecl"
+visibilityNode          LEAF         "visibility"            "visibility"
+voidNode                LEAF         "void"                  "void"
+whileNode               LEAF         "while"                 "while"
+whilestatementNode      FINAL        "whilestatement"        (absorbed from whileNode)
+writeNode               LEAF         "write"                 "write"
+writestatementNode      FINAL        "writestatement"        (absorbed from writeNode)
+
+KEY QUIRKS:
+  - intNode stores nodeType="intnum" (not "int") — matches the token type name.
+  - funcdeclfamNode stores nodeType="funcdecl", identical to funcdeclNode.
+    Distinguish them by C++ type in the visitor, not by nodeType string.
+  - reptstatement4Node's semanticMeaning is ":=" (absorbed from the assignNode leaf).
+  - floatNode is declared in node.h and visitor.h but is never instantiated in
+    handleAction — the float type keyword is captured by typeNode ("type") instead.

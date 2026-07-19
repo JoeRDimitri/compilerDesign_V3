@@ -88,6 +88,7 @@ public:
     virtual void visit(floatnumNode &n) {};
     virtual ~visitor() {} // Virtual destructor for proper cleanup
 
+    node *find_child(std::string missing_child, std::vector<node *> vector_of_children);
     void flatten_children(node &n, const std::unordered_set<std::string> &node_types_needed, std::vector<std::pair<int, node *>> &results, int lvl = 0);
 };
 
@@ -142,4 +143,15 @@ public:
     void visit(exprNode &n);
     void visit(reptstatement4Node &n);
     void visit(floatnumNode &n);
+    void visit(paramNode &n);
+    void visit(freturnstatementNode &n);
+    void visit(arithexprNode &n);
+    void visit(termNode &n);
+    void visit(reptimpldef3Node &n);
+    void visit(funcheadNode &n);
+    void visit(returntypeNode &n);
+
+    bool match_without_order(int num_of_children, std::vector<std::string> children_names, std::vector<node *> &children);
+    bool checkChildren(int expected_num_of_children, int actual_num_of_children, const std::vector<std::string> &expected_children_types, node &n);
+    bool remove_node(node &n);
 };

@@ -1,8 +1,53 @@
 #include "visitor.h"
 #include <typeinfo>
+#include <algorithm>
 
-void SemanticCheckingVisitor::visit(assignNode &n) {}
-void SemanticCheckingVisitor::visit(exprNode &n) {}
+namespace
+{
+	std::string findTypeInEntryLink(node::symbolTableEntry *entry, const std::string &name, std::unordered_set<node::symbolTableEntry *> &visited)
+	{
+		if (!entry || !entry->hasLink || !entry->link || visited.count(entry) > 0)
+			return "";
+		visited.insert(entry);
+
+		auto direct = entry->link->find(name);
+		if (direct != entry->link->end() && direct->second)
+		{
+			return direct->second->type;
+		}
+
+		for (auto &[_, nested] : *entry->link)
+		{
+			std::string nestedType = findTypeInEntryLink(nested, name, visited);
+			if (!nestedType.empty())
+				return nestedType;
+		}
+
+		return "";
+	}
+
+	std::string findTypeFromRoot(node *root, const std::string &name)
+	{
+		if (!root)
+			return "";
+
+		auto direct = root->stMap.find(name);
+		if (direct != root->stMap.end() && direct->second)
+		{
+			return direct->second->type;
+		}
+
+		std::unordered_set<node::symbolTableEntry *> visited;
+		for (auto &[_, entry] : root->stMap)
+		{
+			std::string nestedType = findTypeInEntryLink(entry, name, visited);
+			if (!nestedType.empty())
+				return nestedType;
+		}
+
+		return "";
+	}
+}
 
 std::string SymTabCreationVisitor::get(std::string search, node &head)
 {
@@ -526,12 +571,90 @@ void SymTabCreationVisitor::visit(funcNode &head)
 // Not actually reaching this node as it is not used.
 void SemanticCheckingVisitor::visit(impldefNode &head)
 {
-	node::symbolTableEntry *symbol_table_entry = &head.stEntry;
-	// spdlog::debug("[SemanticCheck] visit(impldefNode): kind='{}' name='{}'", symbol_table_entry->kind, symbol_table_entry->name);
+	// impldef is currently validated via implNode and symbol table merge checks.
 }
 
 void SemanticCheckingVisitor::visit(implNode &head)
 {
+	int childrenCount = head.children.size();
+
+	if (childrenCount == 2)
+	{
+		std::vector<std::string> children_types = {"funchead", "reptimpldef3"};
+		// Check that left and right type of children
+		if (checkChildren(2, childrenCount, children_types, head))
+		{
+			node *funcHeadNode = head.children[0];
+			node *funcBodyNode = head.children[1];
+			std::string className = funcHeadNode->children.size() > 0 ? funcHeadNode->children[0]->nodeValue : "<unknown-class>";
+			std::string funcName = "<unknown-function>";
+			if (funcHeadNode->children.size() >= 2 && funcHeadNode->children[1]->nodeType == "id")
+			{
+				funcName = funcHeadNode->children[1]->nodeValue;
+			}
+			else if (funcHeadNode->children.size() >= 1)
+			{
+				funcName = "constructor";
+			}
+
+			std::string function_return_type = funcHeadNode->stEntry.type;
+			std::string actual_return_type = funcBodyNode->stEntry.type;
+
+			auto hasHeadShape = [](node *fh, const std::vector<std::string> &shape) -> bool
+			{
+				if (!fh || fh->children.size() != shape.size())
+					return false;
+				for (size_t i = 0; i < shape.size(); ++i)
+				{
+					if (!fh->children[i] || fh->children[i]->nodeType != shape[i])
+						return false;
+				}
+				return true;
+			};
+
+			bool isMethodHead = hasHeadShape(funcHeadNode, {"id", "id", "fparams", "returntype"});
+			bool isCtorHead = !isMethodHead && hasHeadShape(funcHeadNode, {"id", "fparams", "returntype"});
+			bool headerShapeOk = isMethodHead || isCtorHead;
+
+			if (function_return_type == actual_return_type)
+			{
+				if (headerShapeOk)
+					spdlog::info("[SemanticCheck][PASS][ReturnType] '{}::{}' declared='{}' actual='{}'.", className, funcName, function_return_type, actual_return_type);
+				else
+					spdlog::info("[SemanticCheck][PASS][ReturnType] '{}::{}' declared='{}' actual='{}' (non-canonical funchead shape).", className, funcName, function_return_type, actual_return_type);
+			}
+			else
+			{
+				if (headerShapeOk)
+					spdlog::warn("[SemanticCheck][FAIL][ReturnType] '{}::{}' declared='{}' actual='{}'.", className, funcName, function_return_type, actual_return_type);
+				else
+				{
+					spdlog::warn("[SemanticCheck][FAIL][ReturnType] '{}::{}' declared='{}' actual='{}' (unexpected funchead shape).", className, funcName, function_return_type, actual_return_type);
+				}
+			}
+		}
+	}
+	else
+	{
+		spdlog::error("[SemanticCheckingVisitor] visit(implNode): expected 2 children, got {}.", childrenCount);
+	}
+}
+
+void SemanticCheckingVisitor::visit(reptimpldef3Node &n)
+{
+	// I dont care about the amount of children i am just looking the "freturnstatemenetNode" child
+	if (node *child = find_child("freturnstatement", n.children); child != nullptr)
+	{
+		n.stEntry.type = child->stEntry.type;
+		spdlog::trace("[SemanticCheck][Trace] reptimpldef3 resolved return statement type='{}'.", child->stEntry.type);
+		n.stEntry.type = child->stEntry.type;
+	}
+
+	else
+	{
+		n.stEntry.type = "void";
+		spdlog::debug("[SemanticCheck][Flow] reptimpldef3 has no return statement; defaulting body type to 'void'.");
+	}
 }
 
 void SemanticCheckingVisitor::visit(startNode &head)
@@ -548,7 +671,7 @@ void SemanticCheckingVisitor::visit(reptstatement4Node &n)
 	// Need to check the left and right side of the assignnode to validate if the assignment is valid
 	// Get left child
 	// assignnode is supposed to be a binary
-	if (n.children.size() != 2 && n.children.at(0) != nullptr && n.children.at(1) != nullptr)
+	if (n.children.size() != 2 || n.children[0] == nullptr || n.children[1] == nullptr)
 	{
 		spdlog::error("[SemanticCheck] AssignNode ERROR : NOT BINARY TREE");
 		return;
@@ -565,21 +688,373 @@ void SemanticCheckingVisitor::visit(floatnumNode &n)
 {
 	spdlog::debug("[SemanticCheck] floatnumNode: nodeValue='{}' nodeType='{}' semanticMeaning='{}'",
 				  n.nodeValue, n.nodeType, n.semanticMeaning);
+	n.stEntry.type = "float";
 }
 
-// void SemanticCheckingVisitor::visit(paramNode &n)
-// {
-// 	int childrenCount = n.children.size();
-// 	node *leftChild = n.children[0];
-// 	node *leftChild = n.children[0];
+void SemanticCheckingVisitor::visit(paramNode &n)
+{
+	int childrenCount = n.children.size();
 
-// 	if (childrenCount == 2)
-// 	{
-// 		// Check that left and right type oif children
-// 		if (n.children[0]->nodeType.compare("id") == 0 && n.c)
-// 	}
-// 	else if (childrenCount != 2)
-// 	{
-// 		spdlog::error("[SemanticCheckingVisitor] Semantic Checking paramNode :: Amount of childrne should not be other than two.");
-// 	}
-// }
+	// param is built with an epsilon-delimited pop, so it may include extra children
+	// (for example dimlist/reptfparams3), not just id+type.
+	if (childrenCount < 2)
+	{
+		spdlog::error("[SemanticCheckingVisitor] visit(paramNode): expected at least id and type, got childrenCount={}", childrenCount);
+		return;
+	}
+
+	node *typeChild = find_child("type", n.children);
+	if (typeChild)
+	{
+		n.stEntry.type = typeChild->nodeValue;
+	}
+	else
+	{
+		spdlog::error("[SemanticCheckingVisitor] visit(paramNode): missing type child.");
+	}
+
+	node *idChild = find_child("id", n.children);
+	if (idChild)
+	{
+		n.stEntry.name = idChild->nodeValue;
+	}
+}
+
+void SemanticCheckingVisitor::visit(freturnstatementNode &n)
+{
+	int childrenCount = n.children.size();
+
+	if (childrenCount == 1)
+	{
+		spdlog::trace("[SemanticCheck][Trace] freturnstatement shape ok: nodeType='{}'.", n.nodeType);
+
+		std::vector<std::string> children_types = {"expr"};
+		node *onlyChild = n.children[0];
+
+		// Check that left and right type of children
+		if (checkChildren(1, childrenCount, children_types, n))
+		{
+			n.stEntry.type = onlyChild->stEntry.type;
+			spdlog::trace("[SemanticCheck][Trace] freturnstatement propagated type='{}' from child nodeType='{}'.", onlyChild->stEntry.type, onlyChild->nodeType);
+		}
+		else
+		{
+			spdlog::error("WRONG child type: {}. This is not the correct child expected for the return statement, was expecting an exprNode.", onlyChild->nodeType);
+		}
+	}
+	else
+	{
+		spdlog::error("[SemanticCheckingVisitor] visit(freturnstatementNode): expected 1 child, got {}.", childrenCount);
+	}
+}
+
+void SemanticCheckingVisitor::visit(exprNode &n)
+{
+	// The parser always produces 2 children: [expr2/epsilon, arithexpr]
+	// child[0] is expr2 (relational) or epsilon (simple), child[1] is arithexpr.
+	int childrenCount = n.children.size();
+	if (childrenCount == 2)
+	{
+		node *firstChild = n.children[0];
+		node *arithChild = n.children[1];
+
+		if (firstChild->nodeType == "epsilon" && arithChild->nodeType == "arithexpr")
+		{
+			// Simple expression — just an arithexpr with no relational operator
+			n.stEntry.type = arithChild->stEntry.type;
+		}
+		else if (firstChild->nodeType == "expr2")
+		{
+			// Relational expression (arithexpr relop arithexpr) — result is boolean/integer
+			n.stEntry.type = "integer";
+		}
+		else
+		{
+			spdlog::warn("[SemanticCheckingVisitor] visit(exprNode): unexpected child[0] nodeType='{}', propagating arithexpr type.", firstChild->nodeType);
+			n.stEntry.type = arithChild->stEntry.type;
+			spdlog::debug("exprNode :: n.stEntry.type = {}", n.stEntry.type);
+		}
+	}
+
+	else
+	{
+		spdlog::error("[SemanticCheckingVisitor] visit(exprNode): unexpected childrenCount={} for node name: '{}', node type: '{}'.", childrenCount, n.stEntry.name, n.stEntry.type);
+	}
+}
+void SemanticCheckingVisitor::visit(arithexprNode &n)
+{
+	// if (remove_node(n))
+	// 	return;
+	int childrenCount = static_cast<int>(n.children.size());
+	bool isSingleTermShape = (childrenCount == 1 && n.children[0] && (n.children[0]->nodeType == "term" || n.children[0]->nodeType == "id" || n.semanticMeaning == "term"));
+	bool isCommonTermShape = (childrenCount == 2 && n.semanticMeaning == "term" && n.children[0] && n.children[0]->nodeType == "id");
+	if (isSingleTermShape || isCommonTermShape)
+	{
+		node *termChild = (n.children[0]->nodeType == "term") ? n.children[0] : &n;
+		node *idChild = nullptr;
+		if (n.children[0]->nodeType == "id")
+		{
+			idChild = n.children[0];
+		}
+		else if (termChild->nodeType == "id")
+		{
+			idChild = termChild;
+		}
+		else
+		{
+			idChild = find_child("id", termChild->children);
+		}
+
+		std::string termName = idChild ? idChild->nodeValue : "<unknown-term>";
+		std::string resolvedType = idChild ? idChild->stEntry.type : "";
+
+		if (resolvedType.empty() && !termName.empty() && termName != "<unknown-term>")
+		{
+			for (node *scope = &n; scope != nullptr; scope = scope->parent)
+			{
+				auto it = scope->stMap.find(termName);
+				if (it != scope->stMap.end() && it->second)
+				{
+					resolvedType = it->second->type;
+					break;
+				}
+				if (scope->stEntry.hasLink && scope->stEntry.link)
+				{
+					auto linkedIt = scope->stEntry.link->find(termName);
+					if (linkedIt != scope->stEntry.link->end() && linkedIt->second)
+					{
+						resolvedType = linkedIt->second->type;
+						break;
+					}
+				}
+			}
+		}
+		if (resolvedType.empty())
+		{
+			resolvedType = findTypeFromRoot(root, termName);
+		}
+
+		if (!resolvedType.empty())
+		{
+			termChild->stEntry.name = termName;
+			termChild->stEntry.type = resolvedType;
+			if (idChild)
+			{
+				idChild->stEntry.type = resolvedType;
+			}
+			n.stEntry.type = resolvedType;
+			spdlog::trace("[SemanticCheck][Trace] arithexpr single-term resolved: name='{}', type='{}'.", termName, resolvedType);
+		}
+		else
+		{
+			spdlog::warn("[SemanticCheck] arithexpr single-term unresolved type for term='{}'.", termName);
+		}
+		return;
+	}
+
+	if (n.isLeaf)
+	{
+		// collapsed literal — read type from semanticMeaning
+		if (n.semanticMeaning == "floatnum")
+			n.stEntry.type = "float";
+		else if (n.semanticMeaning == "intnum")
+			n.stEntry.type = "integer";
+	}
+	else
+	{
+		// normal case — propagate type from child
+		if (!n.children.empty() && n.children[0])
+		{
+			n.stEntry.type = n.children[0]->stEntry.type;
+		}
+		else
+		{
+			spdlog::error("[SemanticCheckingVisitor] visit(arithexprNode): missing child for non-leaf node.");
+		}
+	}
+}
+
+void SemanticCheckingVisitor::visit(termNode &n)
+{
+	if (n.children.size() == 1 && n.children[0] && n.children[0]->nodeType == "id")
+	{
+		node *idChild = n.children[0];
+		std::string termName = idChild->nodeValue;
+		std::string resolvedType = idChild->stEntry.type;
+
+		if (resolvedType.empty() && !termName.empty())
+		{
+			for (node *scope = &n; scope != nullptr; scope = scope->parent)
+			{
+				auto it = scope->stMap.find(termName);
+				if (it != scope->stMap.end() && it->second)
+				{
+					resolvedType = it->second->type;
+					break;
+				}
+				if (scope->stEntry.hasLink && scope->stEntry.link)
+				{
+					auto linkedIt = scope->stEntry.link->find(termName);
+					if (linkedIt != scope->stEntry.link->end() && linkedIt->second)
+					{
+						resolvedType = linkedIt->second->type;
+						break;
+					}
+				}
+			}
+		}
+		if (resolvedType.empty())
+		{
+			resolvedType = findTypeFromRoot(root, termName);
+		}
+
+		if (!resolvedType.empty())
+		{
+			n.stEntry.name = termName;
+			n.stEntry.type = resolvedType;
+			idChild->stEntry.type = resolvedType;
+			spdlog::trace("[SemanticCheck][Trace] term resolved: name='{}', type='{}'.", termName, resolvedType);
+		}
+		else
+		{
+			spdlog::warn("[SemanticCheck] term unresolved type for id='{}'.", termName);
+		}
+	}
+}
+
+void SemanticCheckingVisitor::visit(assignNode &n)
+{
+	if (n.children.size() != 2 || n.children[0] == nullptr || n.children[1] == nullptr)
+	{
+		spdlog::error("[SemanticCheckingVisitor] visit(assignNode): expected binary assign node, got {} children.", n.children.size());
+		return;
+	}
+
+	// The assignment expression type is the RHS expression type.
+	n.stEntry.type = n.children[1]->stEntry.type;
+}
+
+bool SemanticCheckingVisitor::remove_node(node &n)
+{
+	std::string &node_name = n.get_name();
+	std::string &node_type = n.get_type();
+	std::string &node_visibility = n.get_visibility();
+	std::string &node_kind = n.get_kind();
+
+	if ((node_name.empty() && node_type.empty() && node_visibility.empty() && node_kind.empty()) && (n.isLeaf || n.children.empty()))
+	{
+		spdlog::warn("[SemanticCheckingVisitor] Semantic Checking remove_node :: About to remove the node: : {}, node type: {} and .", n.stEntry.name, n.stEntry.type);
+
+		// Bridge the doubly-linked sibling chain
+		if (n.leftSibling)
+			n.leftSibling->rightSibling = n.rightSibling;
+		if (n.rightSibling)
+			n.rightSibling->leftSibling = n.leftSibling;
+
+		// If this node is the head of the sibling list, advance the head
+		if (n.headOfSibling == &n)
+		{
+			if (n.rightSibling)
+				n.rightSibling->headOfSibling = n.rightSibling;
+		}
+
+		// Remove from parent's children vector
+		if (n.parent)
+		{
+			auto &siblings = n.parent->children;
+			siblings.erase(std::remove(siblings.begin(), siblings.end(), &n), siblings.end());
+		}
+
+		return true;
+	}
+	return false;
+}
+
+bool SemanticCheckingVisitor::checkChildren(int expected_num_of_children, int actual_num_of_children, const std::vector<std::string> &expected_children_types, node &n)
+{
+	if (expected_num_of_children != actual_num_of_children)
+	{
+		spdlog::error("SemanticCheckingVisitor :: Unrecoverable error");
+		return false;
+		// throw std::runtime_error("Expected_num_of_children does not equal to the actual number of children");
+	}
+
+	if (expected_num_of_children == 2)
+	{
+		// Order in children_names matters, the first is supposed to be the left child and the second is the right child
+		return (match_without_order(expected_num_of_children, expected_children_types, n.children));
+	}
+	else if (expected_num_of_children == 1)
+	{
+		return (match_without_order(expected_num_of_children, expected_children_types, n.children));
+	}
+	return false;
+}
+
+bool SemanticCheckingVisitor::match_without_order(int num_of_children, std::vector<std::string> children_names, std::vector<node *> &children)
+{
+	// Need to compare the names in the children_names vector and compare them to the children.
+	if (num_of_children == 2)
+	{
+		if (children[0]->nodeType == children_names[0] && children[1]->nodeType == children_names[1])
+		{
+			return true;
+		}
+		else
+		{
+			if (children[1]->nodeType == children_names[0] && children[0]->nodeType == children_names[1])
+			{
+				spdlog::debug("match_without_order :: incorect child order but the number of children is correct. Swapping the child vector pointers values around so that they point to the right child");
+				std::swap(children[0], children[1]);
+				return true;
+			}
+			spdlog::debug("match_without_order :: incorect children types.");
+			return false;
+		}
+	}
+	else if (num_of_children == 1)
+	{
+		if (children[0]->nodeType == children_names[0])
+		{
+			return true;
+		}
+		else
+		{
+			spdlog::debug("match_without_order :: incorect children types.");
+			return false;
+		}
+	}
+	return false;
+}
+
+node *visitor::find_child(std::string missing_child, std::vector<node *> vector_of_children)
+{
+	for (auto child_it = vector_of_children.begin(); child_it != vector_of_children.end(); ++child_it)
+	{
+		if ((*child_it)->nodeType == missing_child)
+		{
+			return (*child_it);
+		}
+		continue;
+	}
+	return nullptr;
+}
+
+void SemanticCheckingVisitor::visit(funcheadNode &n)
+{
+	// I dont care about the amount of children i am just looking the "freturnstatemenetNode" child
+	if (node *child = find_child("returntype", n.children); child != nullptr)
+	{
+		// bring the type up
+		spdlog::trace("[SemanticCheck][Trace] funchead return type discovered: '{}'", child->stEntry.type);
+		n.stEntry.type = child->stEntry.type;
+	}
+}
+
+void SemanticCheckingVisitor::visit(returntypeNode &n)
+{
+	if (!n.nodeValue.empty())
+	{
+		n.stEntry.type = n.nodeValue;
+	}
+}

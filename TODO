@@ -85,7 +85,7 @@ In visit(aparamsandidNode&)   [function call checks]
 In type inference pass   [expression type resolution — req 10, 11]
 ------------------------------------------------------------------
   ITEM s — Expression type inference (build bottom-up, one sub-step at a time)
-  [ ] s1. Add `std::string inferredType` field to the AST node struct/class
+  [x] s1. Add `std::string inferredType` field to the AST node struct/class
           so any node can carry its resolved type.
   [ ] s2. Annotate literal nodes with fixed types:
             intlit   → inferredType = "integer"

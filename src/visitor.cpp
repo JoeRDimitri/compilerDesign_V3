@@ -4,8 +4,10 @@
 
 namespace
 {
+	// Small AST/symbol-table helpers used by the semantic and symbol-table passes below.
 	std::string findTypeInEntryLink(node::symbolTableEntry *entry, const std::string &name, std::unordered_set<node::symbolTableEntry *> &visited)
 	{
+		// Walk a linked symbol-table chain recursively, guarding against cycles.
 		if (!entry || !entry->hasLink || !entry->link || visited.count(entry) > 0)
 			return "";
 		visited.insert(entry);
@@ -28,6 +30,7 @@ namespace
 
 	std::string findTypeFromRoot(node *root, const std::string &name)
 	{
+		// Resolve a symbol by first checking the root table and then any nested links.
 		if (!root)
 			return "";
 
@@ -50,6 +53,7 @@ namespace
 
 	std::string getClassDeclName(node *classDeclNode)
 	{
+		// classdecl nodes store the class identifier as a direct id child.
 		if (!classDeclNode)
 			return "";
 
@@ -66,6 +70,7 @@ namespace
 
 	node *findClassDeclarationNode(node *root, const std::string &className)
 	{
+		// Depth-first search for the class declaration node with the matching class name.
 		if (!root)
 			return nullptr;
 
@@ -87,6 +92,7 @@ namespace
 
 	bool classDeclaresFunction(node *classDeclNode, const std::string &funcName)
 	{
+		// Check whether a class declaration contains a matching function declaration anywhere inside it.
 		if (!classDeclNode)
 			return false;
 
@@ -145,6 +151,177 @@ namespace
 
 		return false;
 	}
+
+	node *findDeclaredFunctionNode(node *classDeclNode, const std::string &funcName)
+	{
+		// Return the declaration node itself so the semantic pass can compare its parameters.
+		if (!classDeclNode)
+			return nullptr;
+
+		const std::string className = classDeclNode->stEntry.name;
+
+		auto matchesFunctionNode = [&](node *candidate) -> bool
+		{
+			return candidate &&
+				   (candidate->semanticMeaning == "funcdecl" || candidate->semanticMeaning == "funchead" || candidate->semanticMeaning == "funcdeclfam") &&
+				   (candidate->stEntry.name == funcName || (funcName == "constructor" && candidate->stEntry.name == className));
+		};
+
+		auto scanDescendants = [&](auto &&self, node *current) -> node *
+		{
+			if (!current)
+				return nullptr;
+
+			if (matchesFunctionNode(current))
+			{
+				return current;
+			}
+
+			for (node *child : current->children)
+			{
+				if (node *found = self(self, child); found != nullptr)
+				{
+					return found;
+				}
+			}
+
+			return nullptr;
+		};
+
+		return scanDescendants(scanDescendants, classDeclNode);
+	}
+
+	std::map<std::string, std::string> collectParamTypes(node *funcheadNode)
+	{
+		// Collect parameter name/type pairs from a funchead subtree.
+		std::map<std::string, std::string> params;
+		if (!funcheadNode)
+			return params;
+
+		auto scan = [&](auto &&self, node *current) -> void
+		{
+			if (!current)
+				return;
+
+			if (current->semanticMeaning == "param")
+			{
+				std::string paramName;
+				std::string paramType;
+				for (node *child : current->children)
+				{
+					if (!child)
+						continue;
+					if (child->semanticMeaning == "id")
+					{
+						paramName = child->nodeValue;
+					}
+					else if (child->semanticMeaning == "type")
+					{
+						paramType = child->nodeValue;
+					}
+				}
+				if (!paramName.empty())
+				{
+					params[paramName] = paramType;
+				}
+			}
+
+			for (node *child : current->children)
+			{
+				self(self, child);
+			}
+		};
+
+		scan(scan, funcheadNode);
+		return params;
+	}
+
+	std::unordered_set<std::string> collectClassAttributes(node *classDeclNode)
+	{
+		// Gather every class member name declared inside the class body.
+		std::unordered_set<std::string> attributes;
+		if (!classDeclNode)
+			return attributes;
+
+		auto scan = [&](auto &&self, node *current) -> void
+		{
+			if (!current)
+				return;
+
+			if (current->semanticMeaning == "vardecl")
+			{
+				if (!current->stEntry.name.empty())
+				{
+					attributes.insert(current->stEntry.name);
+				}
+				else
+				{
+					for (node *child : current->children)
+					{
+						if (child && child->nodeType == "id")
+						{
+							attributes.insert(child->nodeValue);
+							break;
+						}
+					}
+				}
+			}
+
+			for (node *child : current->children)
+			{
+				self(self, child);
+			}
+		};
+
+		scan(scan, classDeclNode);
+		return attributes;
+	}
+
+	std::unordered_set<std::string> collectConstructorTargets(node *implBodyNode)
+	{
+		// Gather the left-hand targets written by constructor-style self.member := ... assignments.
+		std::unordered_set<std::string> targets;
+		if (!implBodyNode)
+			return targets;
+
+		auto scan = [&](auto &&self, node *current) -> void
+		{
+			if (!current)
+				return;
+
+			if (current->semanticMeaning == "dot" && !current->children.empty() && current->children[0])
+			{
+				node *assignNode = current->children[0];
+				if ((assignNode->semanticMeaning == "assign" || assignNode->semanticMeaning == "reptstatement4") && !assignNode->children.empty() && assignNode->children[0])
+				{
+					node *lhsNode = assignNode->children[0];
+					if (!lhsNode->stEntry.name.empty())
+					{
+						targets.insert(lhsNode->stEntry.name);
+					}
+					else
+					{
+						for (node *child : lhsNode->children)
+						{
+							if (child && child->nodeType == "id")
+							{
+								targets.insert(child->nodeValue);
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			for (node *child : current->children)
+			{
+				self(self, child);
+			}
+		};
+
+		scan(scan, implBodyNode);
+		return targets;
+	}
 }
 
 std::string SymTabCreationVisitor::get(std::string search, node &head)
@@ -164,6 +341,7 @@ std::string SymTabCreationVisitor::get(std::string search, node &head)
 }
 void SymTabCreationVisitor::visit(funcdeclNode &head)
 {
+	// Build the function declaration entry and point it at the parameter map.
 	node::symbolTableEntry *ste = &head.stEntry;
 
 	// kind
@@ -187,6 +365,7 @@ void SymTabCreationVisitor::visit(funcdeclNode &head)
 
 void SymTabCreationVisitor::visit(fparamsNode &head)
 {
+	// Store parameter declarations in the function's local symbol table.
 	std::map<std::string, node::symbolTableEntry *> *mp = &head.stMap;
 	for (node *child : head.children)
 	{
@@ -206,6 +385,7 @@ void SymTabCreationVisitor::visit(fparamsNode &head)
 
 void SymTabCreationVisitor::visit(paramNode &head)
 {
+	// A param node only needs its identifier and declared type copied into the entry.
 	node::symbolTableEntry *ste = &head.stEntry;
 	ste->kind = "parameter";
 	ste->name = get("id", head);
@@ -214,6 +394,7 @@ void SymTabCreationVisitor::visit(paramNode &head)
 
 void SymTabCreationVisitor::visit(classNode &head)
 {
+	// Build the class entry and collect attributes/function declarations from the class body.
 	std::map<std::string, node::symbolTableEntry *> *mp = &head.stMap;
 	node::symbolTableEntry *ste = &head.stEntry;
 	ste->kind = "class";
@@ -231,6 +412,7 @@ void SymTabCreationVisitor::visit(classNode &head)
 		}
 		else if (child->semanticMeaning == "{")
 		{
+			// Walk the class body and collect member declarations into the class symbol table.
 			for (node *children : child->children)
 			{
 				if (children->semanticMeaning == "attributedecl")
@@ -284,6 +466,7 @@ void SymTabCreationVisitor::visit(classNode &head)
 
 void SymTabCreationVisitor::visit(startNode &head)
 {
+	// Top-level pass: collect classes and free functions, then merge implementations into classes.
 	std::map<std::string, node::symbolTableEntry *> *mp = &head.stMap;
 	std::unordered_set<std::string> implementedClasses;
 	for (node *child : head.children)
@@ -699,12 +882,13 @@ void SemanticCheckingVisitor::visit(implNode &head)
 			std::string actual_return_type = funcBodyNode->stEntry.type;
 
 			node *classDeclNode = findClassDeclarationNode(root, className);
+			node *declFunctionNode = classDeclNode ? findDeclaredFunctionNode(classDeclNode, funcName) : nullptr;
 			if (!classDeclNode)
 			{
 				canGenerateMachineCode = false;
 				spdlog::error("[SemanticCheck][FAIL][Declaration] '{}::{}' has no matching class declaration.", className, funcName);
 			}
-			else if (classDeclaresFunction(classDeclNode, funcName))
+			else if (declFunctionNode != nullptr)
 			{
 				spdlog::info("[SemanticCheck][PASS][Declaration] '{}::{}' is declared in class '{}'.", className, funcName, className);
 			}
@@ -745,6 +929,41 @@ void SemanticCheckingVisitor::visit(implNode &head)
 				else
 				{
 					spdlog::warn("[SemanticCheck][FAIL][ReturnType] '{}::{}' declared='{}' actual='{}' (unexpected funchead shape).", className, funcName, function_return_type, actual_return_type);
+				}
+			}
+
+			if (declFunctionNode != nullptr)
+			{
+				const auto declaredParams = collectParamTypes(declFunctionNode);
+				const auto implParams = collectParamTypes(funcHeadNode);
+				if (declaredParams == implParams)
+				{
+					spdlog::info("[SemanticCheck][PASS][Parameters] '{}::{}' parameter list matches its declaration.", className, funcName);
+				}
+				else
+				{
+					canGenerateMachineCode = false;
+					spdlog::error("[SemanticCheck][FAIL][Parameters] '{}::{}' parameter list does not match its declaration.", className, funcName);
+				}
+			}
+
+			if (classDeclNode != nullptr && funcName == "constructor")
+			{
+				const auto declaredAttributes = collectClassAttributes(classDeclNode);
+				const auto constructorTargets = collectConstructorTargets(funcBodyNode);
+				bool allAttributesAssigned = true;
+				for (const std::string &attributeName : declaredAttributes)
+				{
+					if (constructorTargets.find(attributeName) == constructorTargets.end())
+					{
+						allAttributesAssigned = false;
+						canGenerateMachineCode = false;
+						spdlog::error("[SemanticCheck][FAIL][ClassMember] '{}::{}' does not assign declared class member '{}'.", className, funcName, attributeName);
+					}
+				}
+				if (allAttributesAssigned)
+				{
+					spdlog::info("[SemanticCheck][PASS][ClassMember] '{}::{}' assigns all declared class members.", className, funcName);
 				}
 			}
 		}

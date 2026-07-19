@@ -47,6 +47,104 @@ namespace
 
 		return "";
 	}
+
+	std::string getClassDeclName(node *classDeclNode)
+	{
+		if (!classDeclNode)
+			return "";
+
+		for (node *child : classDeclNode->children)
+		{
+			if (child && child->semanticMeaning == "id")
+			{
+				return child->nodeValue;
+			}
+		}
+
+		return "";
+	}
+
+	node *findClassDeclarationNode(node *root, const std::string &className)
+	{
+		if (!root)
+			return nullptr;
+
+		if (root->semanticMeaning == "classdecl" && getClassDeclName(root) == className)
+		{
+			return root;
+		}
+
+		for (node *child : root->children)
+		{
+			if (node *found = findClassDeclarationNode(child, className); found != nullptr)
+			{
+				return found;
+			}
+		}
+
+		return nullptr;
+	}
+
+	bool classDeclaresFunction(node *classDeclNode, const std::string &funcName)
+	{
+		if (!classDeclNode)
+			return false;
+
+		auto matchesFunctionNode = [&](node *candidate) -> bool
+		{
+			return candidate &&
+				   (candidate->semanticMeaning == "funcdecl" || candidate->semanticMeaning == "funchead" || candidate->semanticMeaning == "funcdeclfam") &&
+				   candidate->stEntry.name == funcName;
+		};
+
+		auto scanDescendants = [&](auto &&self, node *current) -> bool
+		{
+			if (!current)
+				return false;
+
+			if (matchesFunctionNode(current))
+			{
+				return true;
+			}
+
+			for (node *child : current->children)
+			{
+				if (self(self, child))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		};
+
+		for (node *child : classDeclNode->children)
+		{
+			if (!child)
+				continue;
+
+			if (child->semanticMeaning == "{")
+			{
+				for (node *grandchild : child->children)
+				{
+					if (scanDescendants(scanDescendants, grandchild))
+					{
+						return true;
+					}
+				}
+			}
+			else if (matchesFunctionNode(child))
+			{
+				return true;
+			}
+			else if (scanDescendants(scanDescendants, child))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
 }
 
 std::string SymTabCreationVisitor::get(std::string search, node &head)
@@ -600,6 +698,22 @@ void SemanticCheckingVisitor::visit(implNode &head)
 			std::string function_return_type = funcHeadNode->stEntry.type;
 			std::string actual_return_type = funcBodyNode->stEntry.type;
 
+			node *classDeclNode = findClassDeclarationNode(root, className);
+			if (!classDeclNode)
+			{
+				canGenerateMachineCode = false;
+				spdlog::error("[SemanticCheck][FAIL][Declaration] '{}::{}' has no matching class declaration.", className, funcName);
+			}
+			else if (classDeclaresFunction(classDeclNode, funcName))
+			{
+				spdlog::info("[SemanticCheck][PASS][Declaration] '{}::{}' is declared in class '{}'.", className, funcName, className);
+			}
+			else
+			{
+				canGenerateMachineCode = false;
+				spdlog::error("[SemanticCheck][FAIL][Declaration] '{}::{}' is implemented but not declared in class '{}'.", className, funcName, className);
+			}
+
 			auto hasHeadShape = [](node *fh, const std::vector<std::string> &shape) -> bool
 			{
 				if (!fh || fh->children.size() != shape.size())
@@ -625,6 +739,7 @@ void SemanticCheckingVisitor::visit(implNode &head)
 			}
 			else
 			{
+				canGenerateMachineCode = false;
 				if (headerShapeOk)
 					spdlog::warn("[SemanticCheck][FAIL][ReturnType] '{}::{}' declared='{}' actual='{}'.", className, funcName, function_return_type, actual_return_type);
 				else
@@ -633,10 +748,15 @@ void SemanticCheckingVisitor::visit(implNode &head)
 				}
 			}
 		}
+		else
+		{
+			canGenerateMachineCode = false;
+		}
 	}
 	else
 	{
 		spdlog::error("[SemanticCheckingVisitor] visit(implNode): expected 2 children, got {}.", childrenCount);
+		canGenerateMachineCode = false;
 	}
 }
 

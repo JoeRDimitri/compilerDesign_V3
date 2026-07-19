@@ -129,10 +129,12 @@ class SemanticCheckingVisitor : public visitor
 
 public:
     node *root = nullptr; // set to parser.AST.treeHead before the pass
+    bool canGenerateMachineCode = true;
     SemanticCheckingVisitor()
     {
         value_type_priority["float"] = 1;
         value_type_priority["int"] = 2;
+        canGenerateMachineCode = true;
     };
     virtual ~SemanticCheckingVisitor() {}
     // Need to implement semnatic checking with the semantic checking visitor and not the sym tab creation visitor.

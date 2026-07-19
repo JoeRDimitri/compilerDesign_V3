@@ -89,6 +89,13 @@ int main(int argc, char *argv[])
 	SemanticCheckingVisitor *semanticChecker = new SemanticCheckingVisitor();
 	semanticChecker->root = parser.AST.treeHead;
 	parser.AST.treeHead->accept(*semanticChecker);
+	if (!semanticChecker->canGenerateMachineCode)
+	{
+		spdlog::error("Semantic checks failed. Machine code generation is disabled.");
+		return 1;
+	}
+
+	spdlog::info("Semantic checks passed. Machine code generation is enabled.");
 	std::cout << "Finished Building Symbol Table" << std::endl;
 	return 0;
 }

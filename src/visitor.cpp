@@ -391,6 +391,137 @@ namespace
 		scan(scan, implBodyNode);
 		return targets;
 	}
+
+	std::string joinTypes(const std::vector<std::string> &types)
+	{
+		std::string result;
+		for (size_t i = 0; i < types.size(); ++i)
+		{
+			if (i > 0)
+				result += ",";
+			result += types[i];
+		}
+		return result;
+	}
+
+	std::string getFunctionNameForSignature(node *current, const std::string &className)
+	{
+		if (!current)
+			return "";
+
+		if (current->semanticMeaning == "impl")
+		{
+			for (node *child : current->children)
+			{
+				if (child && child->semanticMeaning == "funchead" && !child->stEntry.name.empty())
+					return child->stEntry.name;
+			}
+
+			bool foundFirstId = false;
+			for (node *child : current->children)
+			{
+				if (!child || child->semanticMeaning != "funchead")
+					continue;
+
+				for (node *grandchild : child->children)
+				{
+					if (grandchild && grandchild->semanticMeaning == "id")
+					{
+						if (!foundFirstId)
+						{
+							foundFirstId = true;
+						}
+						else
+						{
+							return grandchild->nodeValue;
+						}
+					}
+				}
+			}
+
+			if (!className.empty())
+				return "constructor";
+			return current->stEntry.name;
+		}
+
+		if (!current->stEntry.name.empty())
+		{
+			if (!className.empty() && current->stEntry.name == className)
+				return "constructor";
+			return current->stEntry.name;
+		}
+
+		for (node *child : current->children)
+		{
+			if (child && !child->stEntry.name.empty())
+			{
+				if (!className.empty() && child->stEntry.name == className)
+					return "constructor";
+				return child->stEntry.name;
+			}
+		}
+
+		return className.empty() ? "" : "constructor";
+	}
+
+	std::string buildFunctionSignature(node *current, const std::string &className)
+	{
+		if (!current)
+			return "";
+
+		std::string functionName = getFunctionNameForSignature(current, className);
+		if (functionName.empty())
+			return "";
+
+		std::string returnType = collectDeclaredReturnType(current);
+		if (functionName == "constructor" && returnType.empty())
+			returnType = "void";
+
+		std::string signature;
+		if (!className.empty())
+			signature = className + "::" + functionName;
+		else
+			signature = functionName;
+
+		signature += "(" + joinTypes(collectOrderedParamTypes(current)) + "):" + returnType;
+		return signature;
+	}
+
+	void collectFunctionSignatures(node *current, const std::string &activeClassName, std::map<std::string, int> &declaredFunctions, std::map<std::string, int> &implementedFunctions)
+	{
+		if (!current)
+			return;
+
+		std::string nextClassName = activeClassName;
+		if (current->semanticMeaning == "classdecl")
+		{
+			nextClassName = !current->stEntry.name.empty() ? current->stEntry.name : getClassDeclName(current);
+		}
+
+		if (current->semanticMeaning == "funcdecl")
+		{
+			std::string signature = buildFunctionSignature(current, activeClassName);
+			if (!signature.empty())
+				declaredFunctions[signature]++;
+		}
+		else if (current->semanticMeaning == "funcdef")
+		{
+			std::string signature = buildFunctionSignature(current, "");
+			if (!signature.empty())
+				implementedFunctions[signature]++;
+		}
+		else if (current->semanticMeaning == "impl")
+		{
+			std::string signature = buildFunctionSignature(current, current->stEntry.name);
+			if (!signature.empty())
+				implementedFunctions[signature]++;
+		}
+
+		for (node *child : current->children)
+		{
+			collectFunctionSignatures(child, nextClassName, declaredFunctions, implementedFunctions);
+		}
+	}
 }
 
 std::string SymTabCreationVisitor::get(std::string search, node &head)
@@ -1078,6 +1209,37 @@ void SemanticCheckingVisitor::visit(startNode &head)
 	{
 		// spdlog::debug("[SemanticCheck]   child nodeType='{}' semanticMeaning='{}' C++ type={}",
 		//				  child->nodeType, child->semanticMeaning, typeid(*child).name());
+	}
+
+	std::map<std::string, int> declaredFunctions;
+	std::map<std::string, int> implementedFunctions;
+	collectFunctionSignatures(&head, "", declaredFunctions, implementedFunctions);
+
+	for (const auto &[signature, declaredCount] : declaredFunctions)
+	{
+		const int implementedCount = implementedFunctions.count(signature) > 0 ? implementedFunctions.at(signature) : 0;
+		if (implementedCount < declaredCount)
+		{
+			canGenerateMachineCode = false;
+			spdlog::error("[SemanticCheck][FAIL][Completeness] '{}' is declared but not implemented.", signature);
+		}
+	}
+
+	for (const auto &[signature, implementedCount] : implementedFunctions)
+	{
+		const int declaredCount = declaredFunctions.count(signature) > 0 ? declaredFunctions.at(signature) : 0;
+		if (declaredCount < implementedCount)
+		{
+			if (signature.find("::") != std::string::npos)
+			{
+				canGenerateMachineCode = false;
+				spdlog::error("[SemanticCheck][FAIL][Completeness] '{}' is implemented without a matching declaration.", signature);
+			}
+			else
+			{
+				spdlog::warn("[SemanticCheck][WARN][Completeness] free function '{}' is implemented without a matching declaration; continuing.", signature);
+			}
+		}
 	}
 }
 

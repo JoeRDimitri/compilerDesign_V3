@@ -12,8 +12,11 @@ int main(int argc, char *argv[])
 	//  spdlog::set_default_logger(std::make_shared<spdlog::logger>("file_logger", file_sink));
 	//  spdlog::set_level(spdlog::level::info);
 	spdlog::set_level(spdlog::level::debug);
+
 	spdlog::info("** ** **IN MAIN DRIVER.CPP** ** **");
+
 	lexor lex;
+	
 	if (argc >= 2)
 		lex.setInputFile(argv[1]);
 	spdlog::warn("Current working directory check :{}", std::filesystem::current_path().string());

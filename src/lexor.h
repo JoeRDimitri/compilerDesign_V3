@@ -26,10 +26,10 @@ private:
 
 public:
 	// Constructor
-	token() {};
-	token(std::string type, std::string lexeme, int line, int column);
+	token(){};
 	// Destructor
-	~token() {};
+	~token(){};
+	token(std::string type, std::string lexeme, int line, int column);
 
 	// Getters
 	std::string getTypeName() { return this->typeName; };
@@ -49,8 +49,6 @@ class lexor
 {
 private:
 	handler h;
-	errorHandler erroneousHandler;
-	fileHandler fileousHandler;
 
 	std::unordered_map<std::string, std::string> tokenMap;
 	std::vector<char> intArray;
@@ -99,8 +97,6 @@ private:
 public:
 	// Constructor
 	lexor() : h(),
-			  erroneousHandler(&h),
-			  fileousHandler(&h),
 			  tokenMap{
 				  {"==", "=="}, {"+", "+"}, {"or", "or"}, {"(", "("}, {";", ";"}, {"int", "int"}, {"while", "while"}, {"local", "local"}, {"<>", "<>"}, {"-", "-"}, {"and", "and"}, {")", ")"}, {",", ","}, {"::", "::"}, {"float", "float"}, {"if", "if"}, {"constructor", "constructor"}, {"<", "<"}, {"*", "*"}, {"not", "not"}, {"{", "{"}, {".", "."}, {"void", "void"}, {"then", "then"}, {"attribute", "attribute"}, {">", ">"}, {"/", "/"}, {"}", "}"}, {":", ":"}, {"class", "class"}, {"else", "else"}, {"function", "function"}, {"<=", "<="}, {":=", ":="}, {"[", "["}, {"=>", "=>"}, {"self", "self"}, {"read", "read"}, {"public", "public"}, {">=", ">="}, {"]", "]"}, {"isa", "isa"}, {"write", "write"}, {"private", "private"}, {"implementation", "implementation"}, {"return", "return"}},
 			  intArray{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'},

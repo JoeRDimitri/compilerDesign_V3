@@ -1,10 +1,16 @@
 ﻿#include "first_and_follow.h"
 
-void first_and_follow::setInputFile(const std::string &path)
+void first_and_follow::set_first_input_File(const std::string &path)
 {
-	fileousHandler.connectFile(path);
-	fileousHandler.virgin = false;
+	first_set_handler.fileousHandler.connectFile(path);
+	first_set_handler.fileousHandler.virgin = false;
 }
+void first_and_follow::set_follow_input_File(const std::string &path)
+{
+	follow_set_handler.fileousHandler.connectFile(path);
+	follow_set_handler.fileousHandler.virgin = false;
+}
+
 void first_and_follow::resetFileInfo()
 {
 	line = "";
@@ -27,13 +33,13 @@ void first_and_follow::generateFirstSet()
 	// Check if we've run this file before. IF we have not then we begin the virgin protocol
 	// Virgin protocol is used to get the establish file connection.
 	// If the virginf protocol fails then we've already established a connection to the file.
-	if (fileousHandler.virgin == true)
+	if (first_set_handler.fileousHandler.virgin == true)
 	{
 		spdlog::info("Within the First Set Generation Step for the first time.");
 		// Virgin set to false so that we never enter this code again.
-		fileousHandler.virgin = false;
+		first_set_handler.fileousHandler.virgin = false;
 		// If the virgin protocol fails, then we were not able to establish a connection to the file. The program should close
-		if (!fileousHandler.virginProtocol())
+		if (!first_set_handler.fileousHandler.virginProtocol())
 			throw std::invalid_argument("Invalid File location");
 		else
 		{
@@ -49,9 +55,9 @@ void first_and_follow::generateFirstSet()
 		change = false;
 		resetFileInfo();
 		// Reset the file stream to read again
-		fileousHandler.resetToBeginning();
+		first_set_handler.fileousHandler.resetToBeginning();
 		// we should get line until the end of the file.
-		while (fileousHandler.readLine(line))
+		while (first_set_handler.fileousHandler.readLine(line))
 		{
 			lineIndex = 0;
 			currentSymbol = "";
@@ -134,8 +140,7 @@ void first_and_follow::generateFirstSet()
 			}
 		}
 	}
-	fileousHandler.disconnectFile();
-	fileousHandler.virgin = true;
+	first_set_handler.fileousHandler.disconnectFile();
 }
 void first_and_follow::compareSymbolVector(bool &change, std::vector<std::string> *v)
 {
@@ -389,13 +394,13 @@ void first_and_follow::generateFollowSet()
 	// Check if we've run this file before. IF we have not then we begin the virgin protocol
 	// Virgin protocol is used to get the establish file connection.
 	// If the virginf protocol fails then we've already established a connection to the file.
-	if (fileousHandler.virgin == true)
+	if (follow_set_handler.fileousHandler.virgin == true)
 	{
 		spdlog::info("Within the First Set Generation Step for the first time.");
 		// Virgin set to false so that we never enter this code again.
-		fileousHandler.virgin = false;
+		follow_set_handler.fileousHandler.virgin = false;
 		// If the virgin protocol fails, then we were not able to establish a connection to the file. The program should close
-		if (!fileousHandler.virginProtocol())
+		if (!follow_set_handler.fileousHandler.virginProtocol())
 			throw std::invalid_argument("Invalid File location");
 		else
 		{
@@ -420,9 +425,9 @@ void first_and_follow::generateFollowSet()
 		currentSymbol = "";
 		lineIndex = 0;
 		// Reset the file stream to read again
-		fileousHandler.resetToBeginning();
+		follow_set_handler.fileousHandler.resetToBeginning();
 		// we should get line until the end of the file.
-		while (fileousHandler.readLine(line))
+		while (follow_set_handler.fileousHandler.readLine(line))
 		{
 			//			std::cout << line << std::endl;
 			lineIndex = 0;
@@ -556,7 +561,7 @@ void first_and_follow::generateFollowSet()
 			}
 		}
 	}
-	fileousHandler.disconnectFile();
+	follow_set_handler.fileousHandler.disconnectFile();
 }
 bool first_and_follow::hasEpsilon(std::vector<std::string> *b)
 {

@@ -26,9 +26,15 @@ private:
 
 public:
 	// Constructor
-	token(){};
+	token()
+	{
+		//spdlog::debug("Token Default Constructor Called for {}",lexeme);
+	};
 	// Destructor
-	~token(){};
+	~token()
+	{
+		// spdlog::debug("Token Destructor Called for {}",lexeme);
+	};
 	token(std::string type, std::string lexeme, int line, int column);
 
 	// Getters
@@ -109,7 +115,7 @@ public:
 			  currentLexeme(""),
 			  possibleType("")
 	{
-		spdlog::info("Lexor constructor called.");
+		spdlog::info("Main Lexor Initialized");
 	};
 	// Destructor
 	~lexor() { spdlog::info("Lexor destructor called."); };

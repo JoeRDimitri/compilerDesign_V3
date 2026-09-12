@@ -1,6 +1,8 @@
 #include "lexor.h"
 token::token(std::string type, std::string lexeme, int line, int column)
 {
+	// spdlog::debug("Token Constructor Called for {}",lexeme);
+
 	this->typeName = type;
 	this->lexeme = lexeme;
 	this->line = line;
@@ -585,7 +587,7 @@ std::unique_ptr<token> lexor::getNextToken()
 
 	if (h.fileousHandler.checkEndOfStream())
 	{
-		spdlog::warn("Reached end of Stream."); // warn level
+		spdlog::debug("Reached end of Stream."); // warn level
 		throw EndOfFileException();
 	}
 
@@ -604,4 +606,3 @@ std::unique_ptr<token> lexor::getNextToken()
 		return invalidChar(); // if we get here something went wrong
 	return nullptr;
 }
-

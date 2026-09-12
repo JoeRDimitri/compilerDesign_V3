@@ -4,6 +4,19 @@
 #include <iostream>
 #include <spdlog/sinks/basic_file_sink.h>
 
+void initialize_argument_files(int argc, char *argv[], lexor *main_lex, parser *parser)
+{
+	if (argc >= 2)
+	{
+		main_lex->setInputFile(argv[1]);
+		spdlog::info("Virgin Protocol set to FALSE because arguments specified in the executable command.");
+	}
+	if (argc >= 3)
+		parser->set_firstSet_inputFile(argv[2]);
+	if (argc >= 4)
+		parser->set_followSet_inputFile(argv[2]);
+};
+
 int main(int argc, char *argv[])
 {
 
@@ -12,23 +25,26 @@ int main(int argc, char *argv[])
 	//  spdlog::set_default_logger(std::make_shared<spdlog::logger>("file_logger", file_sink));
 	//  spdlog::set_level(spdlog::level::info);
 	spdlog::set_level(spdlog::level::debug);
-
-	spdlog::info("** ** **IN MAIN DRIVER.CPP** ** **");
+	spdlog::info("Initialized logging");
 
 	lexor lex;
-	
-	if (argc >= 2)
-		lex.setInputFile(argv[1]);
-	spdlog::warn("Current working directory check :{}", std::filesystem::current_path().string());
+	parser parser;
+
+	initialize_argument_files(argc, argv, &lex, &parser);
+
+	// spdlog::warn("Current working directory check :{}", std::filesystem::current_path().string());
 	std::vector<std::unique_ptr<token>> vectorOfTokens;
 	try
 	{
-		spdlog::warn("Entering the token loop from the driver.cpp file.");
+		spdlog::debug("Entering the token loop from the driver.cpp file.");
 		while (true)
 		{
 			try
 			{
 				std::unique_ptr<token> currentToken = lex.getNextToken();
+				// We specifically place the tokens that are not comments in the vector
+				// Comment tokens including line comments and block comments, the pointer gets destroyed here
+				// Whereas the pointer for the other tokens live on in the vector
 				if (currentToken->getTypeName().find("cmt") == std::string::npos && currentToken->getTypeName().find("comment") == std::string::npos)
 					vectorOfTokens.emplace_back(std::move(currentToken));
 			}
@@ -42,7 +58,7 @@ int main(int argc, char *argv[])
 	catch (const EndOfFileException &e)
 	{
 		vectorOfTokens.emplace_back(std::make_unique<token>("$", "$", -1, -1));
-		spdlog::warn("Reached the end of the Script file with a total of {} Tokens found in the file.", vectorOfTokens.size());
+		spdlog::debug("Reached the end of the Script file with a total of {} Tokens found in the file.", vectorOfTokens.size());
 	}
 	catch (const std::exception &e)
 	{
@@ -51,9 +67,6 @@ int main(int argc, char *argv[])
 	}
 	std::cout << "------------------------------------------------------------------------------------" << std::endl;
 	spdlog::info("Entering Second phase, the parsing phase.");
-	parser parser;
-	if (argc >= 3)
-		parser.faf.setInputFile(argv[2]);
 	try
 	{
 		parser.faf.generateFirstSet();
@@ -65,8 +78,6 @@ int main(int argc, char *argv[])
 	}
 	parser.faf.h.writeToFirstSetFile(parser.faf);
 
-	if (argc >= 4)
-		parser.faf.setInputFile(argv[3]);
 	try
 	{
 		parser.faf.generateFollowSet();
@@ -78,15 +89,21 @@ int main(int argc, char *argv[])
 	}
 	parser.faf.h.writeToFollowSetFile(parser.faf);
 	std::cout << "------------------------------------------------------------------------------------" << std::endl;
+
 	if (argc >= 5)
 		parser.parsingTable.attributeGrammarFile = argv[4];
 	else
 		parser.parsingTable.attributeGrammarFile = "inputs/AttributeGrammar.txt";
-	parser.parsingTable.buildTable();
+
+	parser.build_parsing_table();
+
 	parser.parse(vectorOfTokens);
+
 	std::cout << "Finished Parsing" << std::endl;
+
 	parser.AST.printTree();
 	std::cout << "------------------------------------------------------------------------------------" << std::endl;
+
 	parser.AST.treeHead->accept(parser.ref_toTableCreatorVisitor);
 	parser.AST.printSymbolTable(parser.AST.treeHead);
 	SemanticCheckingVisitor *semanticChecker = new SemanticCheckingVisitor();

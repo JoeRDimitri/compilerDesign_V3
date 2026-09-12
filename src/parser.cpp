@@ -13,6 +13,7 @@ bool parser::parse(const std::vector<std::unique_ptr<token>> &vectorOfTokens)
 	// Is the current table entry an error?
 	bool error;
 	// Initial variables for parsing stack.
+	initiate_stack();
 	parsingStack.push("$");
 	parsingStack.push("START");
 	// Initial variables for Derivation
@@ -1377,4 +1378,17 @@ void parser::abstractSyntaxTree::printSymbolTable(node *head)
 		}
 	}
 	out << sep0() << "\n";
+}
+void parser::build_parsing_table()
+{
+	parsingTable.buildTable();
+}
+
+void parser::set_firstSet_inputFile(const std::string &path)
+{
+	faf.set_first_input_File(path);
+}
+void parser::set_followSet_inputFile(const std::string &path)
+{
+	faf.set_follow_input_File(path);
 }

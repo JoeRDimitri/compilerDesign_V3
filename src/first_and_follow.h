@@ -7,12 +7,12 @@
 
 class first_and_follow
 {
+	friend class parser;
+
 private:
 	// unordered map for the first set
 	// Key will be the name of the nonterminal symbol
 	// The value will be a vector containing the actual set.
-	errorHandler erroneousHandler;
-	fileHandler fileousHandler;
 	std::string currentSymbol;
 	std::string currentWord;
 	std::string line;
@@ -44,9 +44,12 @@ private:
 	std::vector<std::string> *findFollowSet(std::string);
 	void compareAndAdd(std::vector<std::string> *v1, std::vector<std::string> *v2);
 	bool hasEpsilon(std::vector<std::string> *v);
+	void set_first_input_File(const std::string &path);
+	void set_follow_input_File(const std::string &path);
 
 public:
-	handler h;
+	handler first_set_handler;
+	handler follow_set_handler;
 	static bool inVector(std::vector<std::string> *v, const std::string s);
 	std::unordered_map<std::string, std::vector<std::string> *> firstSet;
 	std::unordered_map<std::string, std::vector<std::string> *> followSet;
@@ -54,10 +57,9 @@ public:
 	void generateFirstSet();
 	void generateFollowSet();
 	// Bypass stdin prompt: open the grammar file directly and mark as ready.
-	void setInputFile(const std::string &path);
-	first_and_follow() : h(),
-						 erroneousHandler(&h),
-						 fileousHandler(&h),
+
+	first_and_follow() : first_set_handler(),
+						 follow_set_handler(),
 						 lineIndex(0),
 						 change(true),
 						 line(""),

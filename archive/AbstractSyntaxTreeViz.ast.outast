@@ -1,0 +1,261 @@
+[prog]
+├── funcdef [funcNode]
+│   ├── funchead
+│   │   ├── id (bubbleSort)
+│   │   ├── funcparams [fparamsNode]
+│   │   │   ├── param
+│   │   │   │   ├── id (arr)
+│   │   │   │   ├── type (integer)
+│   │   │   │   └── dimlist [reptfparams3Node]
+│   │   │   └── param
+│   │   │       ├── id (size)
+│   │   │       └── type (integer)
+│   │   └── returntype (void)
+│   └── funcbody
+│       ├── vardecl [localvardeclNode]
+│       │   ├── id (n)
+│       │   └── type (integer)
+│       ├── vardecl [localvardeclNode]
+│       │   ├── id (i)
+│       │   └── type (integer)
+│       ├── vardecl [localvardeclNode]
+│       │   ├── id (j)
+│       │   └── type (integer)
+│       ├── vardecl [localvardeclNode]
+│       │   ├── id (temp)
+│       │   └── type (integer)
+│       ├── assign [reptstatement4Node]
+│       │   ├── term [reptvariable2andidNode]
+│       │   │   └── id (n)
+│       │   └── expr
+│       │       └── term [arithexprNode]
+│       │           └── id (size)
+│       ├── assign [reptstatement4Node]
+│       │   ├── term [reptvariable2andidNode]
+│       │   │   └── id (i)
+│       │   └── expr
+│       │       └── intnum [arithexprNode] (0)
+│       ├── assign [reptstatement4Node]
+│       │   ├── term [reptvariable2andidNode]
+│       │   │   └── id (j)
+│       │   └── expr
+│       │       └── intnum [arithexprNode] (0)
+│       ├── assign [reptstatement4Node]
+│       │   ├── term [reptvariable2andidNode]
+│       │   │   └── id (temp)
+│       │   └── expr
+│       │       └── intnum [arithexprNode] (0)
+│       └── while [whilestatementNode]
+│           ├── relexpr [conditionNode]
+│           │   ├── term [arithexprNode]
+│           │   │   └── id (i)
+│           │   ├── relop (<)
+│           │   └── addop [arithexprNode]
+│           │       ├── term
+│           │       │   └── id (n)
+│           │       └── intnum [termNode] (1)
+│           └── reptstatblock1 [thenNode]
+│               ├── assign [reptstatement4Node]
+│               │   ├── term [reptvariable2andidNode]
+│               │   │   └── id (j)
+│               │   └── expr
+│               │       └── intnum [arithexprNode] (0)
+│               ├── while [whilestatementNode]
+│               │   ├── relexpr [conditionNode]
+│               │   │   ├── term [arithexprNode]
+│               │   │   │   └── id (j)
+│               │   │   ├── relop (<)
+│               │   │   └── addop [arithexprNode]
+│               │   │       ├── addop [rightrecarithexprNode]
+│               │   │       │   ├── term
+│               │   │       │   │   └── id (n)
+│               │   │       │   └── term
+│               │   │       │       └── id (i)
+│               │   │       └── intnum [termNode] (1)
+│               │   └── reptstatblock1 [thenNode]
+│               │       ├── if [ifstatementNode]
+│               │       │   ├── relexpr [conditionNode]
+│               │       │   │   ├── term [arithexprNode]
+│               │       │   │   │   ├── id (arr)
+│               │       │   │   │   └── reptvariable2
+│               │       │   │   │       └── term [indiceNode]
+│               │       │   │   │           └── id (j)
+│               │       │   │   ├── relop (>)
+│               │       │   │   └── term [arithexprNode]
+│               │       │   │       ├── id (arr)
+│               │       │   │       └── reptvariable2
+│               │       │   │           └── addop [indiceNode]
+│               │       │   │               ├── term
+│               │       │   │               │   └── id (j)
+│               │       │   │               └── intnum [termNode] (1)
+│               │       │   └── reptstatblock1 [thenNode]
+│               │       │       ├── assign [reptstatement4Node]
+│               │       │       │   ├── term [reptvariable2andidNode]
+│               │       │       │   │   └── id (temp)
+│               │       │       │   └── expr
+│               │       │       │       └── term [arithexprNode]
+│               │       │       │           ├── id (arr)
+│               │       │       │           └── reptvariable2
+│               │       │       │               └── term [indiceNode]
+│               │       │       │                   └── id (j)
+│               │       │       ├── assign [reptstatement4Node]
+│               │       │       │   ├── term [reptvariable2andidNode]
+│               │       │       │   │   ├── id (arr)
+│               │       │       │   │   └── reptvariable2
+│               │       │       │   │       └── term [indiceNode]
+│               │       │       │   │           └── id (j)
+│               │       │       │   └── expr
+│               │       │       │       └── term [arithexprNode]
+│               │       │       │           ├── id (arr)
+│               │       │       │           └── reptvariable2
+│               │       │       │               └── addop [indiceNode]
+│               │       │       │                   ├── term
+│               │       │       │                   │   └── id (j)
+│               │       │       │                   └── intnum [termNode] (1)
+│               │       │       └── assign [reptstatement4Node]
+│               │       │           ├── term [reptvariable2andidNode]
+│               │       │           │   ├── id (arr)
+│               │       │           │   └── reptvariable2
+│               │       │           │       └── addop [indiceNode]
+│               │       │           │           ├── term
+│               │       │           │           │   └── id (j)
+│               │       │           │           └── intnum [termNode] (1)
+│               │       │           └── expr
+│               │       │               └── term [arithexprNode]
+│               │       │                   └── id (temp)
+│               │       └── assign [reptstatement4Node]
+│               │           ├── term [reptvariable2andidNode]
+│               │           │   └── id (j)
+│               │           └── expr
+│               │               └── addop [arithexprNode]
+│               │                   ├── term
+│               │                   │   └── id (j)
+│               │                   └── intnum [termNode] (1)
+│               └── assign [reptstatement4Node]
+│                   ├── term [reptvariable2andidNode]
+│                   │   └── id (i)
+│                   └── expr
+│                       └── addop [arithexprNode]
+│                           ├── term
+│                           │   └── id (i)
+│                           └── intnum [termNode] (1)
+├── funcdef [funcNode]
+│   ├── funchead
+│   │   ├── id (printArray)
+│   │   ├── funcparams [fparamsNode]
+│   │   │   ├── param
+│   │   │   │   ├── id (arr)
+│   │   │   │   ├── type (integer)
+│   │   │   │   └── dimlist [reptfparams3Node]
+│   │   │   └── param
+│   │   │       ├── id (size)
+│   │   │       └── type (integer)
+│   │   └── returntype (void)
+│   └── funcbody
+│       ├── term [reptvariable2andidNode]
+│       │   └── id (localvar)
+│       ├── term [reptvariable2andidNode]
+│       │   └── id (;)
+│       ├── term [reptvariable2andidNode]
+│       │   └── id (;)
+│       └── while [whilestatementNode]
+│           ├── relexpr [conditionNode]
+│           │   ├── term [arithexprNode]
+│           │   │   └── id (i)
+│           │   ├── relop (<)
+│           │   └── term [arithexprNode]
+│           │       └── id (n)
+│           └── reptstatblock1 [thenNode]
+│               ├── write [writestatementNode]
+│               │   └── expr
+│               │       └── term [arithexprNode]
+│               │           ├── id (arr)
+│               │           └── reptvariable2
+│               │               └── term [indiceNode]
+│               │                   └── id (i)
+│               └── assign [reptstatement4Node]
+│                   ├── term [reptvariable2andidNode]
+│                   │   └── id (i)
+│                   └── expr
+│                       └── addop [arithexprNode]
+│                           ├── term
+│                           │   └── id (i)
+│                           └── intnum [termNode] (1)
+└── funcdef [funcNode]
+    ├── funchead
+    │   ├── id (main)
+    │   └── returntype (void)
+    └── funcbody
+        ├── assign [reptstatement4Node]
+        │   ├── term [reptvariable2andidNode]
+        │   │   ├── id (localvar)
+        │   │   └── reptvariable2
+        │   │       └── intnum [indiceNode] (7)
+        │   └── expr
+        │       └── intnum [arithexprNode] (64)
+        ├── assign [reptstatement4Node]
+        │   ├── term [reptvariable2andidNode]
+        │   │   ├── id (arr)
+        │   │   └── reptvariable2
+        │   │       └── intnum [indiceNode] (1)
+        │   └── expr
+        │       └── intnum [arithexprNode] (34)
+        ├── assign [reptstatement4Node]
+        │   ├── term [reptvariable2andidNode]
+        │   │   ├── id (arr)
+        │   │   └── reptvariable2
+        │   │       └── intnum [indiceNode] (2)
+        │   └── expr
+        │       └── intnum [arithexprNode] (25)
+        ├── assign [reptstatement4Node]
+        │   ├── term [reptvariable2andidNode]
+        │   │   ├── id (arr)
+        │   │   └── reptvariable2
+        │   │       └── intnum [indiceNode] (3)
+        │   └── expr
+        │       └── intnum [arithexprNode] (12)
+        ├── assign [reptstatement4Node]
+        │   ├── term [reptvariable2andidNode]
+        │   │   ├── id (arr)
+        │   │   └── reptvariable2
+        │   │       └── intnum [indiceNode] (4)
+        │   └── expr
+        │       └── intnum [arithexprNode] (22)
+        ├── assign [reptstatement4Node]
+        │   ├── term [reptvariable2andidNode]
+        │   │   ├── id (arr)
+        │   │   └── reptvariable2
+        │   │       └── intnum [indiceNode] (5)
+        │   └── expr
+        │       └── intnum [arithexprNode] (11)
+        ├── assign [reptstatement4Node]
+        │   ├── term [reptvariable2andidNode]
+        │   │   ├── id (arr)
+        │   │   └── reptvariable2
+        │   │       └── intnum [indiceNode] (6)
+        │   └── expr
+        │       └── intnum [arithexprNode] (90)
+        ├── functioncall [aparamsandidNode]
+        │   ├── id (printarray)
+        │   └── aparams
+        │       ├── expr
+        │       │   └── term [arithexprNode]
+        │       │       └── id (arr)
+        │       └── expr
+        │           └── intnum [arithexprNode] (7)
+        ├── functioncall [aparamsandidNode]
+        │   ├── id (bubbleSort)
+        │   └── aparams
+        │       ├── expr
+        │       │   └── term [arithexprNode]
+        │       │       └── id (arr)
+        │       └── expr
+        │           └── intnum [arithexprNode] (7)
+        └── functioncall [aparamsandidNode]
+            ├── id (printArray)
+            └── aparams
+                ├── expr
+                │   └── term [arithexprNode]
+                │       └── id (arr)
+                └── expr
+                    └── intnum [arithexprNode] (7)

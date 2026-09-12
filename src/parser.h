@@ -20,11 +20,10 @@
 
 class parser
 {
-
+private:
 	class abstractSyntaxTree
 	{
 	public:
-		class symbolTable;
 		// Composite Element
 		// For each node class, we implement an accept function
 		// The accept function will take a visitor as an argument, then call the accept functino for all of its children. Once all the children are visited by the visitor (through the accept function) then the visitor visits the parent.
@@ -51,16 +50,19 @@ class parser
 		void makeBinarySubTreeWithHead(std::string nodeType, int numOfPops, node *newnode);
 	};
 
-	// Need to make all of these variables non-static and instantiate them in the constructor.
-public:
-	first_and_follow faf;
 	parsing_table parsingTable;
+	first_and_follow faf;
 	std::stack<std::string> parsingStack;
 	semanticActions semanticHandler;
 	std::stack<node *> semanticStack;
 	abstractSyntaxTree AST;
 	SymTabCreationVisitor *tableCreatorVisitor = new SymTabCreationVisitor();
 	visitor &ref_toTableCreatorVisitor = *tableCreatorVisitor;
+
+public:
+	void set_firstSet_inputFile(const std::string &path);
+	void set_followSet_inputFile(const std::string &path);
+	void build_parsing_table();
 	bool searchFirst(std::string lookahead, std::string topOfTheStack);
 	bool parse(const std::vector<std::unique_ptr<token>> &);
 	void inverseRHSMultiplePush(tableEntry t, std::vector<std::string> &vec, const int &lineIndex);
